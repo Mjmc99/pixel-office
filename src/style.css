@@ -92,3 +92,17 @@ kbd { font: inherit; font-size: 11px; border: 1px solid currentColor; border-rad
 .zone-row { flex: 0 0 auto; display: flex; flex-direction: column; gap: 4px; background: #1f1d27; border: 2px solid var(--line); border-radius: 4px; padding: 6px; }
 .zone-row input { width: 150px; }
 .zsize { color: var(--muted); font-size: 11px; }
+
+.row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.panel { top: 150px; left: 12px; width: 340px; max-height: calc(100vh - 260px); overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.panel label { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.panel select, .panel textarea, .panel input { width: 100%; font: inherit; color: var(--ink); background: #15141b; border: 2px solid var(--line); border-radius: 4px; padding: 5px; }
+.ptitle { font-family: 'Silkscreen', monospace; font-size: 13px; color: var(--accent); }
+.prow { display: flex; gap: 6px; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 6px; }
+.prow span:first-child { flex: 1; }
+.prow i { color: var(--muted); font-style: normal; font-size: 11px; }
+.role { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+.hint { color: var(--muted); font-size: 11px; }
+.btn.danger { border-color: #a8322c; }
+.elevator { left: 50%; transform: translateX(-50%); top: auto; bottom: 120px; }
+.banned { position: fixed; inset: 0; display: grid; place-items: center; background: #000c; color: #ff9a8a; font-size: 18px; z-index: 10; }

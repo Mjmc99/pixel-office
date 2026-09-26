@@ -13,6 +13,8 @@
     "test": "playwright test"
   },
   "dependencies": {
+    "@noble/ed25519": "^3.2.0",
+    "@noble/hashes": "^2.4.0",
     "phaser": "^4.2.1",
     "trystero": "^0.25.4",
     "y-indexeddb": "^9.0.12",

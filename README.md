@@ -4,7 +4,7 @@ A peer-to-peer, pixel-art virtual office in the spirit of Gather. People walk ar
 3/4-view world, chat, and decorate rooms together. There is **no game server**: peers find
 each other through public Nostr relays and then talk directly over WebRTC.
 
-![Three people in a meeting-room call](docs/phase1-call.png)
+![The lounge, with the owner's People panel](docs/phase2-building.png)
 
 Built so far:
 
@@ -14,6 +14,10 @@ Built so far:
   inside it; walk out and you leave. Outside zones, a **proximity bubble** connects you to
   anyone within about 5 tiles, with volume fading by distance. The world owner draws zones
   (around a couch, a meeting table, a stage) with the zone tool.
+- **Phase 2**: the building. Every world is an office building (4 large + 4 small office
+  slots, lounge, lobby with elevator, cafe with table zones, library) with as many floors as
+  the owner adds. Identities are Ed25519 keys; ownership, moderators, bans and every edit are
+  **signed operations** that each peer verifies, so no server decides who's in charge.
 
 ## Run it
 
@@ -42,7 +46,9 @@ Add `?net=local` to the URL to use the offline, same-browser transport (no netwo
 | Click | Place, or pick up furniture to move it |
 | Right-click / Delete | Remove furniture under the cursor, or cancel placing |
 | Esc | Cancel / leave decorate mode |
-| Decorate > **Call zones** (owner) | Drag on the floor to draw a zone; rename or delete it in the list, or right-click it |
+| People / Settings (world card) | See who's here; owners make mods and ban; mods add floors; back up your identity key |
+| Stand on the elevator pad | Pick a floor |
+| Decorate > **Call zones** (owner/mods) | Drag on the floor to draw a zone; rename or delete it in the list, or right-click it |
 
 *Copy invite link* shares the world. The part after `#` holds the world id and a secret
 that encrypts signaling, and it never reaches any web server.
@@ -61,7 +67,10 @@ src/
   media/audio.ts      Web Audio mixer: per-voice volume and stereo pan
   media/call.ts       Glue: positions + zones -> calls
   ui/tiles.ts         Video / avatar tiles for everyone you're talking to
-  world/identity.ts   Stable per-browser user id (world owner check)
+  world/building.ts   The floor plan: corridors, commons, office slots, elevator
+  world/crypto.ts     Ed25519 identity, signing, canonical JSON, key backup
+  world/state.ts      Signed op log (Y.Array) replayed into the world view with permissions
+  world/starter.ts    Furniture and zones a new world starts with
   world/room.ts       Room geometry, footprints, placement rules, starter layout
   scenes/WorldScene.ts  Phaser scene: rendering, depth sorting, movement, decorate mode
   ui/hud.ts           DOM overlay: world card, identity, palette, chat
@@ -83,9 +92,21 @@ capped at 320×240, 15 fps, ~350 kbps so a 6-person mesh fits a home connection.
 presence and heartbeats run on a timer, not the render loop, so they keep working when
 the tab is in the background.
 
-**Zones** live in the shared world doc (`zones` map). Today the world's creator is its
-owner, checked by a persistent per-browser id; phase 2 replaces that with signed ownership,
-and phase 3 lets room owners draw zones inside their own rooms.
+**Signed op log.** All shared state (furniture, zones, roles, bans, policy, floors) is an
+append-only Yjs array of operations, each signed by its author's Ed25519 key. Every peer
+replays the log in timestamp order and applies an op only if the signature checks out and the
+author had the right role at that moment. The world id is `hash(ownerKey + nonce)`, so only
+the creator's key can write the genesis op; a forged genesis or a guest's zone edit is simply
+ignored by everyone. Peers also sign their session id at connect ("hello"), which binds a
+WebRTC peer to an identity so bans apply to presence, chat and calls.
+
+Known limits: a malicious peer can still append junk (ignored, but it grows the log), and a
+mod could backdate ops before a demotion. Log compaction and anchor-peer checkpoints are
+later work.
+
+**Identity.** Your key lives in this browser (`localStorage`). *Settings > Copy key backup*
+gives you a text key to restore elsewhere. Add `?profile=name` to the URL to run several
+identities in one browser (handy for testing).
 
 ## Art pipeline
 
@@ -122,8 +143,7 @@ npm test             # includes a 4-person video call with fake cameras
 The game has to be served over HTTPS (or localhost) because browser crypto and WebRTC
 require it. That's why friends on other networks need the Pages URL, not your PC's IP.
 
-## Next (phase 2)
+## Next (phase 3)
 
-The building: keypair identities, a signed governance log (owners, bans, placements),
-a floor template with room slots, zones per area, and world invite links that scale past
-one room.
+Room links: signed, content-addressed office packages that anyone can share by link and drop
+into an empty office slot.

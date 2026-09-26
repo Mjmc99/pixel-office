@@ -7,23 +7,24 @@ import type { Transport } from './net/transport'
 import { WorldScene } from './scenes/WorldScene'
 import { Hud } from './ui/hud'
 import { Call } from './media/call'
-import { DEFAULT_ZONES, type Zone } from './media/proximity'
-import { userId } from './world/identity'
-import { starterLayout } from './world/room'
-import type { Manifest, Placed } from './world/types'
+import { loadIdentity, profile } from './world/crypto'
+import { WorldState } from './world/state'
+import { STARTER_DECOR, STARTER_ZONES } from './world/starter'
+import type { Manifest } from './world/types'
 
-/** Invite links look like  …/#w=<worldId>.<secret>  — the part after # never reaches a server. */
-function worldFromHash(): { id: string; secret: string; created: boolean } {
+/**
+ * Invite links look like  …/#w=<worldId>.<secret>  — the part after # never
+ * reaches a server. The world id is derived from the creator's public key,
+ * which is what makes ownership verifiable without a server.
+ */
+function parseHash() {
   const m = location.hash.match(/w=([a-z0-9]+)\.([A-Za-z0-9_-]+)/)
-  if (m) return { id: m[1], secret: m[2], created: false }
-  const rand = (n: number) => {
-    const a = crypto.getRandomValues(new Uint8Array(n))
-    return btoa(String.fromCharCode(...a)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-  }
-  const id = Math.random().toString(36).slice(2, 10)
-  const secret = rand(12)
-  history.replaceState(null, '', `${location.pathname}${location.search}#w=${id}.${secret}`)
-  return { id, secret, created: true }
+  return m ? { id: m[1], secret: m[2] } : null
+}
+
+function randomSecret() {
+  const a = crypto.getRandomValues(new Uint8Array(12))
+  return btoa(String.fromCharCode(...a)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
 function store<T>(key: string, fallback: T): T {
@@ -35,49 +36,59 @@ export function save(key: string, v: unknown) {
 
 async function boot() {
   const manifest: Manifest = await fetch('assets/manifest.json').then((r) => r.json())
-  const world = worldFromHash()
+  const identity = await loadIdentity()
   const params = new URLSearchParams(location.search)
-  const net: Transport = params.get('net') === 'local'
-    ? new LocalTransport(world.id)
-    : new TrysteroTransport(world.id, world.secret)
 
-  const uid = userId()
-  const sync = new DocSync(net, world.id)
-  await sync.whenLoaded()
-  if (world.created && sync.doc.getMap('decor').size === 0) {
-    sync.doc.transact(() => {
-      const decor = sync.doc.getMap<Placed>('decor')
-      starterLayout().forEach((p, i) => decor.set('s' + i, p))
-      sync.doc.getMap<string>('room').set('theme', 'office')
-      sync.doc.getMap<string>('room').set('owner', uid)
-      const zones = sync.doc.getMap<Zone>('zones')
-      for (const z of DEFAULT_ZONES) zones.set(z.id, z)
-    })
+  let world = parseHash()
+  let nonce: string | null = null
+  if (!world) {
+    const w = WorldState.newWorldId(identity.pub)
+    world = { id: w.id, secret: randomSecret() }
+    nonce = w.nonce
+    history.replaceState(null, '', `${location.pathname}${location.search}#w=${world.id}.${world.secret}`)
   }
 
+  const net: Transport = params.get('net') === 'local'
+    ? new LocalTransport(world.id)
+    : new TrysteroTransport(world.id, world.secret, store<RTCIceServer[] | undefined>('po:turn', undefined))
+
+  const sync = new DocSync(net, world.id)
+  await sync.whenLoaded()
+  const state = new WorldState(sync.doc, identity, world.id)
+  await state.refresh()
+
   const presets = manifest.avatars.presets
-  const me = store('po:me', {
+  const meKey = 'po:me' + (profile() ? ':' + profile() : '')
+  const me = store(meKey, {
     name: `Guest ${Math.floor(Math.random() * 900 + 100)}`,
     avatar: presets[Math.floor(Math.random() * presets.length)].id,
   })
   if (params.get('name')) me.name = params.get('name')!
 
-  const call = new Call(net)
-  const hud = new Hud(manifest, net, world, call)
+  if (nonce) {
+    await state.authorMany([
+      { t: 'genesis', p: { nonce, name: `${me.name}'s office` } },
+      ...STARTER_ZONES.map((z) => ({ t: 'zone.set', p: { ...z, floor: 0 } })),
+      ...STARTER_DECOR.map(([item, x, y, f], i) => ({ t: 'decor.set', p: { id: 's' + i, item, x, y, f: f ?? 'S', floor: 0 } })),
+    ])
+  }
+
+  const call = new Call(net, store<RTCIceServer[] | undefined>('po:turn', undefined))
+  const hud = new Hud(manifest, net, world, call, state)
   new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
     pixelArt: true,
-    backgroundColor: '#1b1a22',
+    backgroundColor: '#141319',
     scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
     scene: [],
     callbacks: {
       postBoot: (game) => {
         game.scene.add('world', WorldScene, true, {
-          manifest, net, doc: sync.doc, me, call, uid,
+          manifest, net, call, state, me,
           onReady: (s: WorldScene) => {
-            hud.attach(s, (name, avatar) => { s.setMe(name, avatar); save('po:me', { name, avatar }) })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call }
+            hud.attach(s, (name, avatar) => { s.setMe(name, avatar); save(meKey, { name, avatar }) })
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state }
           },
         })
       },

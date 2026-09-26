@@ -1,21 +1,27 @@
 import type { Transport } from '../net/transport'
 import type { WorldScene } from '../scenes/WorldScene'
 import type { Call } from '../media/call'
-import { Tiles } from './tiles'
+import type { WorldState } from '../world/state'
+import { exportIdentity, importIdentity, shortKey } from '../world/crypto'
 import type { Manifest } from '../world/types'
+import { Tiles } from './tiles'
 
-const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', html = '') => {
+export const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', html = '') => {
   const e = document.createElement(tag)
   if (cls) e.className = cls
   if (html) e.innerHTML = html
   return e
 }
+export function esc(s: string) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
+}
 
-/** DOM overlay: world card, identity, decorate palette, chat. */
+/** DOM overlay: world card, people, settings, identity, decorate palette, chat, call controls, elevator. */
 export class Hud {
-  private root = document.getElementById('hud')!
-  private scene!: WorldScene
+  root = document.getElementById('hud')!
+  scene!: WorldScene
   private peersEl = el('div', 'peers')
+  private titleEl = el('div', 'title')
   private palette = el('div', 'palette hidden')
   private grid = el('div', 'grid')
   private tabs = el('div', 'tabs')
@@ -26,11 +32,18 @@ export class Hud {
   private camBtn = el('button', 'btn media', 'Cam off <kbd>V</kbd>')
   private zoneEl = el('div', 'zone hidden')
   private errEl = el('div', 'err hidden')
+  private elevEl = el('div', 'card elevator hidden')
+  private panel = el('div', 'card panel hidden')
+  private bannedEl = el('div', 'banned hidden', 'You have been banned from this world by its moderators.')
   private tiles?: Tiles
   private themeTab = 'office'
   private thumbs = new Map<string, string>()
+  private zoneSig = ''
+  private panelKind: 'people' | 'settings' | null = null
+  /** Later phases add tabs to the decorate palette: [id, label, render(grid)]. */
+  extraTabs: { id: string; label: string; visible: () => boolean; render: (grid: HTMLElement) => void; onOpen?: () => void; onClose?: () => void }[] = []
 
-  constructor(private manifest: Manifest, private net: Transport, private world: { id: string }, private call: Call) {}
+  constructor(private manifest: Manifest, private net: Transport, private world: { id: string }, private call: Call, private state: WorldState) {}
 
   attach(scene: WorldScene, onMe: (name: string, avatar: string) => void) {
     this.scene = scene
@@ -38,15 +51,21 @@ export class Hud {
 
     // ---- world card
     const card = el('div', 'card world')
-    card.append(el('div', 'title', `Pixel Office <span class="tag">${this.net.kind === 'p2p' ? 'P2P' : 'LOCAL'}</span>`))
-    card.append(el('div', 'sub', `World <code>${this.world.id}</code>`))
+    card.append(this.titleEl)
+    card.append(el('div', 'sub', `World <code>${this.world.id}</code> · <span class="tag">${this.net.kind === 'p2p' ? 'P2P' : 'LOCAL'}</span>`))
+    const row = el('div', 'row')
     const invite = el('button', 'btn small', 'Copy invite link')
     invite.onclick = async () => {
-      try { await navigator.clipboard.writeText(location.href); invite.textContent = 'Copied!' } catch { prompt('Invite link:', location.href) }
+      try { await navigator.clipboard.writeText(location.href); invite.textContent = 'Copied!' } catch { this.showPanelText('Invite link', location.href) }
       setTimeout(() => (invite.textContent = 'Copy invite link'), 1500)
     }
-    card.append(this.peersEl, invite)
-    this.root.append(card)
+    const people = el('button', 'btn small', 'People')
+    people.onclick = () => this.togglePanel('people')
+    const settings = el('button', 'btn small', 'Settings')
+    settings.onclick = () => this.togglePanel('settings')
+    row.append(invite, people, settings)
+    card.append(this.peersEl, row)
+    this.root.append(card, this.panel, this.elevEl, this.bannedEl)
 
     // ---- identity card
     const idc = el('div', 'card me')
@@ -134,20 +153,11 @@ export class Hud {
     this.refresh()
   }
 
-  private refreshMedia() {
-    const d = this.call.devices
-    this.micBtn.innerHTML = `${d.micOn ? 'Mic on' : 'Mic off'} <kbd>M</kbd>`
-    this.camBtn.innerHTML = `${d.camOn ? 'Cam on' : 'Cam off'} <kbd>V</kbd>`
-    this.micBtn.classList.toggle('live', d.micOn)
-    this.camBtn.classList.toggle('live', d.camOn)
-    this.errEl.textContent = d.error
-    this.errEl.classList.toggle('hidden', !d.error)
-  }
-
-  private guardTyping(inp: HTMLInputElement) {
+  // ------------------------------------------------------------------ helpers
+  guardTyping(inp: HTMLInputElement | HTMLTextAreaElement) {
     inp.addEventListener('focus', () => (this.scene.typing = true))
     inp.addEventListener('blur', () => (this.scene.typing = false))
-    inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') inp.blur() })
+    inp.addEventListener('keydown', (e: Event) => { const ke = e as KeyboardEvent; ke.stopPropagation(); if (ke.key === 'Enter' && inp instanceof HTMLInputElement) inp.blur() })
   }
 
   private openChat() {
@@ -163,28 +173,150 @@ export class Hud {
   }
 
   /** PNG data URL of one atlas frame (cached), for DOM thumbnails. */
-  private thumb(key: string, frame: string) {
+  thumb(key: string, frame: string) {
     const k = key + ':' + frame
     if (!this.thumbs.has(k)) this.thumbs.set(k, this.scene.textures.getBase64(key, frame) as string)
     return this.thumbs.get(k)!
   }
 
-  private zoneSig = ''
+  private refreshMedia() {
+    const d = this.call.devices
+    this.micBtn.innerHTML = `${d.micOn ? 'Mic on' : 'Mic off'} <kbd>M</kbd>`
+    this.camBtn.innerHTML = `${d.camOn ? 'Cam on' : 'Cam off'} <kbd>V</kbd>`
+    this.micBtn.classList.toggle('live', d.micOn)
+    this.camBtn.classList.toggle('live', d.camOn)
+    this.errEl.textContent = d.error
+    this.errEl.classList.toggle('hidden', !d.error)
+  }
 
+  // ------------------------------------------------------------------ side panel (people / settings)
+  private togglePanel(kind: 'people' | 'settings') {
+    this.panelKind = this.panelKind === kind ? null : kind
+    this.renderPanel()
+  }
+
+  private showPanelText(title: string, text: string) {
+    this.panelKind = null
+    this.panel.innerHTML = ''
+    this.panel.classList.remove('hidden')
+    const ta = el('textarea') as HTMLTextAreaElement
+    ta.value = text; ta.readOnly = true; ta.rows = 3
+    const close = el('button', 'btn small', 'Close')
+    close.onclick = () => this.panel.classList.add('hidden')
+    this.panel.append(el('div', 'ptitle', esc(title)), ta, close)
+    ta.select()
+  }
+
+  renderPanel() {
+    const p = this.panel
+    p.innerHTML = ''
+    p.classList.toggle('hidden', !this.panelKind)
+    if (!this.panelKind) return
+    const st = this.state
+    if (this.panelKind === 'people') {
+      p.append(el('div', 'ptitle', 'People in this world'))
+      const meRow = el('div', 'prow', `<span>${esc(this.scene.deps.me.name)} (you)</span><span class="role">${st.roleOf(st.me.pub)}</span>`)
+      p.append(meRow)
+      for (const person of this.scene.people()) {
+        const r = el('div', 'prow')
+        r.append(el('span', '', `${esc(person.name)}${person.floor !== this.scene.floor ? ` <i>floor ${person.floor + 1}</i>` : ''}`))
+        r.append(el('span', 'role', person.banned ? 'banned' : person.role))
+        if (person.uid && st.isMod && person.role !== 'owner') {
+          if (st.isOwner) {
+            const mod = el('button', 'btn small', person.role === 'mod' ? 'Remove mod' : 'Make mod')
+            mod.onclick = () => void st.author('role', { target: person.uid, role: person.role === 'mod' ? 'member' : 'mod' })
+            r.append(mod)
+          }
+          if (person.role !== 'mod' || st.isOwner) {
+            const ban = el('button', 'btn small danger', person.banned ? 'Unban' : 'Ban')
+            ban.onclick = () => void st.author('ban', { target: person.uid, on: !person.banned })
+            r.append(ban)
+          }
+        }
+        p.append(r)
+      }
+      if (!this.scene.people().length) p.append(el('div', 'sub', 'Nobody else is here yet.'))
+      return
+    }
+    // settings
+    p.append(el('div', 'ptitle', 'Settings'))
+    if (st.isOwner) {
+      const name = el('input') as HTMLInputElement
+      name.value = st.view.name; name.maxLength = 40
+      this.guardTyping(name)
+      name.onchange = () => void st.author('name', { name: name.value.trim() || st.view.name })
+      p.append(el('label', '', 'World name'), name)
+      const deco = el('select') as HTMLSelectElement
+      deco.innerHTML = `<option value="mods">Only owner + mods can decorate common areas</option><option value="everyone">Everyone can decorate common areas</option>`
+      deco.value = st.view.policy.decor
+      deco.onchange = () => void st.author('policy', { decor: deco.value })
+      const rooms = el('select') as HTMLSelectElement
+      rooms.innerHTML = `<option value="open">Anyone with a room link can add their office</option><option value="approval">New offices need owner/mod approval</option><option value="closed">No new offices</option>`
+      rooms.value = st.view.policy.rooms
+      rooms.onchange = () => void st.author('policy', { rooms: rooms.value })
+      p.append(el('label', '', 'Common areas'), deco, el('label', '', 'Offices'), rooms)
+    }
+    if (st.isMod) {
+      const floors = el('button', 'btn small', `Add a floor (now ${st.view.floors})`)
+      floors.onclick = () => void st.author('floors', { count: st.view.floors + 1 }).then(() => this.renderPanel())
+      p.append(el('label', '', 'Building'), floors)
+    }
+    // identity
+    p.append(el('label', '', `Your identity key: <code>${shortKey(st.me.pub)}</code>`))
+    const exp = el('button', 'btn small', 'Copy key backup')
+    exp.onclick = async () => {
+      const txt = exportIdentity(st.me)
+      try { await navigator.clipboard.writeText(txt); exp.textContent = 'Copied. Keep it private!' } catch { this.showPanelText('Key backup (keep private)', txt) }
+    }
+    const imp = el('button', 'btn small', 'Restore from backup…')
+    const ta = el('textarea') as HTMLTextAreaElement
+    ta.placeholder = 'pixel-office-key:…'; ta.rows = 2; ta.classList.add('hidden')
+    this.guardTyping(ta)
+    imp.onclick = async () => {
+      if (ta.classList.contains('hidden')) { ta.classList.remove('hidden'); ta.focus(); return }
+      try { await importIdentity(ta.value); location.reload() } catch (e) { imp.textContent = (e as Error).message }
+    }
+    p.append(el('div', 'hint', 'Your key proves who you are (ownership, mod rights, your offices). Back it up to use it on another browser.'), exp, imp, ta)
+  }
+
+  private renderElevator() {
+    const s = this.scene
+    const e = this.elevEl
+    e.classList.toggle('hidden', !s.onElevator)
+    if (!s.onElevator) return
+    e.innerHTML = ''
+    e.append(el('div', 'ptitle', 'Elevator'))
+    const row = el('div', 'row')
+    for (let i = 0; i < this.state.view.floors; i++) {
+      const b = el('button', 'btn small' + (i === s.floor ? ' on' : ''), `Floor ${i + 1}`)
+      b.onclick = () => s.goFloor(i)
+      row.append(b)
+    }
+    e.append(row)
+  }
+
+  // ------------------------------------------------------------------ decorate palette
   private renderTabs() {
     this.tabs.innerHTML = ''
+    const close = () => { this.scene.setZoneMode(false); for (const t of this.extraTabs) if (t.id !== this.themeTab) t.onClose?.() }
     for (const [tid, th] of Object.entries(this.manifest.themes)) {
       const b = el('button', 'tab' + (tid === this.themeTab ? ' on' : ''), th.label)
-      b.onclick = () => { this.themeTab = tid; this.scene.setZoneMode(false); this.renderTabs(); this.renderGrid() }
+      b.onclick = () => { this.themeTab = tid; close(); this.renderTabs(); this.renderGrid() }
       this.tabs.append(b)
     }
-    if (this.scene.isOwner) {
+    if (this.scene.canEditZones) {
       const z = el('button', 'tab zones-tab' + (this.themeTab === 'zones' ? ' on' : ''), 'Call zones')
-      z.onclick = () => { this.themeTab = 'zones'; this.scene.setZoneMode(true); this.renderTabs(); this.renderGrid() }
+      z.onclick = () => { this.themeTab = 'zones'; close(); this.scene.setZoneMode(true); this.renderTabs(); this.renderGrid() }
       this.tabs.append(z)
     }
-    if (this.themeTab !== 'zones') {
-      const use = el('button', 'btn small', 'Use this style for walls + floor')
+    for (const t of this.extraTabs) {
+      if (!t.visible()) continue
+      const b = el('button', 'tab zones-tab' + (this.themeTab === t.id ? ' on' : ''), t.label)
+      b.onclick = () => { this.themeTab = t.id; close(); t.onOpen?.(); this.renderTabs(); this.renderGrid() }
+      this.tabs.append(b)
+    }
+    if (this.manifest.themes[this.themeTab] && this.state.isMod) {
+      const use = el('button', 'btn small', 'Use this style for walls')
       use.onclick = () => this.scene.setTheme(this.themeTab)
       this.tabs.append(use)
     }
@@ -193,9 +325,9 @@ export class Hud {
   private renderZones() {
     this.grid.innerHTML = ''
     this.zoneSig = JSON.stringify(this.scene.zones)
-    const help = el('div', 'zone-help', 'Drag on the floor to draw a call zone. Everyone inside a zone is in one call; walking out leaves it. Right-click a zone to delete it.')
-    this.grid.append(help)
+    this.grid.append(el('div', 'zone-help', 'Drag on the floor to draw a call zone. Everyone inside a zone is in one call; walking out leaves it.'))
     for (const z of this.scene.zones) {
+      if ((z as any).room) continue
       const row = el('div', 'zone-row')
       const inp = el('input') as HTMLInputElement
       inp.value = z.name
@@ -209,12 +341,15 @@ export class Hud {
     }
   }
 
-  private renderGrid() {
+  renderGrid() {
     if (this.themeTab === 'zones') return this.renderZones()
+    const extra = this.extraTabs.find((t) => t.id === this.themeTab)
+    if (extra) { this.grid.innerHTML = ''; return extra.render(this.grid) }
     this.grid.innerHTML = ''
     for (const it of this.manifest.themes[this.themeTab].items) {
       const b = el('button', 'item' + (this.scene.selectedItem === it.id ? ' on' : ''))
       b.title = it.label
+      b.dataset.item = it.id
       const img = el('img') as HTMLImageElement
       img.src = this.thumb(this.themeTab, it.views.S.frame)
       b.append(img, el('span', '', it.label))
@@ -223,29 +358,30 @@ export class Hud {
     }
   }
 
-  private refresh() {
+  refresh() {
     const s = this.scene
+    const st = this.state
+    const role = st.roleOf(st.me.pub)
+    this.titleEl.innerHTML = `${esc(st.view.name)} ${role !== 'member' ? `<span class="tag">${role.toUpperCase()}</span>` : ''}`
     const names = s.peerNames()
     this.peersEl.innerHTML = names.length
       ? `<b>${names.length + 1}</b> here: you, ${names.map(esc).join(', ')}`
       : `Just you here. ${this.net.kind === 'p2p' ? 'Send the invite link to a friend.' : 'Open this link in another tab.'}`
+    this.bannedEl.classList.toggle('hidden', !st.isBanned)
     this.decoBtn.classList.toggle('on', s.decorating)
     this.palette.classList.toggle('hidden', !s.decorating)
-    if (this.themeTab === 'zones' && s.decorating && !s.zoneMode && s.isOwner) s.setZoneMode(true)
+    if (this.themeTab === 'zones' && s.decorating && !s.zoneMode && s.canEditZones) s.setZoneMode(true)
     if (this.themeTab === 'zones' && s.decorating && JSON.stringify(s.zones) !== this.zoneSig && !this.grid.contains(document.activeElement)) this.renderZones()
+    const floorNote = st.view.floors > 1 ? ` · floor ${s.floor + 1}` : ''
     this.status.innerHTML = s.zoneMode
       ? 'Drag to draw a call zone · right-click a zone to delete'
       : s.decorating
-      ? s.selectedItem
-        ? `Placing <b>${esc(s.defs.get(s.selectedItem)?.label ?? '')}</b> facing <b>${s.facing}</b> · <kbd>R</kbd> rotate · click place · right-click cancel`
-        : 'Pick an item below · hover furniture: <kbd>R</kbd> rotate, click move, right-click delete'
-      : '<kbd>WASD</kbd> move · walk up to people or into a zone to talk'
-    for (const b of this.grid.querySelectorAll<HTMLButtonElement>('.item')) {
-      b.classList.toggle('on', b.title === s.defs.get(s.selectedItem ?? '')?.label && s.selectedItem?.startsWith(this.themeTab + '/') === true)
-    }
+        ? s.selectedItem
+          ? `Placing <b>${esc(s.defs.get(s.selectedItem)?.label ?? '')}</b> facing <b>${s.facing}</b> · <kbd>R</kbd> rotate · click place · right-click cancel`
+          : st.canDecorate() ? 'Pick an item · hover furniture: <kbd>R</kbd> rotate, click move, right-click delete' : 'Only moderators can decorate common areas here. You can decorate your own office.'
+        : `<kbd>WASD</kbd> move · walk up to people or into a zone to talk${floorNote}`
+    for (const b of this.grid.querySelectorAll<HTMLButtonElement>('.item')) b.classList.toggle('on', b.dataset.item === s.selectedItem)
+    this.renderElevator()
+    if (this.panelKind === 'people') this.renderPanel()
   }
-}
-
-function esc(s: string) {
-  return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
 }
