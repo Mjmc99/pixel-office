@@ -11,6 +11,9 @@ import { loadIdentity, profile } from './world/crypto'
 import { WorldState } from './world/state'
 import { STARTER_DECOR, STARTER_ZONES } from './world/starter'
 import type { Manifest } from './world/types'
+import { Rooms } from './rooms/rooms'
+import { tokenToPackage } from './rooms/package'
+import { OfficePanel } from './ui/offices'
 
 /**
  * Invite links look like  …/#w=<worldId>.<secret>  — the part after # never
@@ -21,6 +24,9 @@ function parseHash() {
   const m = location.hash.match(/w=([a-z0-9]+)\.([A-Za-z0-9_-]+)/)
   return m ? { id: m[1], secret: m[2] } : null
 }
+const roomToken = () => location.hash.match(/r=([A-Za-z0-9_-]+)/)?.[1] ?? null
+
+interface Recent { id: string; secret: string; name: string; t: number }
 
 function randomSecret() {
   const a = crypto.getRandomValues(new Uint8Array(12))
@@ -41,11 +47,18 @@ async function boot() {
 
   let world = parseHash()
   let nonce: string | null = null
+  const token = roomToken()
+  const recents = store<Recent[]>('po:recent', [])
+  // an office link without a world: open it in the last world you visited
+  if (!world && token && recents.length) {
+    world = { id: recents[0].id, secret: recents[0].secret }
+    history.replaceState(null, '', `${location.pathname}${location.search}#w=${world.id}.${world.secret}&r=${token}`)
+  }
   if (!world) {
     const w = WorldState.newWorldId(identity.pub)
     world = { id: w.id, secret: randomSecret() }
     nonce = w.nonce
-    history.replaceState(null, '', `${location.pathname}${location.search}#w=${world.id}.${world.secret}`)
+    history.replaceState(null, '', `${location.pathname}${location.search}#w=${world.id}.${world.secret}${token ? `&r=${token}` : ''}`)
   }
 
   const net: Transport = params.get('net') === 'local'
@@ -56,6 +69,12 @@ async function boot() {
   await sync.whenLoaded()
   const state = new WorldState(sync.doc, identity, world.id)
   await state.refresh()
+  const rooms = new Rooms(net, state)
+  await rooms.init()
+  const w = world
+  const remember = () => save('po:recent', [{ id: w.id, secret: w.secret, name: state.view.name, t: Date.now() },
+    ...recents.filter((r) => r.id !== w.id)].slice(0, 10))
+  state.onChange.on(remember)
 
   const presets = manifest.avatars.presets
   const meKey = 'po:me' + (profile() ? ':' + profile() : '')
@@ -87,8 +106,41 @@ async function boot() {
         game.scene.add('world', WorldScene, true, {
           manifest, net, call, state, me,
           onReady: (s: WorldScene) => {
+            // offices (phase 3)
+            s.extraThings = (f) => rooms.things(f)
+            s.extraZones = (f) => rooms.zones(f)
+            s.structureSig = (f) => rooms.structureSig(f)
+            s.slotInfo = (slot, f) => {
+              const pl = rooms.placementAt(slot, f)
+              if (!pl) return null
+              const pkg = rooms.pkgFor(pl)
+              return { style: pkg?.floorStyle ?? 'office', label: pkg?.name ?? `${pl.name} (loading…)`, pending: pl.pending || !pkg }
+            }
+            s.roomEditHook = {
+              canEditAt: (x, y, f) => !!rooms.myPlacementAt(x, y, f),
+              set: (t) => rooms.setThing(t),
+              del: (id) => rooms.delThing(id),
+            }
+            s.roomZoneHook = {
+              canZone: (f) => rooms.onFloor(f).some((p) => p.owner === state.me.pub && !p.pending),
+              add: (r, f) => rooms.addZone(r, f),
+              del: (id) => rooms.delZone(id),
+              rename: (id, n) => rooms.renameZone(id, n),
+            }
+            rooms.onChange.on(() => s.rebuild())
+            s.rebuild()
             hud.attach(s, (name, avatar) => { s.setMe(name, avatar); save(meKey, { name, avatar }) })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state }
+            const offices = new OfficePanel(hud, s, rooms, state, () => `${w.id}.${w.secret}`)
+            hud.onOffices = () => offices.toggle()
+            if (token) void tokenToPackage(token).then((pkg) => pkg && offices.prompt(pkg))
+            // links opened in an already-running tab only change the #fragment
+            window.addEventListener('hashchange', () => {
+              const next = parseHash()
+              if (next && next.id !== w.id) return location.reload()
+              const t = roomToken()
+              if (t) void tokenToPackage(t).then((pkg) => pkg && offices.prompt(pkg))
+            })
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices }
           },
         })
       },

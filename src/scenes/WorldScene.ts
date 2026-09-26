@@ -72,6 +72,16 @@ export class WorldScene extends Phaser.Scene {
   /** Later phases add more no-go tiles (other people's rooms while editing, …). */
   extraBlocked: (x: number, y: number, floor: number) => boolean = () => false
   /** Later phases decide who may edit what inside rooms. */
+  /** Later phases: zones that belong to offices, and how offices look. */
+  extraZones: (floor: number) => (Zone & { room?: string })[] = () => []
+  slotInfo: (slotId: string, floor: number) => { style: string; label: string; pending: boolean } | null = () => null
+  structureSig: (floor: number) => string = () => ''
+  roomZoneHook: {
+    canZone: (floor: number) => boolean
+    add: (r: { x: number; y: number; w: number; h: number }, floor: number) => string | null
+    del: (id: string) => void
+    rename: (id: string, name: string) => void
+  } | null = null
   roomEditHook: {
     canEditAt: (x: number, y: number, floor: number) => boolean
     set: (t: Omit<Thing, 'editable' | 'source'>) => void
@@ -180,9 +190,10 @@ export class WorldScene extends Phaser.Scene {
 
   /** Re-derive everything visible from the replayed world view. */
   rebuild() {
-    const key = this.theme + ':' + this.floor
+    const key = this.theme + ':' + this.floor + ':' + this.structureSig(this.floor)
     if (key !== this.structureKey) { this.structureKey = key; this.buildStructure() }
-    this.zones = [...this.view.zones.values()].filter((z) => z.floor === this.floor).sort((a, b) => a.name.localeCompare(b.name))
+    this.zones = [...[...this.view.zones.values()].filter((z) => z.floor === this.floor), ...this.extraZones(this.floor)]
+      .sort((a, b) => a.name.localeCompare(b.name))
     this.buildZones()
     this.syncThings()
     if (this.floor >= this.view.floors) this.goFloor(0)
@@ -198,7 +209,8 @@ export class WorldScene extends Phaser.Scene {
       for (let x = 0; x < p.w; x++) {
         if (tileAt(p, x, y) !== FLOOR) continue
         const r = regionAt(p, x, y)
-        const [atlas, frame] = REGION_FLOORS[r?.style ?? 'corridor'] ?? REGION_FLOORS.corridor
+        const info = r?.kind === 'slot' ? this.slotInfo(r.id, this.floor) : null
+        const [atlas, frame] = info && !info.pending ? [info.style, 'floor0_0'] : REGION_FLOORS[r?.style ?? 'corridor'] ?? REGION_FLOORS.corridor
         rt.stamp(atlas, (x * 7 + y * 13) % 11 === 0 ? frame.replace('_0', '_1') : frame, x * T, y * T, { originX: 0, originY: 0 })
       }
     }
@@ -206,10 +218,20 @@ export class WorldScene extends Phaser.Scene {
     this.structure.push(rt)
     // empty offices: dim + sign
     for (const s of p.slots) {
+      const info = this.slotInfo(s.id, this.floor)
+      if (info && !info.pending) {
+        // name plate by the door, on the corridor side
+        const py = s.doorSide === 'S' ? (s.y + s.h + 1) * T + 2 : (s.y - 1) * T - 2
+        const plate = this.add.text((s.door.x + 1) * T, py, info.label, {
+          fontFamily: 'monospace', fontSize: '20px', color: '#efeae0', backgroundColor: '#26242fcc', padding: { x: 4, y: 1 },
+        }).setOrigin(0.5, s.doorSide === 'S' ? 0 : 1).setScale(0.25).setResolution(2).setDepth(150000)
+        this.structure.push(plate)
+        continue
+      }
       const g = this.add.graphics().setDepth(-19000)
       g.fillStyle(0x0c0b10, 0.3).fillRect(s.x * T, s.y * T, s.w * T, s.h * T)
       this.structure.push(g)
-      const t = this.add.text((s.x + s.w / 2) * T, (s.y + s.h / 2) * T, `OFFICE ${s.id}\navailable`, {
+      const t = this.add.text((s.x + s.w / 2) * T, (s.y + s.h / 2) * T, info?.pending ? `${info.label}\nawaiting approval` : `OFFICE ${s.id}\navailable`, {
         fontFamily: 'monospace', fontSize: '24px', color: '#8f8a9c', align: 'center',
       }).setOrigin(0.5).setScale(0.25).setResolution(2).setDepth(-18999)
       t.setData('slot', s.id)
@@ -301,6 +323,9 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ------------------------------------------------------------------ floors
+  /** Where the player is standing (tile) — used by the HUD's office panel. */
+  meTile() { return { x: Math.floor(this.me.sprite.x / T), y: Math.floor(this.me.sprite.y / T) } }
+
   goFloor(n: number) {
     if (n === this.floor || n < 0 || n >= this.view.floors) return
     this.floor = n
@@ -491,9 +516,10 @@ export class WorldScene extends Phaser.Scene {
 
   // ------------------------------------------------------------------ zones
   get canEditZones() { return this.state.isMod && !this.state.isBanned }
+  get canZoneHere() { return this.canEditZones || !!this.roomZoneHook?.canZone(this.floor) }
 
   setZoneMode(on: boolean) {
-    this.zoneMode = on && this.canEditZones
+    this.zoneMode = on && this.canZoneHere
     if (on) this.setBuildItem(null)
     this.dragStart = null
     this.dragGfx?.clear()
@@ -502,10 +528,14 @@ export class WorldScene extends Phaser.Scene {
   }
 
   renameZone(id: string, name: string) {
+    if (id.includes('/')) return this.roomZoneHook?.rename(id, name)
     const z = this.view.zones.get(id)
     if (z && this.canEditZones) void this.state.author('zone.set', { ...z, name: name.slice(0, 32) || z.name })
   }
-  deleteZone(id: string) { if (this.canEditZones) void this.state.author('zone.del', { id }) }
+  deleteZone(id: string) {
+    if (id.includes('/')) return this.roomZoneHook?.del(id)
+    if (this.canEditZones) void this.state.author('zone.del', { id })
+  }
   toggleStage(id: string) {
     const z = this.view.zones.get(id)
     if (z && this.canEditZones) void this.state.author('zone.set', { ...z, stage: !z.stage })
@@ -521,6 +551,8 @@ export class WorldScene extends Phaser.Scene {
 
   /** Add a zone on this floor; returns its id, or null if it overlaps or leaves the building. */
   addZone(x: number, y: number, w: number, h: number, name?: string): string | null {
+    // inside an office: the office owner's zone, stored in their office package
+    if (slotAt(this.plan, x, y)) return this.roomZoneHook?.add({ x, y, w, h }, this.floor) ?? null
     if (!this.canEditZones || !this.zoneOk({ x, y, w, h })) return null
     const id = 'z' + Math.random().toString(36).slice(2, 8)
     let n = this.zones.length + 1
@@ -541,7 +573,8 @@ export class WorldScene extends Phaser.Scene {
     if (!this.dragGfx) this.dragGfx = this.add.graphics().setDepth(300001)
     this.dragGfx.clear()
     if (!r) return
-    const c = this.zoneOk(r) ? 0x7ad08a : 0xff7070
+    const inOffice = !!slotAt(this.plan, r.x, r.y)
+    const c = (inOffice ? !!this.roomZoneHook?.canZone(this.floor) : this.zoneOk(r)) ? 0x7ad08a : 0xff7070
     this.dragGfx.fillStyle(c, 0.18).fillRect(r.x * T, r.y * T, r.w * T, r.h * T)
     this.dragGfx.lineStyle(1, c, 0.9).strokeRect(r.x * T + 0.5, r.y * T + 0.5, r.w * T - 1, r.h * T - 1)
   }
@@ -668,8 +701,8 @@ export class WorldScene extends Phaser.Scene {
     if (this.zoneMode) {
       if (p.rightButtonDown()) {
         const { tx, ty } = this.pointerTile()
-        const z = this.zones.find((z) => tx >= z.x && tx < z.x + z.w && ty >= z.y && ty < z.y + z.h)
-        if (z && !(z as ZoneDef).room) this.deleteZone(z.id)
+        const z = zoneAt(this.zones, { x: tx * T + 8, y: ty * T + 8 })
+        if (z) this.deleteZone(z.id)
         return
       }
       const { tx, ty } = this.pointerTile()

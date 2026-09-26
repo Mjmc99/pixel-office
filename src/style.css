@@ -106,3 +106,7 @@ kbd { font: inherit; font-size: 11px; border: 1px solid currentColor; border-rad
 .btn.danger { border-color: #a8322c; }
 .elevator { left: 50%; transform: translateX(-50%); top: auto; bottom: 120px; }
 .banned { position: fixed; inset: 0; display: grid; place-items: center; background: #000c; color: #ff9a8a; font-size: 18px; z-index: 10; }
+.offices { left: auto; right: 12px; top: 80px; }
+.office { border-top: 1px solid var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.modal { position: fixed; inset: 0; background: #0009; display: grid; place-items: center; z-index: 5; }
+.modal .card { position: static; max-width: min(460px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 8px; }

@@ -4,7 +4,7 @@ A peer-to-peer, pixel-art virtual office in the spirit of Gather. People walk ar
 3/4-view world, chat, and decorate rooms together. There is **no game server**: peers find
 each other through public Nostr relays and then talk directly over WebRTC.
 
-![The lounge, with the owner's People panel](docs/phase2-building.png)
+![An office with a nested call zone and the Offices panel](docs/phase3-office.png)
 
 Built so far:
 
@@ -18,6 +18,11 @@ Built so far:
   slots, lounge, lobby with elevator, cafe with table zones, library) with as many floors as
   the owner adds. Identities are Ed25519 keys; ownership, moderators, bans and every edit are
   **signed operations** that each peer verifies, so no server decides who's in charge.
+- **Phase 3**: offices by link. Claim an empty office or open someone's **office link**: the
+  link carries their whole signed office (furniture, floor style, call zones), and it drops
+  into a free slot of the right size. Only the office's owner can decorate or zone inside it,
+  and every edit is re-signed, so an office can't be tampered with, even in someone else's
+  world. World owners choose whether new offices are open, need approval, or are closed.
 
 ## Run it
 
@@ -48,6 +53,7 @@ Add `?net=local` to the URL to use the offline, same-browser transport (no netwo
 | Esc | Cancel / leave decorate mode |
 | People / Settings (world card) | See who's here; owners make mods and ban; mods add floors; back up your identity key |
 | Stand on the elevator pad | Pick a floor |
+| **Offices** (world card) | Claim the empty office you're standing in; rename, restyle, share or remove yours; mods approve/remove |
 | Decorate > **Call zones** (owner/mods) | Drag on the floor to draw a zone; rename or delete it in the list, or right-click it |
 
 *Copy invite link* shares the world. The part after `#` holds the world id and a secret
@@ -71,6 +77,9 @@ src/
   world/crypto.ts     Ed25519 identity, signing, canonical JSON, key backup
   world/state.ts      Signed op log (Y.Array) replayed into the world view with permissions
   world/starter.ts    Furniture and zones a new world starts with
+  rooms/package.ts    Signed office packages, share-link encoding (deflate + base64url), IndexedDB cache
+  rooms/rooms.ts      Office placement ops, package sync between peers, owner-only editing
+  ui/offices.ts       Offices panel and the "add this office?" prompt
   world/room.ts       Room geometry, footprints, placement rules, starter layout
   scenes/WorldScene.ts  Phaser scene: rendering, depth sorting, movement, decorate mode
   ui/hud.ts           DOM overlay: world card, identity, palette, chat
@@ -103,6 +112,14 @@ WebRTC peer to an identity so bans apply to presence, chat and calls.
 Known limits: a malicious peer can still append junk (ignored, but it grows the log), and a
 mod could backdate ops before a demotion. Log compaction and anchor-peer checkpoints are
 later work.
+
+**Offices.** An office is a JSON package `{owner, roomId, ver, name, size, floorStyle,
+things, zones, objects, code}` signed by its owner. Share links put the whole package
+(deflate-compressed, base64url) in the URL fragment, so a link works even when you're offline.
+Placing it writes a signed `room.place` op (slot, floor, owner, roomId); the package itself
+travels peer to peer and the highest valid `ver` wins. Zones may nest; the smallest one you
+stand in is your call. Edits you make in one world reach other worlds your office is in when
+you (or anyone carrying the newer version) visit them.
 
 **Identity.** Your key lives in this browser (`localStorage`). *Settings > Copy key backup*
 gives you a text key to restore elsewhere. Add `?profile=name` to the URL to run several
@@ -143,7 +160,7 @@ npm test             # includes a 4-person video call with fake cameras
 The game has to be served over HTTPS (or localhost) because browser crypto and WebRTC
 require it. That's why friends on other networks need the Pages URL, not your PC's IP.
 
-## Next (phase 3)
+## Next (phase 4)
 
-Room links: signed, content-addressed office packages that anyone can share by link and drop
-into an empty office slot.
+An in-app editor for no-code objects (portals, whiteboards, sticky notes, a TV with synced
+YouTube) and importing your own sprites.

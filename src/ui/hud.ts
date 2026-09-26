@@ -39,7 +39,9 @@ export class Hud {
   private themeTab = 'office'
   private thumbs = new Map<string, string>()
   private zoneSig = ''
+  private tabSig = ''
   private panelKind: 'people' | 'settings' | null = null
+  onOffices: () => void = () => {}
   /** Later phases add tabs to the decorate palette: [id, label, render(grid)]. */
   extraTabs: { id: string; label: string; visible: () => boolean; render: (grid: HTMLElement) => void; onOpen?: () => void; onClose?: () => void }[] = []
 
@@ -63,7 +65,9 @@ export class Hud {
     people.onclick = () => this.togglePanel('people')
     const settings = el('button', 'btn small', 'Settings')
     settings.onclick = () => this.togglePanel('settings')
-    row.append(invite, people, settings)
+    const offices = el('button', 'btn small', 'Offices')
+    offices.onclick = () => this.onOffices()
+    row.append(invite, offices, people, settings)
     card.append(this.peersEl, row)
     this.root.append(card, this.panel, this.elevEl, this.bannedEl)
 
@@ -304,7 +308,7 @@ export class Hud {
       b.onclick = () => { this.themeTab = tid; close(); this.renderTabs(); this.renderGrid() }
       this.tabs.append(b)
     }
-    if (this.scene.canEditZones) {
+    if (this.scene.canZoneHere) {
       const z = el('button', 'tab zones-tab' + (this.themeTab === 'zones' ? ' on' : ''), 'Call zones')
       z.onclick = () => { this.themeTab = 'zones'; close(); this.scene.setZoneMode(true); this.renderTabs(); this.renderGrid() }
       this.tabs.append(z)
@@ -325,9 +329,10 @@ export class Hud {
   private renderZones() {
     this.grid.innerHTML = ''
     this.zoneSig = JSON.stringify(this.scene.zones)
-    this.grid.append(el('div', 'zone-help', 'Drag on the floor to draw a call zone. Everyone inside a zone is in one call; walking out leaves it.'))
+    this.grid.append(el('div', 'zone-help', 'Drag on the floor to draw a call zone. Everyone inside a zone is in one call; walking out leaves it. Office owners can zone their own office.'))
     for (const z of this.scene.zones) {
-      if ((z as any).room) continue
+      const room = (z as any).room as string | undefined
+      if (room ? !this.scene.canEditAt(z.x, z.y) : !this.scene.canEditZones) continue
       const row = el('div', 'zone-row')
       const inp = el('input') as HTMLInputElement
       inp.value = z.name
@@ -368,9 +373,11 @@ export class Hud {
       ? `<b>${names.length + 1}</b> here: you, ${names.map(esc).join(', ')}`
       : `Just you here. ${this.net.kind === 'p2p' ? 'Send the invite link to a friend.' : 'Open this link in another tab.'}`
     this.bannedEl.classList.toggle('hidden', !st.isBanned)
+    const tabSig = [s.canZoneHere, st.isMod, ...this.extraTabs.map((t) => t.visible())].join()
+    if (tabSig !== this.tabSig) { this.tabSig = tabSig; this.renderTabs() }
     this.decoBtn.classList.toggle('on', s.decorating)
     this.palette.classList.toggle('hidden', !s.decorating)
-    if (this.themeTab === 'zones' && s.decorating && !s.zoneMode && s.canEditZones) s.setZoneMode(true)
+    if (this.themeTab === 'zones' && s.decorating && !s.zoneMode && s.canZoneHere) s.setZoneMode(true)
     if (this.themeTab === 'zones' && s.decorating && JSON.stringify(s.zones) !== this.zoneSig && !this.grid.contains(document.activeElement)) this.renderZones()
     const floorNote = st.view.floors > 1 ? ` · floor ${s.floor + 1}` : ''
     this.status.innerHTML = s.zoneMode

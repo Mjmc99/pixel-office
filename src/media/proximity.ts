@@ -15,9 +15,14 @@ export const FULL = 1.5 * T
 export const CONNECT = 5 * T
 export const DISCONNECT = 6.5 * T
 
+/** The zone you're standing in. Zones may nest (a sofa corner inside an office): the smallest wins. */
 export function zoneAt(zones: Zone[], p: Pos): Zone | null {
   const tx = Math.floor(p.x / T), ty = Math.floor(p.y / T)
-  return zones.find((z) => tx >= z.x && tx < z.x + z.w && ty >= z.y && ty < z.y + z.h) ?? null
+  let best: Zone | null = null
+  for (const z of zones) {
+    if (tx >= z.x && tx < z.x + z.w && ty >= z.y && ty < z.y + z.h && (!best || z.w * z.h < best.w * best.h)) best = z
+  }
+  return best
 }
 
 export interface Hearing { want: boolean; gain: number; pan: number }
