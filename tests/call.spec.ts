@@ -56,7 +56,7 @@ test('proximity rules', async ({ page }) => {
       edgeNoNew: m.hearing(Z, at(5, 16), at(10, 16), false).want,
     }
   })
-  expect(r.sameZone).toEqual({ want: true, gain: 1, pan: 0 })
+  expect(r.sameZone).toEqual({ want: true, gain: 1, pan: 0, send: true })
   expect(r.acrossWall.want).toBe(false)
   expect(r).toMatchObject({ near: true, far: false, edgeStays: true, edgeNoNew: false })
 })

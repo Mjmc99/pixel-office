@@ -38,11 +38,13 @@ export class MediaMesh {
   private conns = new Map<string, Conn>()
   private wanted = new Set<string>()
   private local: Record<'audio' | 'video', MediaStreamTrack | null> = { audio: null, video: null }
+  /** per-peer: may we send our mic / camera to them? (stages, crowd limits) */
+  private sendTo = new Map<string, { audio: boolean; video: boolean }>()
   private lastWant = new Map<string, number>()
   private backoff = new Map<string, number>()
   private sig
 
-  constructor(private net: Transport, private iceServers: RTCIceServer[] = DEFAULT_ICE) {
+  constructor(private net: Transport, private iceServers: RTCIceServer[] = DEFAULT_ICE, private relayOnly = false) {
     this.sig = net.channel<Sig>('sig')
     this.sig.onMessage((m, from) => void this.onSignal(m as Sig, from))
     net.onPeerLeave((p) => this.close(p, false))
@@ -66,13 +68,33 @@ export class MediaMesh {
     return [...this.conns.entries()].map(([id, c]) => ({
       id, state: c.pc.connectionState,
       tracks: c.stream.getTracks().map((t) => ({ kind: t.kind, muted: t.muted, live: t.readyState === 'live' })),
+      sending: { audio: !!this.sender(c.pc, 'audio')?.track, video: !!this.sender(c.pc, 'video')?.track },
     }))
   }
 
   /** Swap the local mic or camera track on every open call (null = stop sending). */
   setTrack(kind: 'audio' | 'video', track: MediaStreamTrack | null) {
     this.local[kind] = track
-    for (const c of this.conns.values()) void this.sender(c.pc, kind)?.replaceTrack(track).catch(() => {})
+    for (const peer of this.conns.keys()) this.apply(peer, kind)
+  }
+
+  /** Control what we send to one peer without renegotiating. */
+  setPeerSend(peer: string, send: { audio: boolean; video: boolean }) {
+    const cur = this.sendTo.get(peer)
+    if (cur && cur.audio === send.audio && cur.video === send.video) return
+    this.sendTo.set(peer, send)
+    if (this.conns.has(peer)) { this.apply(peer, 'audio'); this.apply(peer, 'video') }
+  }
+
+  private trackFor(peer: string, kind: 'audio' | 'video') {
+    return this.sendTo.get(peer)?.[kind] === false ? null : this.local[kind]
+  }
+
+  private apply(peer: string, kind: 'audio' | 'video') {
+    const c = this.conns.get(peer)
+    const s = c && this.sender(c.pc, kind)
+    const t = this.trackFor(peer, kind)
+    if (s && s.track !== t) void s.replaceTrack(t).catch(() => {})
   }
 
   private sender(pc: RTCPeerConnection, kind: 'audio' | 'video') {
@@ -80,7 +102,7 @@ export class MediaMesh {
   }
 
   private create(peer: string): Conn {
-    const pc = new RTCPeerConnection({ iceServers: this.iceServers })
+    const pc = new RTCPeerConnection({ iceServers: this.iceServers, ...(this.relayOnly ? { iceTransportPolicy: 'relay' as const } : {}) })
     const c: Conn = { pc, stream: new MediaStream(), pendingIce: [], remoteSet: false }
     this.conns.set(peer, c)
     pc.onicecandidate = (e) => { if (e.candidate) this.sig.send({ t: 'ice', c: e.candidate.toJSON() }, peer) }
@@ -99,7 +121,7 @@ export class MediaMesh {
     const c = this.create(peer)
     for (const kind of ['audio', 'video'] as const) {
       const t = c.pc.addTransceiver(kind, { direction: 'sendrecv' })
-      void t.sender.replaceTrack(this.local[kind])
+      void t.sender.replaceTrack(this.trackFor(peer, kind))
       if (kind === 'video') this.capBitrate(t.sender)
     }
     try {
@@ -131,7 +153,7 @@ export class MediaMesh {
       for (const t of c.pc.getTransceivers()) {
         const kind = t.receiver.track.kind as 'audio' | 'video'
         t.direction = 'sendrecv'
-        await t.sender.replaceTrack(this.local[kind]).catch(() => {})
+        await t.sender.replaceTrack(this.trackFor(from, kind)).catch(() => {})
       }
       await c.pc.setLocalDescription(await c.pc.createAnswer())
       this.sig.send({ t: 'answer', sdp: c.pc.localDescription!.sdp }, from)
@@ -160,6 +182,7 @@ export class MediaMesh {
     const c = this.conns.get(peer)
     if (!c) return
     this.conns.delete(peer)
+    this.sendTo.delete(peer)
     c.pc.close()
     if (sayBye) this.sig.send({ t: 'bye' }, peer)
     this.onRemoteGone.emit(peer)

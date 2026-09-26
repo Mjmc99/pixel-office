@@ -7,7 +7,7 @@
  *   beyond DISCONNECT px (hysteresis, so standing on the edge doesn't flap).
  *   Volume fades from full at FULL px to silent at CONNECT px.
  */
-export interface Zone { id: string; name: string; x: number; y: number; w: number; h: number }
+export interface Zone { id: string; name: string; x: number; y: number; w: number; h: number; stage?: boolean }
 export interface Pos { x: number; y: number }
 
 const T = 16
@@ -25,20 +25,31 @@ export function zoneAt(zones: Zone[], p: Pos): Zone | null {
   return best
 }
 
-export interface Hearing { want: boolean; gain: number; pan: number }
+/** want: be connected · gain: how loud they are to me · send: whether I send them my mic/camera. */
+export interface Hearing { want: boolean; gain: number; pan: number; send: boolean }
 
 export function hearing(zones: Zone[], me: Pos, other: Pos, connected: boolean): Hearing {
   const zm = zoneAt(zones, me), zo = zoneAt(zones, other)
-  if (zm || zo) {
-    const same = !!zm && zm.id === zo?.id
-    return { want: same, gain: same ? 1 : 0, pan: 0 }
-  }
+  const same = !!zm && zm.id === zo?.id
+  if (same) return { want: true, gain: 1, pan: 0, send: true }
+  // stages: presenters are heard by everyone on the floor who isn't in another zone;
+  // the audience listens only (sends nothing to the stage)
+  if (zo?.stage && !zm) return { want: true, gain: 1, pan: 0, send: false }
+  if (zm?.stage && !zo) return { want: true, gain: 0, pan: 0, send: true }
+  if (zm || zo) return { want: false, gain: 0, pan: 0, send: false }
   const dx = other.x - me.x
   const d = Math.hypot(dx, other.y - me.y)
   const want = d < CONNECT || (connected && d < DISCONNECT)
   const gain = d <= FULL ? 1 : Math.max(0, 1 - (d - FULL) / (CONNECT - FULL))
-  return { want, gain, pan: Math.max(-0.6, Math.min(0.6, dx / CONNECT)) }
+  return { want, gain, pan: Math.max(-0.6, Math.min(0.6, dx / CONNECT)), send: true }
 }
+
+/**
+ * Crowd limit: with more than VIDEO_CROWD people in your call, your camera only
+ * goes out if you've spoken in the last 20 s. Keeps big mesh calls affordable.
+ */
+export const VIDEO_CROWD = 6
+export const sendVideo = (callSize: number, msSinceSpoke: number) => callSize <= VIDEO_CROWD || msSinceSpoke < 20_000
 
 /** Starter zones for the phase-0/1 room (tile coords). */
 export const DEFAULT_ZONES: Zone[] = [

@@ -144,3 +144,4 @@ textarea.code { font: 12px/1.45 'IBM Plex Mono', ui-monospace, monospace; color:
 .permlist .risky, .perms .risky { color: #ffb07a; }
 .perms { margin: 0; padding-left: 18px; }
 .codelog { background: #121118; border-radius: 4px; padding: 6px 8px; font-size: 11px; color: var(--muted); max-height: 140px; overflow: auto; margin: 0; white-space: pre-wrap; }
+.cmd { display: block; user-select: all; background: #121118; padding: 4px 6px; border-radius: 4px; margin-top: 4px; word-break: break-all; }

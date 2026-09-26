@@ -127,6 +127,7 @@ export class Hud {
       this.zoneEl.innerHTML = info.zone
         ? `In <b>${esc(info.zone)}</b> · ${n ? `talking with ${n}` : 'nobody else here'}`
         : n ? `Nearby: talking with <b>${n}</b>` : ''
+      if (this.call.videoHeld) this.zoneEl.innerHTML += ' · camera paused in this big call until you speak'
     }, 200)
     this.refreshMedia()
 
@@ -266,6 +267,8 @@ export class Hud {
       floors.onclick = () => void st.author('floors', { count: st.view.floors + 1 }).then(() => this.renderPanel())
       p.append(el('label', '', 'Building'), floors)
     }
+    // network
+    this.renderNetwork(p)
     // identity
     p.append(el('label', '', `Your identity key: <code>${shortKey(st.me.pub)}</code>`))
     const exp = el('button', 'btn small', 'Copy key backup')
@@ -282,6 +285,36 @@ export class Hud {
       try { await importIdentity(ta.value); location.reload() } catch (e) { imp.textContent = (e as Error).message }
     }
     p.append(el('div', 'hint', 'Your key proves who you are (ownership, mod rights, your offices). Back it up to use it on another browser.'), exp, imp, ta)
+  }
+
+  private renderNetwork(p: HTMLElement) {
+    const read = <T,>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch { return d } }
+    const write = (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { /* blocked */ } }
+    p.append(el('label', '', 'Network'))
+    const relay = el('input') as HTMLInputElement
+    relay.placeholder = 'Own relay (wss://…) — empty = public Nostr relays'
+    relay.value = read('po:relay', '')
+    const turn = read<RTCIceServer[]>('po:turn', [])
+    const turnUrl = el('input') as HTMLInputElement, turnUser = el('input') as HTMLInputElement, turnPass = el('input') as HTMLInputElement
+    turnUrl.placeholder = 'TURN url (turn:host:3478 or turns:…)'
+    turnUser.placeholder = 'TURN username'; turnPass.placeholder = 'TURN credential'; turnPass.type = 'password'
+    turnUrl.value = String(turn[0]?.urls ?? ''); turnUser.value = turn[0]?.username ?? ''; turnPass.value = String(turn[0]?.credential ?? '')
+    const only = el('label', 'hint')
+    const cb = el('input') as HTMLInputElement
+    cb.type = 'checkbox'; cb.checked = read('po:relayOnly', false)
+    only.append(cb, document.createTextNode(' Relay-only: route everything through TURN so peers never see your IP (needs TURN)'))
+    for (const i of [relay, turnUrl, turnUser, turnPass]) this.guardTyping(i)
+    const apply = el('button', 'btn small', 'Save and reconnect')
+    apply.onclick = () => {
+      write('po:relay', relay.value.trim())
+      write('po:turn', turnUrl.value.trim() ? [{ urls: turnUrl.value.trim(), username: turnUser.value.trim(), credential: turnPass.value }] : [])
+      write('po:relayOnly', cb.checked && !!turnUrl.value.trim())
+      location.reload()
+    }
+    const world = location.hash.match(/w=[a-z0-9]+\.[A-Za-z0-9_-]+/)?.[0] ?? ''
+    const cmd = `node anchor/anchor.mjs --invite "#${world}"${relay.value ? ` --relay ${relay.value}` : ''}`
+    const anchor = el('div', 'hint', `Keep this world online with an anchor peer (e.g. on a Raspberry Pi):<br><code class="cmd">${esc(cmd)}</code>`)
+    p.append(relay, turnUrl, turnUser, turnPass, only, apply, anchor)
   }
 
   private renderElevator() {
@@ -342,7 +375,17 @@ export class Hud {
       inp.onchange = () => this.scene.renameZone(z.id, inp.value.trim())
       const del = el('button', 'btn small', 'Delete')
       del.onclick = () => this.scene.deleteZone(z.id)
-      row.append(inp, el('span', 'zsize', `${z.w}×${z.h}`), del)
+      row.append(inp, el('span', 'zsize', `${z.w}×${z.h}`))
+      if (!room) {
+        const stage = el('label', 'zsize')
+        const cb = el('input') as HTMLInputElement
+        cb.type = 'checkbox'; cb.checked = !!(z as any).stage
+        cb.onchange = () => this.scene.toggleStage(z.id)
+        stage.append(cb, document.createTextNode(' Stage'))
+        stage.title = 'People on a stage are heard by everyone on this floor who is not in another zone'
+        row.append(stage)
+      }
+      row.append(del)
       this.grid.append(row)
     }
   }

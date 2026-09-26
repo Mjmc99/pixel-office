@@ -1,4 +1,5 @@
-import { joinRoom, selfId, type Room } from 'trystero'
+import { joinRoom as joinNostr, selfId, type Room } from 'trystero'
+import { joinRoom as joinRelay } from '@trystero-p2p/ws-relay'
 import { Emitter, type Channel, type Transport } from './transport'
 
 export const APP_ID = 'pixel-office-v0'
@@ -17,8 +18,19 @@ export class TrysteroTransport implements Transport {
   private left = new Emitter<[string]>()
   private known = new Set<string>()
 
-  constructor(roomId: string, secret: string, turn?: RTCIceServer[]) {
-    this.room = joinRoom({ appId: APP_ID, password: secret, ...(turn ? { turnConfig: turn } : {}) }, roomId)
+  /**
+   * @param relay  optional self-hosted relay (wss://…); default is public Nostr relays
+   * @param relayOnly route all traffic through TURN (hides your IP from peers)
+   */
+  constructor(roomId: string, secret: string, opts: { turn?: RTCIceServer[]; relay?: string | null; relayOnly?: boolean } = {}) {
+    const config = {
+      appId: APP_ID, password: secret,
+      ...(opts.turn?.length ? { turnConfig: opts.turn as any } : {}),
+      ...(opts.relayOnly ? { rtcConfig: { iceTransportPolicy: 'relay' as const } } : {}),
+    }
+    this.room = opts.relay
+      ? joinRelay({ ...config, relayConfig: { urls: [opts.relay] } }, roomId)
+      : joinNostr(config, roomId)
     this.room.onPeerJoin = (id) => { this.known.add(id); this.joined.emit(id) }
     this.room.onPeerLeave = (id) => { this.known.delete(id); this.left.emit(id) }
   }

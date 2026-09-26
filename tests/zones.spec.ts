@@ -12,8 +12,8 @@ test('the owner draws a call zone around a corner of the lounge; it becomes its 
   await drag(owner, [17, 32], [21, 35])
   await expect.poll(() => zones(guest)).toContain('Zone 10@17,32,5x4')
 
-  await owner.locator('.zone-row input').last().fill('Reading nook')
-  await owner.locator('.zone-row input').last().press('Enter')
+  await owner.locator('.zone-row input[maxlength]').last().fill('Reading nook')
+  await owner.locator('.zone-row input[maxlength]').last().press('Enter')
   await expect.poll(() => zones(guest)).toContain('Reading nook@17,32,5x4')
 
   // overlapping zones and zones over offices are refused

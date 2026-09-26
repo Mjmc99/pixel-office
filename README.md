@@ -33,6 +33,11 @@ Built so far:
   opaque-origin iframe hosting a Web Worker, with a CSP that blocks the network. It uses a
   small `room` SDK: shared state, events, host election, sprites, toasts and HTML panels.
   Samples include a visitor counter, tic-tac-toe and a confetti party.
+- **Phase 6**: always on, and ready for crowds. An **anchor peer** (a Node script, e.g. on a
+  Raspberry Pi) keeps worlds and offices online when nobody's there. Settings > Network adds
+  your **own signaling relay**, **TURN** servers and a **relay-only** privacy mode. **Stage
+  zones** let presenters be heard across the whole floor while the audience just listens, and
+  in calls with more than 6 people your camera only sends while you're talking.
 
 ## Run it
 
@@ -98,6 +103,9 @@ src/
   code/sdk.ts         The `room` API that office code sees (runs inside the worker)
   code/runner.ts      Runs the code of the office you're in, with consent; wires SDK calls to the game
   code/editor.ts      Owner's code editor (samples, permissions, website list, live log)
+anchor/
+  anchor.mjs          Always-on peer: keeps world docs + office packages on disk (Node + werift)
+  relay.mjs           Optional self-hosted signaling relay (instead of public Nostr relays)
   world/room.ts       Room geometry, footprints, placement rules, starter layout
   scenes/WorldScene.ts  Phaser scene: rendering, depth sorting, movement, decorate mode
   ui/hud.ts           DOM overlay: world card, identity, palette, chat
@@ -166,6 +174,12 @@ room.on('message', (from, ev, data) => { if (room.isHost()) room.state.set('last
 Consent is stored per office *and* per version of the code (a hash), so a changed program
 asks again. Owners' own code always runs for them.
 
+**Stages and crowds.** Each connection now has per-direction send controls. On a stage zone,
+presenters send to everyone on the floor who isn't in another zone and hear nothing back; the
+audience sends nothing, so a talk costs each listener one connection per presenter. In calls
+with more than 6 people, cameras only send for 20 s after you last spoke (audio always flows).
+For hundreds of people, a self-hosted SFU such as LiveKit is the next step; it isn't built in.
+
 **Identity.** Your key lives in this browser (`localStorage`). *Settings > Copy key backup*
 gives you a text key to restore elsewhere. Add `?profile=name` to the URL to run several
 identities in one browser (handy for testing).
@@ -192,8 +206,35 @@ palettes). To add a piece, write a builder in `models.py` and register it in `SH
 
 ```sh
 npx playwright install chromium
-npm test             # includes a 4-person video call with fake cameras
+npm test             # 4-person video call with fake cameras, sandbox attacks, and a real
+                     # WebRTC run through a local relay + anchor peer
 ```
+
+## Keep a world online (anchor peer)
+
+Any machine with Node 20+ works; a Raspberry Pi is perfect.
+
+```sh
+git clone https://github.com/Mjmc99/pixel-office && cd pixel-office
+npm install
+# copy the command from Settings > Network in your world, e.g.
+npm run anchor -- --invite "#w=abc123def456.SECRET"
+```
+
+The anchor joins as a silent peer, saves everything to `./anchor-data`, and hands the world and
+office packages to whoever arrives. It never signs anything, so it can't change a world; every
+browser still verifies the log and packages itself. Several `--invite` flags anchor several
+worlds. To run it as a service, use `pm2 start anchor/anchor.mjs -- --invite …` or a systemd
+unit.
+
+**Own relay (optional).** `npm run relay -- --port 8787` starts a signaling relay. Put it
+behind TLS (e.g. Caddy) and enter `wss://your-host` in Settings > Network (or add
+`?relay=wss://your-host` to a link) for everyone who should use it, and pass
+`--relay wss://your-host` to the anchor.
+
+**TURN.** Some networks block direct connections. Add a TURN server in Settings > Network, e.g.
+Cloudflare's (1,000 GB/month free) or your own coturn. With **relay-only** on, all traffic goes
+through TURN and peers never see your IP.
 
 ## Put it online (free)
 
@@ -205,7 +246,7 @@ npm test             # includes a 4-person video call with fake cameras
 The game has to be served over HTTPS (or localhost) because browser crypto and WebRTC
 require it. That's why friends on other networks need the Pages URL, not your PC's IP.
 
-## Next (phase 6)
+## Next (phase 7)
 
-Always-on anchor peer (Node, e.g. on a Raspberry Pi), TURN settings and relay-only privacy
-mode, limits for crowded rooms, and stage zones for talks.
+Shared screens, fully in the browser: a TV that streams a shared tab to the zone, a synced
+in-room browser for sites that allow embedding, and "open together" for sites that don't.

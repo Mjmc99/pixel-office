@@ -66,9 +66,13 @@ async function boot() {
     history.replaceState(null, '', `${location.pathname}${location.search}#w=${world.id}.${world.secret}${token ? `&r=${token}` : ''}`)
   }
 
+  // network settings (Settings > Network); ?relay=wss://… overrides for one visit
+  const turn = store<RTCIceServer[]>('po:turn', [])
+  const relayOnly = store<boolean>('po:relayOnly', false)
+  const relay = params.get('relay') ?? store<string>('po:relay', '') ?? ''
   const net: Transport = params.get('net') === 'local'
     ? new LocalTransport(world.id)
-    : new TrysteroTransport(world.id, world.secret, store<RTCIceServer[] | undefined>('po:turn', undefined))
+    : new TrysteroTransport(world.id, world.secret, { turn, relay: relay || null, relayOnly })
 
   const sync = new DocSync(net, world.id)
   await sync.whenLoaded()
@@ -97,7 +101,7 @@ async function boot() {
     ])
   }
 
-  const call = new Call(net, store<RTCIceServer[] | undefined>('po:turn', undefined))
+  const call = new Call(net, turn, relayOnly)
   const hud = new Hud(manifest, net, world, call, state)
   new Phaser.Game({
     type: Phaser.AUTO,

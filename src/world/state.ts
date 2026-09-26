@@ -159,7 +159,7 @@ export class WorldState {
           const z = p as ZoneDef
           const okRect = z.w >= 1 && z.h >= 1 && z.x >= 1 && z.y >= 1 && z.x + z.w < plan.w && z.y + z.h < plan.h
           // zones inside an office belong to that room (phase 3); commons are for mods
-          if (mod && !banned && okRect && !z.room) v.zones.set(z.id, { ...z, name: String(z.name).slice(0, 32) })
+          if (mod && !banned && okRect && !z.room) v.zones.set(z.id, { ...z, name: String(z.name).slice(0, 32), stage: !!z.stage })
           break
         }
         case 'zone.del':
