@@ -69,6 +69,8 @@ export class TvSync {
   }
 
   get state(): TvState | null {
+    const mode = this.map.get('mode')
+    if (mode && mode !== 'yt') return null
     const v = this.map.get('v')
     return v ? { v, playing: !!this.map.get('playing'), pos: Number(this.map.get('pos')) || 0, at: Number(this.map.get('at')) || Date.now() } : null
   }
@@ -82,10 +84,10 @@ export class TvSync {
     })
   }
 
-  load(v: string) { this.write({ v, playing: true, pos: 0 }) }
+  load(v: string) { this.map.set('mode', 'yt'); this.write({ v, playing: true, pos: 0 }) }
   play() { if (this.state) this.write({ playing: true }) }
   pause() { if (this.state) this.write({ playing: false }) }
-  off() { this.map.doc!.transact(() => { for (const k of ['v', 'playing', 'pos', 'at']) this.map.delete(k) }) }
+  off() { this.map.doc!.transact(() => { for (const k of ['v', 'playing', 'pos', 'at']) this.map.delete(k); this.map.set('mode', 'off') }) }
 
   /** The viewer used the player's own controls: share that with everyone. */
   private onPlayerState(code: number) {

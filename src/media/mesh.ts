@@ -44,8 +44,8 @@ export class MediaMesh {
   private backoff = new Map<string, number>()
   private sig
 
-  constructor(private net: Transport, private iceServers: RTCIceServer[] = DEFAULT_ICE, private relayOnly = false) {
-    this.sig = net.channel<Sig>('sig')
+  constructor(private net: Transport, private iceServers: RTCIceServer[] = DEFAULT_ICE, private relayOnly = false, channel = 'sig') {
+    this.sig = net.channel<Sig>(channel)
     this.sig.onMessage((m, from) => void this.onSignal(m as Sig, from))
     net.onPeerLeave((p) => this.close(p, false))
   }

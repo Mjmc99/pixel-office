@@ -4,7 +4,7 @@ A peer-to-peer, pixel-art virtual office in the spirit of Gather. People walk ar
 3/4-view world, chat, and decorate rooms together. There is **no game server**: peers find
 each other through public Nostr relays and then talk directly over WebRTC.
 
-![Tic-tac-toe running as office code](docs/phase5-code.png)
+![A shared screen on the lounge TV](docs/phase7-screens.png)
 
 Built so far:
 
@@ -38,6 +38,11 @@ Built so far:
   your **own signaling relay**, **TURN** servers and a **relay-only** privacy mode. **Stage
   zones** let presenters be heard across the whole floor while the audience just listens, and
   in calls with more than 6 people your camera only sends while you're talking.
+- **Phase 7**: shared screens, all in the browser. Every TV has four shared modes:
+  **YouTube** (synced watch party), **Share screen** (a tab or window streamed peer-to-peer to
+  everyone at the TV), **Web page** (a synced in-room browser for sites that allow embedding;
+  Figma, Google Docs/Slides, Vimeo, Loom and Twitch links are rewritten to their embed forms)
+  and **Open together** (for sites that block embedding: everyone nearby gets a one-click banner).
 
 ## Run it
 
@@ -103,6 +108,8 @@ src/
   code/sdk.ts         The `room` API that office code sees (runs inside the worker)
   code/runner.ts      Runs the code of the office you're in, with consent; wires SDK calls to the game
   code/editor.ts      Owner's code editor (samples, permissions, website list, live log)
+  objects/screens.ts  Screen sharing onto TVs (its own media mesh, "at the TV" rules)
+  objects/embeds.ts   Rewrites share links to embeddable URLs
 anchor/
   anchor.mjs          Always-on peer: keeps world docs + office packages on disk (Node + werift)
   relay.mjs           Optional self-hosted signaling relay (instead of public Nostr relays)
@@ -246,7 +253,16 @@ through TURN and peers never see your IP.
 The game has to be served over HTTPS (or localhost) because browser crypto and WebRTC
 require it. That's why friends on other networks need the Pages URL, not your PC's IP.
 
-## Next (phase 7)
+## Status and known limits
 
-Shared screens, fully in the browser: a TV that streams a shared tab to the zone, a synced
-in-room browser for sites that allow embedding, and "open together" for sites that don't.
+All seven phases of the plan are built and covered by tests (`npm test`). Things worth knowing:
+
+- **Real-world P2P** is tested end to end over a self-hosted relay; over public Nostr relays
+  and across home networks it still needs real-world testing, and some networks will need TURN.
+- **Scale**: one world is one Trystero room (everyone on all floors shares the signaling
+  room). That's fine for tens of people; hundreds would need per-floor rooms and an SFU.
+- **Governance log**: never compacted yet; a spammer can grow it (their ops are ignored).
+- **Office updates across worlds** travel when someone carrying the newer version visits.
+- **Watch party** sync uses each browser's clock (fine when OS clocks are NTP-synced).
+- **Sites that block iframes** can't be browsed together in-page; use Share screen or Open
+  together for those.

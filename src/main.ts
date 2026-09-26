@@ -19,6 +19,7 @@ import { Importer } from './objects/importer'
 import { CodeRunner } from './code/runner'
 import { CodeEditor } from './code/editor'
 import { kindOf } from './scenes/WorldScene'
+import { Screens } from './objects/screens'
 
 /**
  * Invite links look like  …/#w=<worldId>.<secret>  — the part after # never
@@ -141,7 +142,8 @@ async function boot() {
             s.rebuild()
             hud.attach(s, (name, avatar) => { s.setMe(name, avatar); save(meKey, { name, avatar }) })
             const offices = new OfficePanel(hud, s, rooms, state, () => `${w.id}.${w.secret}`)
-            const objects = new ObjectPanels(hud, s, sync.doc, state, rooms)
+            const screens = new Screens(net, turn, relayOnly)
+            const objects = new ObjectPanels(hud, s, sync.doc, state, rooms, screens)
             const importer = new Importer(hud, s, state, rooms)
             const runner = new CodeRunner(hud, s, rooms, state, sync.doc, net)
             const editor = new CodeEditor(hud, rooms, runner)
@@ -157,7 +159,7 @@ async function boot() {
               const t = roomToken()
               if (t) void tokenToPackage(t).then((pkg) => pkg && offices.prompt(pkg))
             })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer, runner, editor }
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer, runner, editor, screens }
           },
         })
       },

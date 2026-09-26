@@ -850,6 +850,15 @@ export class WorldScene extends Phaser.Scene {
     return out
   }
 
+  /** Positions (px) of everyone else on my floor, and mine — for screen sharing. */
+  peerPositions() {
+    const m = new Map<string, { x: number; y: number }>()
+    for (const [peer, a] of this.others) if (a.floor === this.floor && !this.isBanned(a)) m.set(peer, { x: a.tx, y: a.ty })
+    return m
+  }
+  mePos() { return { x: this.me.sprite.x, y: this.me.sprite.y } }
+  peerName(peer: string) { return this.others.get(peer)?.name ?? 'Someone' }
+
   setCodeSprite(id: string, item: string, x: number, y: number, f: Facing) {
     const def = this.defs.get(item)
     if (!def || this.codeSprites.size >= 64) return
@@ -875,7 +884,7 @@ export class WorldScene extends Phaser.Scene {
   debugState() {
     return {
       me: { x: this.me.sprite.x, y: this.me.sprite.y, f: this.me.facing, floor: this.floor },
-      others: [...this.others.entries()].map(([id, a]) => ({ id, x: a.sprite.x, y: a.sprite.y, n: a.name, said: a.bubble?.text, uid: a.uid, floor: a.floor, visible: a.sprite.visible })),
+      others: [...this.others.entries()].map(([id, a]) => ({ id, x: a.sprite.x, y: a.sprite.y, tx: a.tx, ty: a.ty, n: a.name, said: a.bubble?.text, uid: a.uid, floor: a.floor, visible: a.sprite.visible })),
       decor: this.view.decor.size,
       things: this.things.size,
       theme: this.theme,
