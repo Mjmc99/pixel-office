@@ -6,7 +6,7 @@ import { buildingPlan, FLOOR, inside, isWallTile, regionAt, slotAt, tileAt, type
 import { sign, verify } from '../world/crypto'
 import { canPlace, solidTiles, type Placement } from '../world/room'
 import type { DecorDef, View, WorldState, ZoneDef } from '../world/state'
-import { FACINGS, type Facing, type ItemDef, type Manifest, type Presence } from '../world/types'
+import { FACINGS, type CustomAsset, type Facing, type ItemDef, type Manifest, type Presence } from '../world/types'
 
 const T = 16
 const SPEED = 80                 // px per second
@@ -38,7 +38,13 @@ interface Avatar {
 }
 
 /** Something drawn on the map that people can bump into (world decor, room decor…). */
-export interface Thing extends Placement { id: string; floor: number; editable: boolean; source: 'world' | 'room' }
+export interface Thing extends Placement { id: string; floor: number; editable: boolean; source: 'world' | 'room'; cfg?: any }
+
+/** Items that do something when you press E next to them (or step on them). */
+export const OBJECT_KINDS: Record<string, 'portal' | 'notes' | 'whiteboard' | 'tv'> = {
+  portal: 'portal', noteboard: 'notes', whiteboard: 'whiteboard', tv: 'tv',
+}
+export const kindOf = (item: string) => OBJECT_KINDS[item.split('/')[1] ?? ''] ?? null
 
 export interface SceneDeps {
   manifest: Manifest
@@ -72,6 +78,14 @@ export class WorldScene extends Phaser.Scene {
   /** Later phases add more no-go tiles (other people's rooms while editing, …). */
   extraBlocked: (x: number, y: number, floor: number) => boolean = () => false
   /** Later phases decide who may edit what inside rooms. */
+  /** Custom sprites in use on a floor (world assets + office assets). */
+  customAssets: (floor: number) => CustomAsset[] = () => []
+  private loadedAssets = new Set<string>()
+  /** The object you can use right now (E), and what happens when you do. */
+  near: Thing | null = null
+  onInteract: (t: Thing) => void = () => {}
+  private portalCooldown = 0
+  private onPortal: string | null = null
   /** Later phases: zones that belong to offices, and how offices look. */
   extraZones: (floor: number) => (Zone & { room?: string })[] = () => []
   slotInfo: (slotId: string, floor: number) => { style: string; label: string; pending: boolean } | null = () => null
@@ -135,10 +149,11 @@ export class WorldScene extends Phaser.Scene {
     this.state.onChange.on(() => { this.rebuild(); this.onChange() })
 
     const kb = this.input.keyboard!
-    this.keys = kb.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,R,B,ESC,DELETE,SHIFT', false) as Record<string, Phaser.Input.Keyboard.Key>
+    this.keys = kb.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,R,B,E,ESC,DELETE,SHIFT', false) as Record<string, Phaser.Input.Keyboard.Key>
     kb.on('keydown-R', () => { if (!this.typing && this.decorating) this.rotate(this.keys.SHIFT.isDown ? -1 : 1) })
     kb.on('keydown-B', () => { if (!this.typing) this.setDecorating(!this.decorating) })
     kb.on('keydown-ESC', () => { if (this.decorating) this.buildItem ? this.setBuildItem(null) : this.setDecorating(false) })
+    kb.on('keydown-E', () => { if (!this.typing && this.near) this.onInteract(this.near) })
     kb.on('keydown-DELETE', () => { if (this.decorating && this.hoverId) this.deleteThing(this.hoverId) })
     this.input.mouse?.disableContextMenu()
     this.input.on('pointermove', () => this.updateGhost())
@@ -190,6 +205,7 @@ export class WorldScene extends Phaser.Scene {
 
   /** Re-derive everything visible from the replayed world view. */
   rebuild() {
+    for (const a of this.customAssets(this.floor)) this.registerAsset(a)
     const key = this.theme + ':' + this.floor + ':' + this.structureSig(this.floor)
     if (key !== this.structureKey) { this.structureKey = key; this.buildStructure() }
     this.zones = [...[...this.view.zones.values()].filter((z) => z.floor === this.floor), ...this.extraZones(this.floor)]
@@ -292,13 +308,37 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
+  /** Turn an imported PNG into a texture with S/E/N/W frames and an item definition. */
+  registerAsset(a: CustomAsset) {
+    const key = 'cust_' + a.id
+    const id = 'custom/' + a.id
+    if (this.loadedAssets.has(key + a.png.length)) return
+    this.loadedAssets.add(key + a.png.length)
+    const img = new Image()
+    img.onload = () => {
+      if (this.textures.exists(key)) this.textures.remove(key)
+      const tex = this.textures.addImage(key, img)
+      if (!tex) return
+      const fw = Math.floor(img.width / a.frames), fh = img.height
+      FACINGS.forEach((f, i) => tex.add(f, 0, a.frames === 4 ? i * fw : 0, 0, fw, fh))
+      const view = (f: Facing) => ({ frame: f, w: f === 'E' || f === 'W' ? a.d : a.w, d: f === 'E' || f === 'W' ? a.w : a.d, px: [fw, fh] as [number, number] })
+      this.defs.set(id, { id, item: a.id, label: a.name, height: fh, flat: false, atlas: key,
+        views: { S: view('S'), E: view('E'), N: view('N'), W: view('W') } })
+      for (const spr of this.thingSprites.values()) if (spr.texture.key === key) spr.destroy()
+      for (const [tid, spr] of [...this.thingSprites]) if (!spr.active) this.thingSprites.delete(tid)
+      this.syncThings()
+      this.onChange()
+    }
+    img.src = a.png
+  }
+
   /** World decor + room things (phase 3) on the current floor. */
   private collectThings() {
     const out = new Map<string, Thing>()
     const canWorld = this.state.canDecorate()
     for (const d of this.view.decor.values()) {
       if (d.floor !== this.floor) continue
-      out.set(d.id, { id: d.id, item: d.item, x: d.x, y: d.y, f: d.f, floor: d.floor, editable: canWorld, source: 'world' })
+      out.set(d.id, { id: d.id, item: d.item, x: d.x, y: d.y, f: d.f, floor: d.floor, editable: canWorld, source: 'world', cfg: d.cfg })
     }
     for (const t of this.extraThings(this.floor)) out.set(t.id, t)
     return out
@@ -310,7 +350,7 @@ export class WorldScene extends Phaser.Scene {
     for (const [id, p] of this.things) {
       const def = this.defs.get(p.item)
       if (!def) continue
-      const [tid] = p.item.split('/')
+      const tid = def.atlas ?? p.item.split('/')[0]
       const v = def.views[p.f]
       let spr = this.thingSprites.get(id)
       if (!spr) { spr = this.add.image(0, 0, tid, v.frame).setOrigin(0, 1); this.thingSprites.set(id, spr) }
@@ -463,6 +503,7 @@ export class WorldScene extends Phaser.Scene {
       me.facing = Math.abs(vx) > Math.abs(vy) ? (vx > 0 ? 'E' : 'W') : vy > 0 ? 'S' : 'N'
     }
     this.drawAvatar(me, dt)
+    this.detectObjects()
     const onElev = inside(this.plan.elevator, Math.floor(me.sprite.x / T), Math.floor(me.sprite.y / T))
     if (onElev !== this.onElevator) { this.onElevator = onElev; this.onChange() }
 
@@ -475,6 +516,40 @@ export class WorldScene extends Phaser.Scene {
       if (Math.hypot(a.tx - a.sprite.x, a.ty - a.sprite.y) < 0.5) { a.sprite.x = a.tx; a.sprite.y = a.ty }
       this.drawAvatar(a, dt)
     }
+  }
+
+  /** Nearest usable object within reach; portals fire when you step onto them. */
+  private detectObjects() {
+    const fx = this.me.sprite.x, fy = this.me.sprite.y
+    const tx = Math.floor(fx / T), ty = Math.floor(fy / T)
+    let best: Thing | null = null, bestD = Infinity
+    let standing: Thing | null = null
+    for (const t of this.things.values()) {
+      const kind = kindOf(t.item)
+      if (!kind) continue
+      const def = this.defs.get(t.item)
+      if (!def) continue
+      const v = def.views[t.f]
+      if (kind === 'portal' && tx >= t.x && tx < t.x + v.w && ty >= t.y && ty < t.y + v.d) standing = t
+      // distance from feet to the footprint rectangle, in px
+      const dx = Math.max(t.x * T - fx, 0, fx - (t.x + v.w) * T), dy = Math.max(t.y * T - fy, 0, fy - (t.y + v.d) * T)
+      const d = Math.hypot(dx, dy)
+      if (d < 1.5 * T && d < bestD) { best = t; bestD = d }
+    }
+    if (best?.id !== this.near?.id) { this.near = best; this.onChange() }
+    // portals: trigger on entering the pad, once, with a short cooldown
+    if (standing && standing.id !== this.onPortal && Date.now() > this.portalCooldown && !this.decorating) {
+      const to = standing.cfg?.to as { floor: number; x: number; y: number } | undefined
+      if (to) {
+        this.portalCooldown = Date.now() + 1200
+        if (to.floor !== this.floor && to.floor < this.view.floors) this.goFloor(to.floor)
+        this.teleport(to.x * T + 8, to.y * T + 10)
+        this.cameras.main.flash(150, 180, 240, 255)
+        this.onPortal = [...this.things.values()].find((t) => kindOf(t.item) === 'portal' && t.x <= to.x && to.x < t.x + 1 && t.y === to.y)?.id ?? null
+        return
+      }
+    }
+    this.onPortal = standing?.id ?? null
   }
 
   private setSpeaking(a: Avatar, on: boolean) {
@@ -602,7 +677,7 @@ export class WorldScene extends Phaser.Scene {
     this.ghost = undefined
     if (id) {
       const def = this.defs.get(id)!
-      this.ghost = this.add.image(0, 0, id.split('/')[0], def.views[this.buildFacing].frame).setOrigin(0, 1).setAlpha(0.75)
+      this.ghost = this.add.image(0, 0, def.atlas ?? id.split('/')[0], def.views[this.buildFacing].frame).setOrigin(0, 1).setAlpha(0.75)
     }
     this.updateGhost()
     this.onChange()
@@ -627,10 +702,21 @@ export class WorldScene extends Phaser.Scene {
     return canPlace(def, x, y, f, this.things.values(), this.defs, (tx, ty) => this.placeBlocked(tx, ty, x, y), ignore)
   }
 
-  private writeThing(t: { id: string; item: string; x: number; y: number; f: Facing }) {
+  private writeThing(t: { id: string; item: string; x: number; y: number; f: Facing; cfg?: any }) {
     if (slotAt(this.plan, t.x, t.y)) this.roomEditHook?.set({ ...t, floor: this.floor })
     else void this.state.author('decor.set', { ...t, floor: this.floor } satisfies Omit<DecorDef, 'by'>)
   }
+
+  /** Update an object's settings (e.g. where a portal leads). */
+  configure(id: string, cfg: any) {
+    const t = this.things.get(id)
+    if (!t?.editable) return false
+    const localId = t.source === 'room' ? id.slice(id.lastIndexOf('/') + 1) : id
+    this.writeThing({ id: localId, item: t.item, x: t.x, y: t.y, f: t.f, cfg })
+    return true
+  }
+  thing(id: string) { return this.things.get(id) }
+  allThings() { return [...this.things.values()] }
 
   deleteThing(id: string) {
     const t = this.things.get(id)
@@ -652,7 +738,8 @@ export class WorldScene extends Phaser.Scene {
     const def = p && this.defs.get(p.item)
     if (!p || !def || !p.editable) return
     const f = next(p.f)
-    if (this.canPlaceAt(def, p.x, p.y, f, p.id)) this.writeThing({ id: p.id, item: p.item, x: p.x, y: p.y, f })
+    const localId = p.source === 'room' ? p.id.slice(p.id.lastIndexOf('/') + 1) : p.id
+    if (this.canPlaceAt(def, p.x, p.y, f, p.id)) this.writeThing({ id: localId, item: p.item, x: p.x, y: p.y, f, cfg: p.cfg })
     else this.cameras.main.shake(80, 0.002)
   }
 
@@ -721,10 +808,19 @@ export class WorldScene extends Phaser.Scene {
       const pos = this.ghost.getData('pos') as { x: number; y: number; ok: boolean }
       if (!pos?.ok) { this.cameras.main.shake(80, 0.002); return }
       const id = Math.random().toString(36).slice(2, 10)
-      this.writeThing({ id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing })
+      const cfg = this.ghost.getData('cfg')
+      this.writeThing({ id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing, ...(cfg ? { cfg } : {}) })
       // optimistic: treat as taken until the op replays
       this.things.set(id, { id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing, floor: this.floor, editable: true, source: 'world' })
+      const placedKind = kindOf(this.buildItem)
       if (!p.event.shiftKey && this.ghost.getData('moving')) this.setBuildItem(null)
+      // a brand-new portal: ask where it goes
+      if (placedKind === 'portal' && !cfg) {
+        this.time.delayedCall(300, () => {
+          const t = [...this.things.values()].find((t) => t.x === pos.x && t.y === pos.y && kindOf(t.item) === 'portal')
+          if (t) this.onInteract(t)
+        })
+      }
       return
     }
     if (this.hoverId) {
@@ -734,6 +830,7 @@ export class WorldScene extends Phaser.Scene {
       this.buildFacing = placed.f
       this.setBuildItem(placed.item)
       this.ghost?.setData('moving', true)
+      this.ghost?.setData('cfg', placed.cfg)
     }
   }
 

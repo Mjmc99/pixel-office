@@ -110,3 +110,27 @@ kbd { font: inherit; font-size: 11px; border: 1px solid currentColor; border-rad
 .office { border-top: 1px solid var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
 .modal { position: fixed; inset: 0; background: #0009; display: grid; place-items: center; z-index: 5; }
 .modal .card { position: static; max-width: min(460px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 8px; }
+.use { position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%); background: var(--accent); color: var(--accent-ink);
+  border-radius: 6px; padding: 4px 10px; font-weight: 600; white-space: nowrap; }
+.use kbd { border-color: var(--accent-ink); }
+.objpanel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(700px, calc(100vw - 24px));
+  max-height: calc(100vh - 120px); overflow: auto; background: var(--panel); border: 2px solid var(--line); border-radius: 6px; padding: 10px;
+  box-shadow: 0 6px 0 #0008; z-index: 4; display: flex; flex-direction: column; gap: 8px; }
+.objhead { display: flex; justify-content: space-between; align-items: center; }
+.objbody { display: flex; flex-direction: column; gap: 8px; }
+.objbody select, .objbody input { font: inherit; color: var(--ink); background: #15141b; border: 2px solid var(--line); border-radius: 4px; padding: 5px; }
+.wb { width: 100%; aspect-ratio: 640 / 400; border-radius: 4px; cursor: crosshair; touch-action: none; background: #f6f4ee; }
+.swatch { border-width: 3px; }
+.swatch.on { outline: 2px solid var(--accent); }
+.notes { display: flex; flex-wrap: wrap; gap: 8px; }
+.note { position: relative; width: 150px; min-height: 90px; color: #1b1a22; padding: 8px 8px 20px; border-radius: 2px; box-shadow: 0 2px 0 #0004;
+  white-space: pre-wrap; word-break: break-word; font-size: 12px; }
+.note i { position: absolute; left: 8px; bottom: 4px; font-size: 10px; opacity: .6; }
+.note .x { position: absolute; right: 2px; top: 0; background: none; border: 0; cursor: pointer; font-size: 14px; }
+.tvscreen { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 4px; overflow: hidden; }
+.tvscreen iframe, .tvscreen > div { width: 100%; height: 100%; }
+.tvoff { display: grid; place-items: center; color: var(--muted); height: 100%; padding: 12px; text-align: center; }
+.item.import { justify-content: center; }
+.plus { font-size: 28px; color: var(--accent); }
+.import-preview { max-width: 100%; max-height: 120px; image-rendering: pixelated; background: #15141b; align-self: flex-start; }
+.modal select, .modal input { font: inherit; color: var(--ink); background: #15141b; border: 2px solid var(--line); border-radius: 4px; padding: 5px; }

@@ -417,6 +417,96 @@
      }
     },
     {
+     "id": "office/portal",
+     "item": "portal",
+     "label": "Portal",
+     "height": 2,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "portal_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "E": {
+       "frame": "portal_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "N": {
+       "frame": "portal_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "W": {
+       "frame": "portal_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/noteboard",
+     "item": "noteboard",
+     "label": "Note board",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "noteboard_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "noteboard_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "noteboard_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "noteboard_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
      "id": "office/whiteboard",
      "item": "whiteboard",
      "label": "Whiteboard",
@@ -1018,6 +1108,96 @@
      }
     },
     {
+     "id": "cabin/portal",
+     "item": "portal",
+     "label": "Portal",
+     "height": 2,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "portal_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "E": {
+       "frame": "portal_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "N": {
+       "frame": "portal_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "W": {
+       "frame": "portal_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/noteboard",
+     "item": "noteboard",
+     "label": "Note board",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "noteboard_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "noteboard_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "noteboard_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "noteboard_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
      "id": "cabin/fireplace",
      "item": "fireplace",
      "label": "Fireplace",
@@ -1569,6 +1749,96 @@
        "px": [
         16,
         58
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/portal",
+     "item": "portal",
+     "label": "Portal",
+     "height": 2,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "portal_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "E": {
+       "frame": "portal_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "N": {
+       "frame": "portal_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "W": {
+       "frame": "portal_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/noteboard",
+     "item": "noteboard",
+     "label": "Note board",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "noteboard_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "noteboard_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "noteboard_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "noteboard_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
        ]
       }
      }
@@ -2175,6 +2445,96 @@
      }
     },
     {
+     "id": "zen/portal",
+     "item": "portal",
+     "label": "Portal",
+     "height": 2,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "portal_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "E": {
+       "frame": "portal_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "N": {
+       "frame": "portal_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "W": {
+       "frame": "portal_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/noteboard",
+     "item": "noteboard",
+     "label": "Note board",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "noteboard_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "noteboard_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "noteboard_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "noteboard_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
      "id": "zen/shoji",
      "item": "shoji",
      "label": "Shoji screen",
@@ -2771,6 +3131,96 @@
        "px": [
         16,
         58
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/portal",
+     "item": "portal",
+     "label": "Portal",
+     "height": 2,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "portal_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "E": {
+       "frame": "portal_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "N": {
+       "frame": "portal_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      },
+      "W": {
+       "frame": "portal_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        18
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/noteboard",
+     "item": "noteboard",
+     "label": "Note board",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "noteboard_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "noteboard_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "noteboard_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "noteboard_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
        ]
       }
      }

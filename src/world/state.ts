@@ -17,7 +17,7 @@ import type { Facing } from './types'
 export interface Op { id: string; t: string; p: any; by: string; ts: number; sig: string }
 
 export interface ZoneDef { id: string; name: string; x: number; y: number; w: number; h: number; floor: number; stage?: boolean; room?: string }
-export interface DecorDef { id: string; item: string; x: number; y: number; f: Facing; floor: number; by: string; room?: string }
+export interface DecorDef { id: string; item: string; x: number; y: number; f: Facing; floor: number; by: string; room?: string; cfg?: any }
 export interface Policy { decor: 'everyone' | 'mods'; rooms: 'open' | 'approval' | 'closed' }
 
 export interface View {
@@ -172,6 +172,18 @@ export class WorldState {
           if (allowed && !inSlot && d.floor < v.floors) v.decor.set(d.id, { ...d, by: op.by })
           break
         }
+        case 'asset.set': {
+          const a = p ?? {}
+          const assets = v.ext.get('assets') ?? new Map()
+          v.ext.set('assets', assets)
+          if (mod && !banned && typeof a.png === 'string' && a.png.length <= 90_000 && a.png.startsWith('data:image/png')) {
+            assets.set(String(a.id), { id: String(a.id), name: String(a.name ?? 'Custom').slice(0, 32), w: clampInt(a.w, 1, 4), d: clampInt(a.d, 1, 4), frames: a.frames === 4 ? 4 : 1, png: a.png, by: op.by })
+          }
+          break
+        }
+        case 'asset.del':
+          if (mod) v.ext.get('assets')?.delete(p.id)
+          break
         case 'decor.del':
           if (!banned && (mod || v.policy.decor === 'everyone')) v.decor.delete(p.id)
           break
@@ -184,5 +196,7 @@ export class WorldState {
     return v
   }
 }
+
+const clampInt = (n: unknown, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.floor(Number(n) || lo)))
 
 export { inside }

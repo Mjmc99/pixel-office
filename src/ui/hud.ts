@@ -35,6 +35,7 @@ export class Hud {
   private elevEl = el('div', 'card elevator hidden')
   private panel = el('div', 'card panel hidden')
   private bannedEl = el('div', 'banned hidden', 'You have been banned from this world by its moderators.')
+  private useEl = el('div', 'use hidden')
   private tiles?: Tiles
   private themeTab = 'office'
   private thumbs = new Map<string, string>()
@@ -69,7 +70,7 @@ export class Hud {
     offices.onclick = () => this.onOffices()
     row.append(invite, offices, people, settings)
     card.append(this.peersEl, row)
-    this.root.append(card, this.panel, this.elevEl, this.bannedEl)
+    this.root.append(card, this.panel, this.elevEl, this.bannedEl, this.useEl)
 
     // ---- identity card
     const idc = el('div', 'card me')
@@ -390,5 +391,12 @@ export class Hud {
     for (const b of this.grid.querySelectorAll<HTMLButtonElement>('.item')) b.classList.toggle('on', b.dataset.item === s.selectedItem)
     this.renderElevator()
     if (this.panelKind === 'people') this.renderPanel()
+    const near = s.near
+    this.useEl.classList.toggle('hidden', !near || s.decorating || !!document.querySelector('.objpanel:not(.hidden)'))
+    if (near) {
+      const label = s.defs.get(near.item)?.label ?? 'object'
+      const portal = near.item.endsWith('/portal')
+      this.useEl.innerHTML = portal ? (near.cfg?.to ? `Step on the portal to go to <b>${esc(near.cfg.label ?? '')}</b>${near.editable ? ' · <kbd>E</kbd> change' : ''}` : `<kbd>E</kbd> connect portal`) : `<kbd>E</kbd> use ${esc(label)}`
+    }
   }
 }

@@ -3,6 +3,7 @@ export const FACINGS: Facing[] = ['S', 'E', 'N', 'W']
 
 export interface ItemView { frame: string; w: number; d: number; px: [number, number] }
 export interface ItemDef {
+  atlas?: string        // texture key when it isn't the theme atlas (custom sprites)
   id: string            // "office/desk"
   item: string          // "desk"
   label: string
@@ -23,3 +24,6 @@ export interface Placed { item: string; x: number; y: number; f: Facing; by: str
 
 /** What each peer broadcasts about itself ~10x/second while moving. */
 export interface Presence { x: number; y: number; f: Facing; m: boolean; a: string; n: string; mic?: boolean; cam?: boolean }
+
+/** A sprite someone imported: 1 frame (used for every facing) or 4 frames S,E,N,W side by side. */
+export interface CustomAsset { id: string; name: string; w: number; d: number; frames: 1 | 4; png: string; by?: string }

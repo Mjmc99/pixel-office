@@ -208,6 +208,28 @@ def tv(t):
     return m
 
 
+def portal(t):
+    """Glowing floor pad that teleports you. Flat, so people can stand on it."""
+    m = Model(16, 16, 2)
+    m.cyl(8, 8, 7, 0, 1, "stone" if t in ("zen", "cabin") else "metal")
+    m.cyl(8, 8, 5.5, 0, 2, "neon" if t != "arcade" else "neon2")
+    m.cyl(8, 8, 3.5, 1, 2, "light")
+    return m
+
+
+def noteboard(t):
+    """Cork board on a stand, covered in sticky notes."""
+    m = Model(16, 16, 30)
+    frame = {"office": "metal", "cabin": "wood_dark", "scifi": "metal_light", "zen": "wood_dark", "arcade": "metal"}[t]
+    m.box(3, 7, 0, 5, 9, 26, frame); m.box(11, 7, 0, 13, 9, 26, frame)
+    m.box(2, 6, 0, 6, 10, 1, frame); m.box(10, 6, 0, 14, 10, 1, frame)
+    m.box(1, 8, 12, 15, 9, 29, frame)
+    m.box(2, 9, 13, 14, 10, 28, "wood")
+    for (x, z, c) in ((3, 24, "accent"), (7, 25, "fire"), (10, 23, "neon"), (4, 17, "paper"), (8, 18, "accent"), (11, 16, "paper")):
+        m.box(x, 10, z - 2, x + 3, 11, z + 1, c)
+    return m
+
+
 # ---------------------------------------------------------------- theme specials
 def whiteboard(t):
     m = Model(32, 16, 32)
@@ -405,7 +427,8 @@ def neon_sign(t):
 
 
 SHARED = {"desk": desk, "chair": chair, "sofa": sofa, "bookshelf": bookshelf, "plant": plant,
-          "coffee_table": coffee_table, "lamp": lamp, "rug": rug, "tv": tv}
+          "coffee_table": coffee_table, "lamp": lamp, "rug": rug, "tv": tv,
+          "portal": portal, "noteboard": noteboard}
 SPECIALS = {
     "office": {"whiteboard": whiteboard, "water_cooler": water_cooler, "filing_cabinet": filing_cabinet,
                "meeting_table": meeting_table},
@@ -420,7 +443,8 @@ LABELS = {"desk": "Desk", "chair": "Chair", "sofa": "Sofa", "bookshelf": "Booksh
           "fireplace": "Fireplace", "log_pile": "Log pile", "armchair": "Armchair", "server_rack": "Server rack",
           "holo_table": "Holo table", "console": "Console", "cryo_pod": "Cryo pod", "shoji": "Shoji screen",
           "tea_table": "Tea table", "bamboo": "Bamboo", "koi_pond": "Koi pond", "arcade_cabinet": "Arcade cabinet",
-          "pinball": "Pinball", "vending": "Vending machine", "neon_sign": "Neon sign"}
+          "pinball": "Pinball", "vending": "Vending machine", "neon_sign": "Neon sign",
+          "portal": "Portal", "noteboard": "Note board"}
 # per-theme label overrides
 LABEL_OVERRIDES = {("zen", "chair"): "Floor cushion", ("zen", "lamp"): "Stone lantern", ("zen", "desk"): "Low desk",
                    ("zen", "plant"): "Bonsai", ("cabin", "tv"): "Radio", ("arcade", "chair"): "Bean bag",

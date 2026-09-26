@@ -14,6 +14,8 @@ import type { Manifest } from './world/types'
 import { Rooms } from './rooms/rooms'
 import { tokenToPackage } from './rooms/package'
 import { OfficePanel } from './ui/offices'
+import { ObjectPanels } from './objects/panels'
+import { Importer } from './objects/importer'
 
 /**
  * Invite links look like  …/#w=<worldId>.<secret>  — the part after # never
@@ -127,10 +129,13 @@ async function boot() {
               del: (id) => rooms.delZone(id),
               rename: (id, n) => rooms.renameZone(id, n),
             }
+            s.customAssets = (f) => [...((state.view.ext.get('assets') ?? new Map()) as Map<string, any>).values(), ...rooms.assets(f)]
             rooms.onChange.on(() => s.rebuild())
             s.rebuild()
             hud.attach(s, (name, avatar) => { s.setMe(name, avatar); save(meKey, { name, avatar }) })
             const offices = new OfficePanel(hud, s, rooms, state, () => `${w.id}.${w.secret}`)
+            const objects = new ObjectPanels(hud, s, sync.doc, state, rooms)
+            const importer = new Importer(hud, s, state, rooms)
             hud.onOffices = () => offices.toggle()
             if (token) void tokenToPackage(token).then((pkg) => pkg && offices.prompt(pkg))
             // links opened in an already-running tab only change the #fragment
@@ -140,7 +145,7 @@ async function boot() {
               const t = roomToken()
               if (t) void tokenToPackage(t).then((pkg) => pkg && offices.prompt(pkg))
             })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices }
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer }
           },
         })
       },

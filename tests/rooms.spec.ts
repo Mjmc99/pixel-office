@@ -52,7 +52,7 @@ test('claim an office, decorate it (owner only), zone it, and share it into anot
   const token = new URL(link).hash.match(/r=([^&]+)/)![1]
   await carol.goto(`/?net=local&name=Carol&profile=Carol#w=${carolWorld}&r=${token}`)
   await carol.waitForFunction(() => (window as any).__po?.scene)
-  await expect(carol.locator('.modal')).toContainText("Bob's office")
+  await expect(carol.locator('.modal:not(.hidden)')).toContainText("Bob's office")
   await carol.getByRole('button', { name: /Add it as office/ }).click()
   await expect.poll(() => rooms(carol)).toEqual(['N1:active'])
   await expect.poll(() => roomThings(carol)).toContain('office/sofa@6,6,N')

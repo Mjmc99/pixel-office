@@ -4,7 +4,7 @@ A peer-to-peer, pixel-art virtual office in the spirit of Gather. People walk ar
 3/4-view world, chat, and decorate rooms together. There is **no game server**: peers find
 each other through public Nostr relays and then talk directly over WebRTC.
 
-![An office with a nested call zone and the Offices panel](docs/phase3-office.png)
+![The shared whiteboard in the lounge](docs/phase4-objects.png)
 
 Built so far:
 
@@ -23,6 +23,11 @@ Built so far:
   into a free slot of the right size. Only the office's owner can decorate or zone inside it,
   and every edit is re-signed, so an office can't be tampered with, even in someone else's
   world. World owners choose whether new offices are open, need approval, or are closed.
+- **Phase 4**: objects and your own art. Every theme now has a **Portal** (step on it to
+  travel to a lobby, an office door or another portal), a **Note board** (shared sticky notes),
+  plus the **Whiteboard** (shared drawing) and **TV** (a synced YouTube watch party). Walk up
+  and press **E**. The **Custom** palette tab imports your own PNG sprites (1 frame, or 4
+  frames S/E/N/W, e.g. straight from Aseprite) into your office or, for mods, the world.
 
 ## Run it
 
@@ -53,6 +58,7 @@ Add `?net=local` to the URL to use the offline, same-browser transport (no netwo
 | Esc | Cancel / leave decorate mode |
 | People / Settings (world card) | See who's here; owners make mods and ban; mods add floors; back up your identity key |
 | Stand on the elevator pad | Pick a floor |
+| E | Use the object you're next to (whiteboard, notes, TV, portal settings) |
 | **Offices** (world card) | Claim the empty office you're standing in; rename, restyle, share or remove yours; mods approve/remove |
 | Decorate > **Call zones** (owner/mods) | Drag on the floor to draw a zone; rename or delete it in the list, or right-click it |
 
@@ -80,6 +86,9 @@ src/
   rooms/package.ts    Signed office packages, share-link encoding (deflate + base64url), IndexedDB cache
   rooms/rooms.ts      Office placement ops, package sync between peers, owner-only editing
   ui/offices.ts       Offices panel and the "add this office?" prompt
+  objects/panels.ts   Portal settings, whiteboard, note board, TV panels (live state in the Yjs doc)
+  objects/tv.ts       Watch-party sync: {video, playing, pos, at} + drift correction
+  objects/importer.ts Custom sprite import (PNG, 1 or 4 facings, 30 KB max)
   world/room.ts       Room geometry, footprints, placement rules, starter layout
   scenes/WorldScene.ts  Phaser scene: rendering, depth sorting, movement, decorate mode
   ui/hud.ts           DOM overlay: world card, identity, palette, chat
@@ -121,6 +130,12 @@ travels peer to peer and the highest valid `ver` wins. Zones may nest; the small
 stand in is your call. Edits you make in one world reach other worlds your office is in when
 you (or anyone carrying the newer version) visit them.
 
+**Objects.** A portal, whiteboard, note board or TV is ordinary furniture whose item name
+gives it behaviour; portal destinations are stored as signed config on the piece. The shared
+state (strokes, notes, what's playing) lives in the world's Yjs doc keyed by the object's id:
+collaborative and unsigned by design, like a real whiteboard. The TV never re-streams video:
+everyone's own YouTube player seeks to `pos + (now - at)` whenever it drifts more than 0.8 s.
+
 **Identity.** Your key lives in this browser (`localStorage`). *Settings > Copy key backup*
 gives you a text key to restore elsewhere. Add `?profile=name` to the URL to run several
 identities in one browser (handy for testing).
@@ -160,7 +175,7 @@ npm test             # includes a 4-person video call with fake cameras
 The game has to be served over HTTPS (or localhost) because browser crypto and WebRTC
 require it. That's why friends on other networks need the Pages URL, not your PC's IP.
 
-## Next (phase 4)
+## Next (phase 5)
 
-An in-app editor for no-code objects (portals, whiteboards, sticky notes, a TV with synced
-YouTube) and importing your own sprites.
+Room code: a JS bundle in your office that runs sandboxed and talks to the world through a
+small SDK (games, tools, custom behaviour).

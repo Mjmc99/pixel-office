@@ -10,9 +10,11 @@ test('two peers see each other move, chat, and share furniture', async ({ contex
   await a.bringToFront()
   await move(a, 10, 34)
   const before = (await debug(a)).me
-  await a.keyboard.down('KeyW'); await a.waitForTimeout(600); await a.keyboard.up('KeyW')
+  await a.keyboard.down('KeyW')
+  await expect.poll(async () => (await debug(a)).me.y, { timeout: 10_000 }).toBeLessThan(before.y - 10)
+  await a.keyboard.up('KeyW')
+  await a.waitForTimeout(200)
   const after = (await debug(a)).me
-  expect(after.y).toBeLessThan(before.y - 10)
   await expect.poll(async () => Math.abs((await debug(b)).others[0].y - after.y), { timeout: 5000 }).toBeLessThan(2)
 
   // chat

@@ -1,6 +1,6 @@
 import { b64u, canonical, fromB64u, hashHex, sign, verify, type Identity } from '../world/crypto'
 import type { SlotSize } from '../world/building'
-import type { Facing } from '../world/types'
+import type { CustomAsset, Facing } from '../world/types'
 
 /**
  * An office ("room") is a self-contained, signed package. It travels inside
@@ -8,7 +8,7 @@ import type { Facing } from '../world/types'
  * Coordinates are local to the room (0,0 = top-left tile inside the office).
  * Newer versions (higher `ver`) from the same owner + roomId replace older ones.
  */
-export interface RoomThing { id: string; item: string; x: number; y: number; f: Facing }
+export interface RoomThing { id: string; item: string; x: number; y: number; f: Facing; cfg?: any }
 export interface RoomZone { id: string; name: string; x: number; y: number; w: number; h: number }
 export interface RoomContent {
   v: 1
@@ -23,6 +23,7 @@ export interface RoomContent {
   zones: RoomZone[]
   objects: any[]       // phase 4: interactables (portals, whiteboards, TVs…)
   code: any | null     // phase 5: sandboxed room code
+  assets?: CustomAsset[] // imported sprites used in this office
 }
 export interface RoomPackage extends RoomContent { sig: string }
 
