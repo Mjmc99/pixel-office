@@ -392,11 +392,12 @@ export class Hud {
     this.renderElevator()
     if (this.panelKind === 'people') this.renderPanel()
     const near = s.near
-    this.useEl.classList.toggle('hidden', !near || s.decorating || !!document.querySelector('.objpanel:not(.hidden)'))
+    this.useEl.classList.toggle('hidden', !near || s.decorating || !!document.querySelector('.objpanel:not(.hidden), .codepanel:not(.hidden)'))
     if (near) {
       const label = s.defs.get(near.item)?.label ?? 'object'
       const portal = near.item.endsWith('/portal')
-      this.useEl.innerHTML = portal ? (near.cfg?.to ? `Step on the portal to go to <b>${esc(near.cfg.label ?? '')}</b>${near.editable ? ' · <kbd>E</kbd> change' : ''}` : `<kbd>E</kbd> connect portal`) : `<kbd>E</kbd> use ${esc(label)}`
+      const coded = !near.item.match(/\/(portal|noteboard|whiteboard|tv)$/)
+      this.useEl.innerHTML = coded ? `<kbd>E</kbd> interact` : portal ? (near.cfg?.to ? `Step on the portal to go to <b>${esc(near.cfg.label ?? '')}</b>${near.editable ? ' · <kbd>E</kbd> change' : ''}` : `<kbd>E</kbd> connect portal`) : `<kbd>E</kbd> use ${esc(label)}`
     }
   }
 }

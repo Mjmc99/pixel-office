@@ -16,6 +16,9 @@ import { tokenToPackage } from './rooms/package'
 import { OfficePanel } from './ui/offices'
 import { ObjectPanels } from './objects/panels'
 import { Importer } from './objects/importer'
+import { CodeRunner } from './code/runner'
+import { CodeEditor } from './code/editor'
+import { kindOf } from './scenes/WorldScene'
 
 /**
  * Invite links look like  …/#w=<worldId>.<secret>  — the part after # never
@@ -136,6 +139,11 @@ async function boot() {
             const offices = new OfficePanel(hud, s, rooms, state, () => `${w.id}.${w.secret}`)
             const objects = new ObjectPanels(hud, s, sync.doc, state, rooms)
             const importer = new Importer(hud, s, state, rooms)
+            const runner = new CodeRunner(hud, s, rooms, state, sync.doc, net)
+            const editor = new CodeEditor(hud, rooms, runner)
+            offices.onEditCode = (pl) => editor.open(pl)
+            s.extraInteractable = (t) => runner.active && t.source === 'room'
+            s.onInteract = (t) => { if (kindOf(t.item)) objects.open(t); else runner.interact(t) }
             hud.onOffices = () => offices.toggle()
             if (token) void tokenToPackage(token).then((pkg) => pkg && offices.prompt(pkg))
             // links opened in an already-running tab only change the #fragment
@@ -145,7 +153,7 @@ async function boot() {
               const t = roomToken()
               if (t) void tokenToPackage(t).then((pkg) => pkg && offices.prompt(pkg))
             })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer }
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer, runner, editor }
           },
         })
       },

@@ -4,7 +4,7 @@ A peer-to-peer, pixel-art virtual office in the spirit of Gather. People walk ar
 3/4-view world, chat, and decorate rooms together. There is **no game server**: peers find
 each other through public Nostr relays and then talk directly over WebRTC.
 
-![The shared whiteboard in the lounge](docs/phase4-objects.png)
+![Tic-tac-toe running as office code](docs/phase5-code.png)
 
 Built so far:
 
@@ -28,6 +28,11 @@ Built so far:
   plus the **Whiteboard** (shared drawing) and **TV** (a synced YouTube watch party). Walk up
   and press **E**. The **Custom** palette tab imports your own PNG sprites (1 frame, or 4
   frames S/E/N/W, e.g. straight from Aseprite) into your office or, for mods, the world.
+- **Phase 5**: office code. Office owners attach JavaScript to their office (Offices > Office
+  code). It runs in each visitor's browser, only after they agree, inside a sandbox: an
+  opaque-origin iframe hosting a Web Worker, with a CSP that blocks the network. It uses a
+  small `room` SDK: shared state, events, host election, sprites, toasts and HTML panels.
+  Samples include a visitor counter, tic-tac-toe and a confetti party.
 
 ## Run it
 
@@ -89,6 +94,10 @@ src/
   objects/panels.ts   Portal settings, whiteboard, note board, TV panels (live state in the Yjs doc)
   objects/tv.ts       Watch-party sync: {video, playing, pos, at} + drift correction
   objects/importer.ts Custom sprite import (PNG, 1 or 4 facings, 30 KB max)
+  code/host.ts        Sandbox: opaque-origin iframe + Web Worker, CSP, permission checks, watchdog
+  code/sdk.ts         The `room` API that office code sees (runs inside the worker)
+  code/runner.ts      Runs the code of the office you're in, with consent; wires SDK calls to the game
+  code/editor.ts      Owner's code editor (samples, permissions, website list, live log)
   world/room.ts       Room geometry, footprints, placement rules, starter layout
   scenes/WorldScene.ts  Phaser scene: rendering, depth sorting, movement, decorate mode
   ui/hud.ts           DOM overlay: world card, identity, palette, chat
@@ -136,6 +145,27 @@ state (strokes, notes, what's playing) lives in the world's Yjs doc keyed by the
 collaborative and unsigned by design, like a real whiteboard. The TV never re-streams video:
 everyone's own YouTube player seeks to `pos + (now - at)` whenever it drifts more than 0.8 s.
 
+**Office code sandbox.**
+
+| Layer | What it stops |
+| --- | --- |
+| `<iframe sandbox="allow-scripts">` (no `allow-same-origin`) | Opaque origin: no access to the page, its storage, cookies or keys |
+| Web Worker inside that iframe | Runaway code runs on its own thread; the game never freezes |
+| CSP `default-src 'none'; connect-src 'none'` | No network unless the office lists domains and the visitor approves |
+| Permission checks on every SDK call | `state`, `events`, `sprites`, `ui`, `players`, `embed`, `network`, shown in the consent prompt |
+| Watchdog | Kills code that stops answering pings for 3 s or sends more than 300 messages/s |
+| Limits | 64 KB of code, 256 KB of shared state, 64 sprites, panels in their own sandboxed iframe |
+
+```js
+// a taste of the SDK
+room.on('enter', (p) => room.ui.toast('Hi ' + p.name))
+room.on('interact', (thingId) => room.broadcast('ding', { thingId }))
+room.on('message', (from, ev, data) => { if (room.isHost()) room.state.set('last', ev) })
+```
+
+Consent is stored per office *and* per version of the code (a hash), so a changed program
+asks again. Owners' own code always runs for them.
+
 **Identity.** Your key lives in this browser (`localStorage`). *Settings > Copy key backup*
 gives you a text key to restore elsewhere. Add `?profile=name` to the URL to run several
 identities in one browser (handy for testing).
@@ -175,7 +205,7 @@ npm test             # includes a 4-person video call with fake cameras
 The game has to be served over HTTPS (or localhost) because browser crypto and WebRTC
 require it. That's why friends on other networks need the Pages URL, not your PC's IP.
 
-## Next (phase 5)
+## Next (phase 6)
 
-Room code: a JS bundle in your office that runs sandboxed and talks to the world through a
-small SDK (games, tools, custom behaviour).
+Always-on anchor peer (Node, e.g. on a Raspberry Pi), TURN settings and relay-only privacy
+mode, limits for crowded rooms, and stage zones for talks.

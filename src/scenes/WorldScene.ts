@@ -84,6 +84,9 @@ export class WorldScene extends Phaser.Scene {
   /** The object you can use right now (E), and what happens when you do. */
   near: Thing | null = null
   onInteract: (t: Thing) => void = () => {}
+  /** Phase 5: furniture in an office running code is interactable too. */
+  extraInteractable: (t: Thing) => boolean = () => false
+  private codeSprites = new Map<string, Phaser.GameObjects.Image>()
   private portalCooldown = 0
   private onPortal: string | null = null
   /** Later phases: zones that belong to offices, and how offices look. */
@@ -526,7 +529,7 @@ export class WorldScene extends Phaser.Scene {
     let standing: Thing | null = null
     for (const t of this.things.values()) {
       const kind = kindOf(t.item)
-      if (!kind) continue
+      if (!kind && !this.extraInteractable(t)) continue
       const def = this.defs.get(t.item)
       if (!def) continue
       const v = def.views[t.f]
@@ -833,6 +836,40 @@ export class WorldScene extends Phaser.Scene {
       this.ghost?.setData('cfg', placed.cfg)
     }
   }
+
+  // ------------------------------------------------------------------ office code support
+  /** Everyone (including me) whose feet are inside rect, in world tile coords. */
+  peopleIn(r: { x: number; y: number; w: number; h: number }) {
+    const out: { id: string; name: string; x: number; y: number }[] = []
+    const add = (id: string, name: string, px: number, py: number) => {
+      const x = Math.floor(px / T), y = Math.floor(py / T)
+      if (x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h) out.push({ id, name, x, y })
+    }
+    add(this.deps.net.selfId, this.deps.me.name, this.me.sprite.x, this.me.sprite.y)
+    for (const [peer, a] of this.others) if (a.floor === this.floor && !this.isBanned(a)) add(peer, a.name, a.tx, a.ty)
+    return out
+  }
+
+  setCodeSprite(id: string, item: string, x: number, y: number, f: Facing) {
+    const def = this.defs.get(item)
+    if (!def || this.codeSprites.size >= 64) return
+    this.codeSprites.get(id)?.destroy()
+    const v = def.views[f]
+    const img = this.add.image(x * T, (y + v.d) * T, def.atlas ?? item.split('/')[0], v.frame).setOrigin(0, 1)
+    img.setDepth((y + v.d) * T - 0.2).setData('item', item)
+    this.codeSprites.set(id, img)
+  }
+  moveCodeSprite(id: string, x: number, y: number, f?: Facing) {
+    const img = this.codeSprites.get(id)
+    const def = img && this.defs.get(img.getData('item'))
+    if (!img || !def) return
+    const v = def.views[f && FACINGS.includes(f) ? f : 'S']
+    if (f) img.setFrame(v.frame)
+    img.setPosition(x * T, (y + v.d) * T).setDepth((y + v.d) * T - 0.2)
+  }
+  removeCodeSprite(id: string) { this.codeSprites.get(id)?.destroy(); this.codeSprites.delete(id) }
+  clearCodeSprites() { for (const img of this.codeSprites.values()) img.destroy(); this.codeSprites.clear() }
+  codeSpriteIds() { return [...this.codeSprites.keys()] }
 
   /** Test/debug hook. */
   debugState() {

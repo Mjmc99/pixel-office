@@ -11,6 +11,7 @@ export class OfficePanel {
   private panel = el('div', 'card panel offices hidden')
   private modal = el('div', 'modal hidden')
   open = false
+  onEditCode: (pl: Placement) => void = () => {}
 
   constructor(private hud: Hud, private scene: WorldScene, private rooms: Rooms, private state: WorldState, private worldLink: () => string) {
     hud.root.append(this.panel, this.modal)
@@ -86,7 +87,9 @@ export class OfficePanel {
       go.onclick = () => this.goTo(pl)
       const rm = el('button', 'btn small danger', 'Remove')
       rm.onclick = () => void this.rooms.remove(pl)
-      row.append(share, invite, go, rm)
+      const code = el('button', 'btn small', pkg?.code ? 'Office code ✓' : 'Office code…')
+      code.onclick = () => this.onEditCode(pl)
+      row.append(share, invite, go, code, rm)
       box.append(el('div', 'sub', `Your office ${pl.slot}${pl.floor ? ` · floor ${pl.floor + 1}` : ''}${pl.pending ? ' · <b>awaiting approval</b>' : ''} · v${pkg?.ver ?? '?'}`), name, style, row)
       box.append(el('div', 'hint', 'Only you can decorate inside it (press B inside your office). Draw call zones in it from Decorate > Call zones.'))
       p.append(box)
