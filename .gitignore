@@ -1,0 +1,6 @@
+node_modules
+dist
+test-results
+playwright-report
+tools/assets/preview
+__pycache__

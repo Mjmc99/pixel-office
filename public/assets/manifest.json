@@ -1,0 +1,3016 @@
+{
+ "tile": 16,
+ "facings": [
+  "S",
+  "E",
+  "N",
+  "W"
+ ],
+ "themes": {
+  "office": {
+   "label": "Modern Office",
+   "atlas": "office",
+   "items": [
+    {
+     "id": "office/desk",
+     "item": "desk",
+     "label": "Desk",
+     "height": 16,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "desk_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "E": {
+       "frame": "desk_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "N": {
+       "frame": "desk_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "W": {
+       "frame": "desk_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/chair",
+     "item": "chair",
+     "label": "Chair",
+     "height": 22,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "chair_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "E": {
+       "frame": "chair_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "N": {
+       "frame": "chair_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "W": {
+       "frame": "chair_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/sofa",
+     "item": "sofa",
+     "label": "Sofa",
+     "height": 18,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "sofa_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "E": {
+       "frame": "sofa_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "sofa_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "W": {
+       "frame": "sofa_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/bookshelf",
+     "item": "bookshelf",
+     "label": "Bookshelf",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "bookshelf_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "bookshelf_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "bookshelf_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "bookshelf_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/plant",
+     "item": "plant",
+     "label": "Fiddle-leaf fig",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "plant_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "plant_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "plant_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "plant_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/coffee_table",
+     "item": "coffee_table",
+     "label": "Coffee table",
+     "height": 10,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "coffee_table_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "E": {
+       "frame": "coffee_table_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      },
+      "N": {
+       "frame": "coffee_table_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "W": {
+       "frame": "coffee_table_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/lamp",
+     "item": "lamp",
+     "label": "Lamp",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "lamp_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "lamp_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "lamp_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "lamp_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/rug",
+     "item": "rug",
+     "label": "Rug",
+     "height": 1,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "rug_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "E": {
+       "frame": "rug_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      },
+      "N": {
+       "frame": "rug_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "W": {
+       "frame": "rug_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/tv",
+     "item": "tv",
+     "label": "TV",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "tv_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "E": {
+       "frame": "tv_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "N": {
+       "frame": "tv_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "W": {
+       "frame": "tv_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/whiteboard",
+     "item": "whiteboard",
+     "label": "Whiteboard",
+     "height": 32,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "whiteboard_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        48
+       ]
+      },
+      "E": {
+       "frame": "whiteboard_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        64
+       ]
+      },
+      "N": {
+       "frame": "whiteboard_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        48
+       ]
+      },
+      "W": {
+       "frame": "whiteboard_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        64
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/water_cooler",
+     "item": "water_cooler",
+     "label": "Water cooler",
+     "height": 32,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "water_cooler_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "E": {
+       "frame": "water_cooler_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "N": {
+       "frame": "water_cooler_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "W": {
+       "frame": "water_cooler_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        48
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/filing_cabinet",
+     "item": "filing_cabinet",
+     "label": "Filing cabinet",
+     "height": 24,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "filing_cabinet_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        40
+       ]
+      },
+      "E": {
+       "frame": "filing_cabinet_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        40
+       ]
+      },
+      "N": {
+       "frame": "filing_cabinet_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        40
+       ]
+      },
+      "W": {
+       "frame": "filing_cabinet_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        40
+       ]
+      }
+     }
+    },
+    {
+     "id": "office/meeting_table",
+     "item": "meeting_table",
+     "label": "Meeting table",
+     "height": 12,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "meeting_table_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        44
+       ]
+      },
+      "E": {
+       "frame": "meeting_table_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        60
+       ]
+      },
+      "N": {
+       "frame": "meeting_table_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        44
+       ]
+      },
+      "W": {
+       "frame": "meeting_table_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        60
+       ]
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "cabin": {
+   "label": "Cozy Cabin",
+   "atlas": "cabin",
+   "items": [
+    {
+     "id": "cabin/desk",
+     "item": "desk",
+     "label": "Desk",
+     "height": 16,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "desk_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "E": {
+       "frame": "desk_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "N": {
+       "frame": "desk_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "W": {
+       "frame": "desk_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/chair",
+     "item": "chair",
+     "label": "Chair",
+     "height": 22,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "chair_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "E": {
+       "frame": "chair_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "N": {
+       "frame": "chair_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "W": {
+       "frame": "chair_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/sofa",
+     "item": "sofa",
+     "label": "Sofa",
+     "height": 18,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "sofa_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "E": {
+       "frame": "sofa_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "sofa_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "W": {
+       "frame": "sofa_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/bookshelf",
+     "item": "bookshelf",
+     "label": "Bookshelf",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "bookshelf_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "bookshelf_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "bookshelf_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "bookshelf_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/plant",
+     "item": "plant",
+     "label": "Fern",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "plant_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "plant_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "plant_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "plant_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/coffee_table",
+     "item": "coffee_table",
+     "label": "Coffee table",
+     "height": 10,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "coffee_table_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "E": {
+       "frame": "coffee_table_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      },
+      "N": {
+       "frame": "coffee_table_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "W": {
+       "frame": "coffee_table_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/lamp",
+     "item": "lamp",
+     "label": "Lamp",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "lamp_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "lamp_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "lamp_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "lamp_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/rug",
+     "item": "rug",
+     "label": "Rug",
+     "height": 1,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "rug_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "E": {
+       "frame": "rug_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      },
+      "N": {
+       "frame": "rug_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "W": {
+       "frame": "rug_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/tv",
+     "item": "tv",
+     "label": "Radio",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "tv_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "E": {
+       "frame": "tv_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "N": {
+       "frame": "tv_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "W": {
+       "frame": "tv_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/fireplace",
+     "item": "fireplace",
+     "label": "Fireplace",
+     "height": 32,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "fireplace_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        48
+       ]
+      },
+      "E": {
+       "frame": "fireplace_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        64
+       ]
+      },
+      "N": {
+       "frame": "fireplace_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        48
+       ]
+      },
+      "W": {
+       "frame": "fireplace_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        64
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/log_pile",
+     "item": "log_pile",
+     "label": "Log pile",
+     "height": 12,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "log_pile_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        28
+       ]
+      },
+      "E": {
+       "frame": "log_pile_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        28
+       ]
+      },
+      "N": {
+       "frame": "log_pile_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        28
+       ]
+      },
+      "W": {
+       "frame": "log_pile_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        28
+       ]
+      }
+     }
+    },
+    {
+     "id": "cabin/armchair",
+     "item": "armchair",
+     "label": "Armchair",
+     "height": 20,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "armchair_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        36
+       ]
+      },
+      "E": {
+       "frame": "armchair_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        36
+       ]
+      },
+      "N": {
+       "frame": "armchair_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        36
+       ]
+      },
+      "W": {
+       "frame": "armchair_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        36
+       ]
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "scifi": {
+   "label": "Sci-Fi Lab",
+   "atlas": "scifi",
+   "items": [
+    {
+     "id": "scifi/desk",
+     "item": "desk",
+     "label": "Desk",
+     "height": 16,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "desk_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "E": {
+       "frame": "desk_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "N": {
+       "frame": "desk_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "W": {
+       "frame": "desk_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/chair",
+     "item": "chair",
+     "label": "Pod chair",
+     "height": 22,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "chair_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "E": {
+       "frame": "chair_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "N": {
+       "frame": "chair_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "W": {
+       "frame": "chair_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/sofa",
+     "item": "sofa",
+     "label": "Sofa",
+     "height": 18,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "sofa_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "E": {
+       "frame": "sofa_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "sofa_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "W": {
+       "frame": "sofa_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/bookshelf",
+     "item": "bookshelf",
+     "label": "Bookshelf",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "bookshelf_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "bookshelf_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "bookshelf_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "bookshelf_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/plant",
+     "item": "plant",
+     "label": "Hydroponic tube",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "plant_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "plant_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "plant_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "plant_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/coffee_table",
+     "item": "coffee_table",
+     "label": "Coffee table",
+     "height": 10,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "coffee_table_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "E": {
+       "frame": "coffee_table_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      },
+      "N": {
+       "frame": "coffee_table_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "W": {
+       "frame": "coffee_table_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/lamp",
+     "item": "lamp",
+     "label": "Lamp",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "lamp_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "lamp_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "lamp_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "lamp_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/rug",
+     "item": "rug",
+     "label": "Rug",
+     "height": 1,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "rug_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "E": {
+       "frame": "rug_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      },
+      "N": {
+       "frame": "rug_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "W": {
+       "frame": "rug_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/tv",
+     "item": "tv",
+     "label": "TV",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "tv_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "E": {
+       "frame": "tv_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "N": {
+       "frame": "tv_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "W": {
+       "frame": "tv_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/server_rack",
+     "item": "server_rack",
+     "label": "Server rack",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "server_rack_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "server_rack_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "server_rack_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "server_rack_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/holo_table",
+     "item": "holo_table",
+     "label": "Holo table",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "holo_table_S",
+       "w": 2,
+       "d": 2,
+       "px": [
+        32,
+        58
+       ]
+      },
+      "E": {
+       "frame": "holo_table_E",
+       "w": 2,
+       "d": 2,
+       "px": [
+        32,
+        58
+       ]
+      },
+      "N": {
+       "frame": "holo_table_N",
+       "w": 2,
+       "d": 2,
+       "px": [
+        32,
+        58
+       ]
+      },
+      "W": {
+       "frame": "holo_table_W",
+       "w": 2,
+       "d": 2,
+       "px": [
+        32,
+        58
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/console",
+     "item": "console",
+     "label": "Console",
+     "height": 18,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "console_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "E": {
+       "frame": "console_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "console_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "W": {
+       "frame": "console_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "scifi/cryo_pod",
+     "item": "cryo_pod",
+     "label": "Cryo pod",
+     "height": 20,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "cryo_pod_S",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        52
+       ]
+      },
+      "E": {
+       "frame": "cryo_pod_E",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        36
+       ]
+      },
+      "N": {
+       "frame": "cryo_pod_N",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        52
+       ]
+      },
+      "W": {
+       "frame": "cryo_pod_W",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        36
+       ]
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "zen": {
+   "label": "Zen Garden",
+   "atlas": "zen",
+   "items": [
+    {
+     "id": "zen/desk",
+     "item": "desk",
+     "label": "Low desk",
+     "height": 16,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "desk_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "E": {
+       "frame": "desk_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "N": {
+       "frame": "desk_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "W": {
+       "frame": "desk_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/chair",
+     "item": "chair",
+     "label": "Floor cushion",
+     "height": 22,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "chair_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "E": {
+       "frame": "chair_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "N": {
+       "frame": "chair_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "W": {
+       "frame": "chair_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/sofa",
+     "item": "sofa",
+     "label": "Sofa",
+     "height": 18,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "sofa_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "E": {
+       "frame": "sofa_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "sofa_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "W": {
+       "frame": "sofa_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/bookshelf",
+     "item": "bookshelf",
+     "label": "Bookshelf",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "bookshelf_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "bookshelf_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "bookshelf_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "bookshelf_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/plant",
+     "item": "plant",
+     "label": "Bonsai",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "plant_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "plant_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "plant_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "plant_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/coffee_table",
+     "item": "coffee_table",
+     "label": "Coffee table",
+     "height": 10,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "coffee_table_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "E": {
+       "frame": "coffee_table_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      },
+      "N": {
+       "frame": "coffee_table_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "W": {
+       "frame": "coffee_table_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/lamp",
+     "item": "lamp",
+     "label": "Stone lantern",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "lamp_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "lamp_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "lamp_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "lamp_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/rug",
+     "item": "rug",
+     "label": "Rug",
+     "height": 1,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "rug_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "E": {
+       "frame": "rug_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      },
+      "N": {
+       "frame": "rug_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "W": {
+       "frame": "rug_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/tv",
+     "item": "tv",
+     "label": "TV",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "tv_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "E": {
+       "frame": "tv_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "N": {
+       "frame": "tv_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "W": {
+       "frame": "tv_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/shoji",
+     "item": "shoji",
+     "label": "Shoji screen",
+     "height": 32,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "shoji_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        48
+       ]
+      },
+      "E": {
+       "frame": "shoji_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        64
+       ]
+      },
+      "N": {
+       "frame": "shoji_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        48
+       ]
+      },
+      "W": {
+       "frame": "shoji_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        64
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/tea_table",
+     "item": "tea_table",
+     "label": "Tea table",
+     "height": 10,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "tea_table_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        26
+       ]
+      },
+      "E": {
+       "frame": "tea_table_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        26
+       ]
+      },
+      "N": {
+       "frame": "tea_table_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        26
+       ]
+      },
+      "W": {
+       "frame": "tea_table_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        26
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/bamboo",
+     "item": "bamboo",
+     "label": "Bamboo",
+     "height": 40,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "bamboo_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        56
+       ]
+      },
+      "E": {
+       "frame": "bamboo_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        56
+       ]
+      },
+      "N": {
+       "frame": "bamboo_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        56
+       ]
+      },
+      "W": {
+       "frame": "bamboo_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        56
+       ]
+      }
+     }
+    },
+    {
+     "id": "zen/koi_pond",
+     "item": "koi_pond",
+     "label": "Koi pond",
+     "height": 3,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "koi_pond_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        35
+       ]
+      },
+      "E": {
+       "frame": "koi_pond_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        51
+       ]
+      },
+      "N": {
+       "frame": "koi_pond_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        35
+       ]
+      },
+      "W": {
+       "frame": "koi_pond_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        51
+       ]
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "arcade": {
+   "label": "Retro Arcade",
+   "atlas": "arcade",
+   "items": [
+    {
+     "id": "arcade/desk",
+     "item": "desk",
+     "label": "Gaming desk",
+     "height": 16,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "desk_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "E": {
+       "frame": "desk_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      },
+      "N": {
+       "frame": "desk_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        32
+       ]
+      },
+      "W": {
+       "frame": "desk_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        48
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/chair",
+     "item": "chair",
+     "label": "Bean bag",
+     "height": 22,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "chair_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "E": {
+       "frame": "chair_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "N": {
+       "frame": "chair_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      },
+      "W": {
+       "frame": "chair_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        38
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/sofa",
+     "item": "sofa",
+     "label": "Sofa",
+     "height": 18,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "sofa_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "E": {
+       "frame": "sofa_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "sofa_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        34
+       ]
+      },
+      "W": {
+       "frame": "sofa_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/bookshelf",
+     "item": "bookshelf",
+     "label": "Bookshelf",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "bookshelf_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "bookshelf_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "bookshelf_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "bookshelf_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/plant",
+     "item": "plant",
+     "label": "Cactus",
+     "height": 30,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "plant_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "E": {
+       "frame": "plant_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "N": {
+       "frame": "plant_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      },
+      "W": {
+       "frame": "plant_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        46
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/coffee_table",
+     "item": "coffee_table",
+     "label": "Coffee table",
+     "height": 10,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "coffee_table_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "E": {
+       "frame": "coffee_table_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      },
+      "N": {
+       "frame": "coffee_table_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        26
+       ]
+      },
+      "W": {
+       "frame": "coffee_table_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        42
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/lamp",
+     "item": "lamp",
+     "label": "Lamp",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "lamp_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "lamp_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "lamp_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "lamp_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/rug",
+     "item": "rug",
+     "label": "Rug",
+     "height": 1,
+     "flat": true,
+     "views": {
+      "S": {
+       "frame": "rug_S",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "E": {
+       "frame": "rug_E",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      },
+      "N": {
+       "frame": "rug_N",
+       "w": 3,
+       "d": 2,
+       "px": [
+        48,
+        33
+       ]
+      },
+      "W": {
+       "frame": "rug_W",
+       "w": 2,
+       "d": 3,
+       "px": [
+        32,
+        49
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/tv",
+     "item": "tv",
+     "label": "TV",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "tv_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "E": {
+       "frame": "tv_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "N": {
+       "frame": "tv_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "W": {
+       "frame": "tv_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/arcade_cabinet",
+     "item": "arcade_cabinet",
+     "label": "Arcade cabinet",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "arcade_cabinet_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "arcade_cabinet_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "arcade_cabinet_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "arcade_cabinet_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/pinball",
+     "item": "pinball",
+     "label": "Pinball",
+     "height": 26,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "pinball_S",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "E": {
+       "frame": "pinball_E",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      },
+      "N": {
+       "frame": "pinball_N",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        58
+       ]
+      },
+      "W": {
+       "frame": "pinball_W",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        42
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/vending",
+     "item": "vending",
+     "label": "Vending machine",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "vending_S",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "E": {
+       "frame": "vending_E",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "N": {
+       "frame": "vending_N",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      },
+      "W": {
+       "frame": "vending_W",
+       "w": 1,
+       "d": 1,
+       "px": [
+        16,
+        50
+       ]
+      }
+     }
+    },
+    {
+     "id": "arcade/neon_sign",
+     "item": "neon_sign",
+     "label": "Neon sign",
+     "height": 34,
+     "flat": false,
+     "views": {
+      "S": {
+       "frame": "neon_sign_S",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        50
+       ]
+      },
+      "E": {
+       "frame": "neon_sign_E",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        66
+       ]
+      },
+      "N": {
+       "frame": "neon_sign_N",
+       "w": 2,
+       "d": 1,
+       "px": [
+        32,
+        50
+       ]
+      },
+      "W": {
+       "frame": "neon_sign_W",
+       "w": 1,
+       "d": 2,
+       "px": [
+        16,
+        66
+       ]
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  }
+ },
+ "avatars": {
+  "presets": [
+   {
+    "id": "ada",
+    "name": "Ada"
+   },
+   {
+    "id": "bo",
+    "name": "Bo"
+   },
+   {
+    "id": "cy",
+    "name": "Cy"
+   },
+   {
+    "id": "dee",
+    "name": "Dee"
+   },
+   {
+    "id": "eli",
+    "name": "Eli"
+   },
+   {
+    "id": "fox",
+    "name": "Fox"
+   },
+   {
+    "id": "gus",
+    "name": "Gus"
+   },
+   {
+    "id": "hana",
+    "name": "Hana"
+   }
+  ],
+  "frameSize": [
+   16,
+   42
+  ],
+  "origin": [
+   0.5,
+   0.8214285714285714
+  ],
+  "walkFrames": 3
+ }
+}

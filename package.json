@@ -1,0 +1,26 @@
+{
+  "name": "pixel-office",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Peer-to-peer pixel-art office world",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "assets": "python tools/assets/build.py --preview",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "phaser": "^4.2.1",
+    "trystero": "^0.25.4",
+    "y-indexeddb": "^9.0.12",
+    "yjs": "^13.6.33"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1"
+  }
+}
