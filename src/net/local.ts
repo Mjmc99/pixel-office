@@ -32,7 +32,8 @@ export class LocalTransport implements Transport {
     window.addEventListener('pagehide', () => this.leave())
   }
 
-  private post(f: Frame) { this.bc.postMessage(f) }
+  private closed = false
+  private post(f: Frame) { if (!this.closed) this.bc.postMessage(f) }
 
   private see(id: string) {
     const isNew = !this.lastSeen.has(id)
@@ -65,7 +66,9 @@ export class LocalTransport implements Transport {
   peers() { return [...this.lastSeen.keys()] }
   leave() {
     clearInterval(this.timer)
+    if (this.closed) return
     this.post({ k: 'bye', from: this.selfId })
+    this.closed = true
     this.bc.close()
   }
 }

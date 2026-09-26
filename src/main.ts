@@ -6,6 +6,9 @@ import { TrysteroTransport } from './net/trystero'
 import type { Transport } from './net/transport'
 import { WorldScene } from './scenes/WorldScene'
 import { Hud } from './ui/hud'
+import { Call } from './media/call'
+import { DEFAULT_ZONES, type Zone } from './media/proximity'
+import { userId } from './world/identity'
 import { starterLayout } from './world/room'
 import type { Manifest, Placed } from './world/types'
 
@@ -38,6 +41,7 @@ async function boot() {
     ? new LocalTransport(world.id)
     : new TrysteroTransport(world.id, world.secret)
 
+  const uid = userId()
   const sync = new DocSync(net, world.id)
   await sync.whenLoaded()
   if (world.created && sync.doc.getMap('decor').size === 0) {
@@ -45,6 +49,9 @@ async function boot() {
       const decor = sync.doc.getMap<Placed>('decor')
       starterLayout().forEach((p, i) => decor.set('s' + i, p))
       sync.doc.getMap<string>('room').set('theme', 'office')
+      sync.doc.getMap<string>('room').set('owner', uid)
+      const zones = sync.doc.getMap<Zone>('zones')
+      for (const z of DEFAULT_ZONES) zones.set(z.id, z)
     })
   }
 
@@ -55,7 +62,8 @@ async function boot() {
   })
   if (params.get('name')) me.name = params.get('name')!
 
-  const hud = new Hud(manifest, net, world)
+  const call = new Call(net)
+  const hud = new Hud(manifest, net, world, call)
   new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
@@ -66,10 +74,10 @@ async function boot() {
     callbacks: {
       postBoot: (game) => {
         game.scene.add('world', WorldScene, true, {
-          manifest, net, doc: sync.doc, me,
+          manifest, net, doc: sync.doc, me, call, uid,
           onReady: (s: WorldScene) => {
             hud.attach(s, (name, avatar) => { s.setMe(name, avatar); save('po:me', { name, avatar }) })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc }
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call }
           },
         })
       },

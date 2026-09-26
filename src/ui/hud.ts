@@ -1,5 +1,7 @@
 import type { Transport } from '../net/transport'
 import type { WorldScene } from '../scenes/WorldScene'
+import type { Call } from '../media/call'
+import { Tiles } from './tiles'
 import type { Manifest } from '../world/types'
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', html = '') => {
@@ -20,10 +22,15 @@ export class Hud {
   private status = el('div', 'status')
   private decoBtn = el('button', 'btn', 'Decorate <kbd>B</kbd>')
   private chatIn = el('input', 'chat') as HTMLInputElement
+  private micBtn = el('button', 'btn media', 'Mic off <kbd>M</kbd>')
+  private camBtn = el('button', 'btn media', 'Cam off <kbd>V</kbd>')
+  private zoneEl = el('div', 'zone hidden')
+  private errEl = el('div', 'err hidden')
+  private tiles?: Tiles
   private themeTab = 'office'
   private thumbs = new Map<string, string>()
 
-  constructor(private manifest: Manifest, private net: Transport, private world: { id: string }) {}
+  constructor(private manifest: Manifest, private net: Transport, private world: { id: string }, private call: Call) {}
 
   attach(scene: WorldScene, onMe: (name: string, avatar: string) => void) {
     this.scene = scene
@@ -64,11 +71,40 @@ export class Hud {
 
     // ---- toolbar
     const bar = el('div', 'toolbar')
-    this.decoBtn.onclick = () => scene.setDecorating(!scene.decorating)
+    this.decoBtn.onclick = () => {
+      scene.setDecorating(!scene.decorating)
+      if (scene.decorating && this.themeTab === 'zones') scene.setZoneMode(true)
+    }
     const chatBtn = el('button', 'btn', 'Chat <kbd>Enter</kbd>')
     chatBtn.onclick = () => this.openChat()
-    bar.append(this.decoBtn, chatBtn, this.status)
-    this.root.append(bar)
+    this.micBtn.onclick = () => void this.call.devices.setMic(!this.call.devices.micOn)
+    this.camBtn.onclick = () => void this.call.devices.setCam(!this.call.devices.camOn)
+    bar.append(this.micBtn, this.camBtn, this.decoBtn, chatBtn, this.status)
+    this.root.append(bar, this.zoneEl, this.errEl)
+    this.call.devices.onChange.on(() => this.refreshMedia())
+    window.addEventListener('keydown', (e) => {
+      if (this.scene.typing || e.repeat || e.ctrlKey || e.metaKey) return
+      if (e.key === 'm' || e.key === 'M') this.micBtn.click()
+      if (e.key === 'v' || e.key === 'V') this.camBtn.click()
+    })
+
+    // ---- call tiles
+    this.tiles = new Tiles(this.call)
+    const avatarUrl = (preset: string) => this.thumb('avatars', `${preset}_S_0`)
+    setInterval(() => {
+      const info = scene.callInfo()
+      const d = this.call.devices
+      this.tiles!.update(
+        { id: 'me', name: 'You', cam: d.camOn, mic: d.micOn, avatarUrl: avatarUrl(info.me.preset), speaking: d.level > 0.04 },
+        info.peers.map((p) => ({ ...p, avatarUrl: avatarUrl(p.preset) })),
+      )
+      const n = info.peers.length
+      this.zoneEl.classList.toggle('hidden', !info.zone && n === 0)
+      this.zoneEl.innerHTML = info.zone
+        ? `In <b>${esc(info.zone)}</b> · ${n ? `talking with ${n}` : 'nobody else here'}`
+        : n ? `Nearby: talking with <b>${n}</b>` : ''
+    }, 200)
+    this.refreshMedia()
 
     // ---- chat
     this.chatIn.placeholder = 'Say something… (Enter to send, Esc to cancel)'
@@ -98,6 +134,16 @@ export class Hud {
     this.refresh()
   }
 
+  private refreshMedia() {
+    const d = this.call.devices
+    this.micBtn.innerHTML = `${d.micOn ? 'Mic on' : 'Mic off'} <kbd>M</kbd>`
+    this.camBtn.innerHTML = `${d.camOn ? 'Cam on' : 'Cam off'} <kbd>V</kbd>`
+    this.micBtn.classList.toggle('live', d.micOn)
+    this.camBtn.classList.toggle('live', d.camOn)
+    this.errEl.textContent = d.error
+    this.errEl.classList.toggle('hidden', !d.error)
+  }
+
   private guardTyping(inp: HTMLInputElement) {
     inp.addEventListener('focus', () => (this.scene.typing = true))
     inp.addEventListener('blur', () => (this.scene.typing = false))
@@ -123,19 +169,48 @@ export class Hud {
     return this.thumbs.get(k)!
   }
 
+  private zoneSig = ''
+
   private renderTabs() {
     this.tabs.innerHTML = ''
     for (const [tid, th] of Object.entries(this.manifest.themes)) {
       const b = el('button', 'tab' + (tid === this.themeTab ? ' on' : ''), th.label)
-      b.onclick = () => { this.themeTab = tid; this.renderTabs(); this.renderGrid() }
+      b.onclick = () => { this.themeTab = tid; this.scene.setZoneMode(false); this.renderTabs(); this.renderGrid() }
       this.tabs.append(b)
     }
-    const use = el('button', 'btn small', 'Use this style for walls + floor')
-    use.onclick = () => this.scene.setTheme(this.themeTab)
-    this.tabs.append(use)
+    if (this.scene.isOwner) {
+      const z = el('button', 'tab zones-tab' + (this.themeTab === 'zones' ? ' on' : ''), 'Call zones')
+      z.onclick = () => { this.themeTab = 'zones'; this.scene.setZoneMode(true); this.renderTabs(); this.renderGrid() }
+      this.tabs.append(z)
+    }
+    if (this.themeTab !== 'zones') {
+      const use = el('button', 'btn small', 'Use this style for walls + floor')
+      use.onclick = () => this.scene.setTheme(this.themeTab)
+      this.tabs.append(use)
+    }
+  }
+
+  private renderZones() {
+    this.grid.innerHTML = ''
+    this.zoneSig = JSON.stringify(this.scene.zones)
+    const help = el('div', 'zone-help', 'Drag on the floor to draw a call zone. Everyone inside a zone is in one call; walking out leaves it. Right-click a zone to delete it.')
+    this.grid.append(help)
+    for (const z of this.scene.zones) {
+      const row = el('div', 'zone-row')
+      const inp = el('input') as HTMLInputElement
+      inp.value = z.name
+      inp.maxLength = 32
+      this.guardTyping(inp)
+      inp.onchange = () => this.scene.renameZone(z.id, inp.value.trim())
+      const del = el('button', 'btn small', 'Delete')
+      del.onclick = () => this.scene.deleteZone(z.id)
+      row.append(inp, el('span', 'zsize', `${z.w}×${z.h}`), del)
+      this.grid.append(row)
+    }
   }
 
   private renderGrid() {
+    if (this.themeTab === 'zones') return this.renderZones()
     this.grid.innerHTML = ''
     for (const it of this.manifest.themes[this.themeTab].items) {
       const b = el('button', 'item' + (this.scene.selectedItem === it.id ? ' on' : ''))
@@ -156,11 +231,15 @@ export class Hud {
       : `Just you here. ${this.net.kind === 'p2p' ? 'Send the invite link to a friend.' : 'Open this link in another tab.'}`
     this.decoBtn.classList.toggle('on', s.decorating)
     this.palette.classList.toggle('hidden', !s.decorating)
-    this.status.innerHTML = s.decorating
+    if (this.themeTab === 'zones' && s.decorating && !s.zoneMode && s.isOwner) s.setZoneMode(true)
+    if (this.themeTab === 'zones' && s.decorating && JSON.stringify(s.zones) !== this.zoneSig && !this.grid.contains(document.activeElement)) this.renderZones()
+    this.status.innerHTML = s.zoneMode
+      ? 'Drag to draw a call zone · right-click a zone to delete'
+      : s.decorating
       ? s.selectedItem
         ? `Placing <b>${esc(s.defs.get(s.selectedItem)?.label ?? '')}</b> facing <b>${s.facing}</b> · <kbd>R</kbd> rotate · click place · right-click cancel`
         : 'Pick an item below · hover furniture: <kbd>R</kbd> rotate, click move, right-click delete'
-      : '<kbd>WASD</kbd> move'
+      : '<kbd>WASD</kbd> move · walk up to people or into a zone to talk'
     for (const b of this.grid.querySelectorAll<HTMLButtonElement>('.item')) {
       b.classList.toggle('on', b.title === s.defs.get(s.selectedItem ?? '')?.label && s.selectedItem?.startsWith(this.themeTab + '/') === true)
     }

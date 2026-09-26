@@ -22,4 +22,4 @@ export interface Manifest {
 export interface Placed { item: string; x: number; y: number; f: Facing; by: string }
 
 /** What each peer broadcasts about itself ~10x/second while moving. */
-export interface Presence { x: number; y: number; f: Facing; m: boolean; a: string; n: string }
+export interface Presence { x: number; y: number; f: Facing; m: boolean; a: string; n: string; mic?: boolean; cam?: boolean }
