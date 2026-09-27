@@ -36,9 +36,14 @@ every push to `main` once the tests pass.
     aseprite.exe -b input.aseprite --sheet out.png --data out.json --format json-array
 - Lua scripts should be self-contained, save their output file explicitly,
   and print a short summary so batch runs show what happened.
-- Game assets for pixel-office are NOT made in Aseprite: furniture/floors/walls
-  come from tools/assets (Python voxel renderer, `npm run assets`), avatars are
-  rendered in-browser from src/avatars/. Style: oblique 3/4 view (screen_y = y - z),
-  16 px tiles, every placeable asset in 4 facings (S/E/N/W), 1 px dark outline.
+- Game assets: the original five furniture themes (office, cabin, scifi, zen, arcade)
+  come from tools/assets (Python voxel renderer, `npm run assets`). The floor-layout
+  themes (starship, submarine, apartment, tavern) are drawn by Aseprite Lua scripts in
+  tools/aseprite/ (see its README): `tools\aseprite\draw.cmd` runs Aseprite headless and
+  packs the result with `python tools/assets/pack_aseprite.py`. Without Aseprite,
+  `python tools/aseprite/fake_aseprite.py tools/aseprite/draw_layouts.lua` gives the same
+  PNGs. Avatars are rendered in-browser from src/avatars/. Style for all of it: oblique
+  3/4 view (screen_y = y - z), 16 px tiles, every placeable asset in 4 facings
+  (S/E/N/W), 1 px dark outline.
 - Hand-made sprites go in through the in-game Custom tab: PNG, 1 frame or
   4 frames laid out S/E/N/W, 30 KB max.
