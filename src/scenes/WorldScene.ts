@@ -1,3 +1,5 @@
+import { avatarTexture, ORIGIN as AV_ORIGIN } from '../avatars/avatars'
+import { toRecipe } from '../avatars/parts'
 import Phaser from 'phaser'
 import type { Transport } from '../net/transport'
 import type { Call } from '../media/call'
@@ -133,7 +135,6 @@ export class WorldScene extends Phaser.Scene {
       this.load.atlas(tid, `assets/${th.atlas}.png`, `assets/${th.atlas}.json`)
       for (const it of th.items) this.defs.set(it.id, it)
     }
-    this.load.atlas('avatars', 'assets/avatars.png', 'assets/avatars.json')
   }
 
   create() {
@@ -388,8 +389,8 @@ export class WorldScene extends Phaser.Scene {
 
   // ------------------------------------------------------------------ avatars
   private makeAvatar(preset: string, name: string, x: number, y: number): Avatar {
-    const m = this.deps.manifest.avatars
-    const sprite = this.add.image(x, y, 'avatars', `${preset}_S_0`).setOrigin(m.origin[0], m.origin[1])
+    preset = toRecipe(preset)
+    const sprite = this.add.image(x, y, avatarTexture(this, preset), 'S_0').setOrigin(AV_ORIGIN[0], AV_ORIGIN[1])
     const label = this.add.text(x, y, name, {
       fontFamily: 'monospace', fontSize: '24px', color: '#ffffff', backgroundColor: '#00000088', padding: { x: 4, y: 1 },
     }).setOrigin(0.5, 1).setScale(0.25).setResolution(2)
@@ -404,7 +405,9 @@ export class WorldScene extends Phaser.Scene {
   private drawAvatar(a: Avatar, dt: number) {
     a.animT = a.moving ? a.animT + dt : 0
     const fr = a.moving ? WALK[Math.floor(a.animT / 130) % WALK.length] : 0
-    a.sprite.setFrame(`${a.preset}_${a.facing}_${fr}`)
+    const key = avatarTexture(this, a.preset)
+    if (a.sprite.texture.key !== key) a.sprite.setTexture(key, `${a.facing}_${fr}`)
+    else a.sprite.setFrame(`${a.facing}_${fr}`)
     a.sprite.setDepth(a.sprite.y)
     const text = this.labelText(a)
     if (a.label.text !== text) a.label.setText(text)
@@ -453,7 +456,7 @@ export class WorldScene extends Phaser.Scene {
     }
     a.tx = d.x; a.ty = d.y; a.facing = d.f; a.moving = d.m; a.seen = Date.now()
     a.mic = !!d.mic; a.cam = !!d.cam
-    a.preset = d.a
+    if (typeof d.a === 'string' && d.a !== a.preset) a.preset = toRecipe(d.a.slice(0, 80))
     const floor = d.fl ?? 0
     if (a.floor !== floor) { a.floor = floor; a.sprite.setPosition(d.x, d.y) }
     if (a.name !== d.n) { a.name = String(d.n).slice(0, 24); this.onChange() }
@@ -470,7 +473,7 @@ export class WorldScene extends Phaser.Scene {
 
   setMe(name: string, avatar: string) {
     this.deps.me = { name, avatar }
-    this.me.preset = avatar
+    this.me.preset = toRecipe(avatar)
     this.me.name = name
     this.lastSentState = ''
   }

@@ -71,6 +71,7 @@ Add `?net=local` to the URL to use the offline, same-browser transport (no netwo
 | Click | Place, or pick up furniture to move it |
 | Right-click / Delete | Remove furniture under the cursor, or cancel placing |
 | Esc | Cancel / leave decorate mode |
+| **Customize** (top right) or click your face | Character creator: body, hair, outfit, accessories |
 | People / Settings (world card) | See who's here; owners make mods and ban; mods add floors; back up your identity key |
 | Stand on the elevator pad | Pick a floor |
 | E | Use the object you're next to (whiteboard, notes, TV, portal settings) |
@@ -94,6 +95,10 @@ src/
   media/audio.ts      Web Audio mixer: per-voice volume and stereo pan
   media/call.ts       Glue: positions + zones -> calls
   ui/tiles.ts         Video / avatar tiles for everyone you're talking to
+  ui/creator.ts       Character creator (turning preview, part chips, colour swatches)
+  avatars/voxel.ts    Browser port of the voxel renderer (same shading and outlines as the Python one)
+  avatars/parts.ts    Avatar parts, colours, recipe encode/decode, the chibi model builder
+  avatars/avatars.ts  Recipe -> 12-frame sprite sheet (4 facings x 3 walk frames), cached textures and thumbnails
   world/building.ts   The floor plan: corridors, commons, office slots, elevator
   world/crypto.ts     Ed25519 identity, signing, canonical JSON, key backup
   world/state.ts      Signed op log (Y.Array) replayed into the world view with permissions
@@ -208,6 +213,25 @@ npm run assets       # rebuilds public/assets/* and preview sheets in tools/asse
 Themes: Modern Office, Cozy Cabin, Sci-Fi Lab, Zen Garden, Retro Arcade (`themes.py`
 palettes). To add a piece, write a builder in `models.py` and register it in `SHARED` or
 `SPECIALS`. Output PNGs open fine in Aseprite for hand touch-ups.
+
+### Characters
+
+Avatars are built in the browser from a short recipe such as `v1.3.4.1.1.5.9.0.6.12.0.2.0.0`
+(skin, hair style, hair colour, top, top colour, trim, bottoms, bottoms colour, shoes,
+facial hair, eyewear, headwear, accessory colour). The recipe is what goes over the network, and
+every peer renders it with `src/avatars/voxel.ts`, so there are no image downloads and bad
+values fall back to safe defaults. The options are:
+
+- 10 skin tones
+- 10 hair styles in 13 colours
+- 6 tops, 3 bottoms, and 16 cloth colours for top, trim, bottoms and shoes
+- facial hair, 5 eyewear and 6 headwear options
+
+That makes millions of combinations. The original 8 presets (`ada`…`hana`) still resolve to
+recipes. To add a part, add a name to its list in `parts.ts` and a case in `buildAvatar`.
+
+![Random characters in all four facings](docs/avatars-grid.png)
+![The character creator](docs/creator.png)
 
 ## Test
 

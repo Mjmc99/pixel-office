@@ -5,6 +5,9 @@ import type { WorldState } from '../world/state'
 import { exportIdentity, importIdentity, shortKey } from '../world/crypto'
 import type { Manifest } from '../world/types'
 import { Tiles } from './tiles'
+import { Creator } from './creator'
+import { avatarThumb } from '../avatars/avatars'
+import { toRecipe } from '../avatars/parts'
 
 export const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', html = '') => {
   const e = document.createElement(tag)
@@ -28,6 +31,8 @@ export class Hud {
   private status = el('div', 'status')
   private decoBtn = el('button', 'btn', 'Decorate <kbd>B</kbd>')
   private chatIn = el('input', 'chat') as HTMLInputElement
+  /** Opens the character creator (set once attached). */
+  openCreator = () => {}
   private micBtn = el('button', 'btn media', 'Mic off <kbd>M</kbd>')
   private camBtn = el('button', 'btn media', 'Cam off <kbd>V</kbd>')
   private zoneEl = el('div', 'zone hidden')
@@ -77,21 +82,24 @@ export class Hud {
     const nameIn = el('input', 'name') as HTMLInputElement
     nameIn.value = scene.deps.me.name
     nameIn.maxLength = 24
-    const presets = this.manifest.avatars.presets
-    let ai = Math.max(0, presets.findIndex((p) => p.id === scene.deps.me.avatar))
+    let recipe = toRecipe(scene.deps.me.avatar)
     const face = el('img', 'face') as HTMLImageElement
-    const prev = el('button', 'btn small', '&lsaquo;'), next = el('button', 'btn small', '&rsaquo;')
+    face.title = 'Customize your character'
+    const custom = el('button', 'btn small customize', 'Customize')
     const apply = () => {
-      face.src = this.thumb('avatars', `${presets[ai].id}_S_0`)
-      onMe(nameIn.value.trim() || 'Guest', presets[ai].id)
+      face.src = avatarThumb(recipe)
+      onMe(nameIn.value.trim() || 'Guest', recipe)
     }
-    prev.onclick = () => { ai = (ai + presets.length - 1) % presets.length; apply() }
-    next.onclick = () => { ai = (ai + 1) % presets.length; apply() }
+    const creator = new Creator(this.root, (b) => (this.scene.typing = b))
+    const openCreator = () => creator.show(recipe, (r) => { recipe = r; apply() })
+    custom.onclick = openCreator
+    face.onclick = openCreator
+    this.openCreator = openCreator
     nameIn.onchange = apply
     this.guardTyping(nameIn)
-    idc.append(prev, face, next, nameIn)
+    idc.append(face, nameIn, custom)
     this.root.append(idc)
-    face.src = this.thumb('avatars', `${presets[ai].id}_S_0`)
+    face.src = avatarThumb(recipe)
 
     // ---- toolbar
     const bar = el('div', 'toolbar')
@@ -114,7 +122,7 @@ export class Hud {
 
     // ---- call tiles
     this.tiles = new Tiles(this.call)
-    const avatarUrl = (preset: string) => this.thumb('avatars', `${preset}_S_0`)
+    const avatarUrl = (recipe: string) => avatarThumb(recipe)
     setInterval(() => {
       const info = scene.callInfo()
       const d = this.call.devices
