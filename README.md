@@ -263,6 +263,8 @@ browser still verifies the log and packages itself. Several `--invite` flags anc
 worlds. To run it as a service, use `pm2 start anchor/anchor.mjs -- --invite …` or a systemd
 unit.
 
+An anchor started while people are already in a world can take up to a minute to join them
+(peers re-announce every 60 s); anyone arriving later connects to it right away.
 Add `--stun off` when the anchor and its visitors share a machine or LAN: it skips public STUN
 lookups and starts much faster. Add `--verbose` to log relay and WebRTC connection steps.
 
