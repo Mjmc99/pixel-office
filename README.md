@@ -44,6 +44,17 @@ Built so far:
   Figma, Google Docs/Slides, Vimeo, Loom and Twitch links are rewritten to their embed forms)
   and **Open together** (for sites that block embedding: everyone nearby gets a one-click banner).
 
+- **Phase 8**: floor layouts. The owner or a mod can turn any floor into a **Starship**
+  (bridge, mess hall, cargo bay, warp core, 6 crew cabins), a **Submarine** (control room with
+  periscope and sonar, galley, torpedo room, 4 bunk rooms), a **Neon Apartment** (city-view
+  living room, kitchen bar, balcony, 3 bedrooms) or an **Adventurer's Hall** for tabletop/D&D
+  nights (a big gaming table with minis and dice, banners, torches, no offices), or back into
+  the office building (Settings > Floors). Each comes furnished with its own call zones. The
+  cabins, bunk rooms and bedrooms work like offices. All of its art is drawn by Aseprite Lua
+  scripts in `tools/aseprite/`.
+
+![Choosing a floor layout](docs/layouts.png)
+
 ## Run it
 
 **Windows:** double-click `play.cmd`. It installs Node.js if you don't have it, then opens
@@ -76,6 +87,7 @@ Add `?net=local` to the URL to use the offline, same-browser transport (no netwo
 | Stand on the elevator pad | Pick a floor |
 | E | Use the object you're next to (whiteboard, notes, TV, portal settings) |
 | **Offices** (world card) | **New office: pick a spot** zooms out to the floor map: click any green (free) office. **Move…** does the same for an office you have, and everything inside comes along. Also: claim where you stand, rename, pick floor and wall style, share or remove; re-place removed offices or ones from other worlds; mods approve/remove/move |
+| Settings > **Floors** (owner/mods) | Pick this floor's layout: office building, starship, submarine, neon apartment or adventurer's hall |
 | Decorate > **My office** | One-click wall and floor styles for your own office (just yours; everyone picks their own) |
 | Decorate > **Call zones** (owner/mods) | Drag on the floor to draw a zone; rename or delete it in the list, or right-click it |
 

@@ -129,6 +129,10 @@ def build(preview: bool):
             PREVIEW.mkdir(exist_ok=True)
             preview_sheet(tid, items, frames).save(PREVIEW / f"{tid}.png")
 
+    # themes drawn in Aseprite (tools/aseprite/draw_layouts.lua)
+    from pack_aseprite import themes as aseprite_themes
+    manifest["themes"].update(aseprite_themes())
+
     av_sheet, av_json, av_meta = build_avatars()
     av_sheet.save(OUT / "avatars.png")
     (OUT / "avatars.json").write_text(json.dumps({"frames": av_json, "meta": {

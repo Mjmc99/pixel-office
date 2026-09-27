@@ -210,3 +210,13 @@ video.tvlayer { object-fit: contain; background: #000; }
 .wallprev, .floorprev { width: 64px; height: 48px; background-repeat: repeat; image-rendering: pixelated; border-radius: 2px; }
 .wallprev { background-size: 16px 48px; }
 .floorprev { background-size: 32px 32px; }
+
+/* floor layout chooser */
+.layouts-modal .card { max-width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 40px); overflow-y: auto; }
+.layout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.layout-card { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; padding: 8px; font: inherit;
+  color: var(--ink); background: #15141b; border: 2px solid var(--line); border-radius: 6px; cursor: pointer; }
+.layout-card:hover { border-color: #5fd38d; }
+.layout-card.on { border-color: var(--accent); }
+.layout-card .tag { font-size: 11px; }
+.layout-map { image-rendering: pixelated; max-width: 100%; border-radius: 3px; align-self: center; }

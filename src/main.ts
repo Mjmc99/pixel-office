@@ -16,6 +16,7 @@ import type { Manifest } from './world/types'
 import { Rooms } from './rooms/rooms'
 import { tokenToPackage } from './rooms/package'
 import { OfficePanel } from './ui/offices'
+import { LayoutPicker } from './ui/layouts'
 import { ObjectPanels } from './objects/panels'
 import { Importer } from './objects/importer'
 import { CodeRunner } from './code/runner'
@@ -153,6 +154,8 @@ async function boot() {
             s.extraInteractable = (t) => runner.active && t.source === 'room'
             s.onInteract = (t) => { if (kindOf(t.item)) objects.open(t); else runner.interact(t) }
             hud.onOffices = () => offices.toggle()
+            const layouts = new LayoutPicker(hud, s, state)
+            hud.onLayouts = (f) => layouts.open(f)
             if (token) void tokenToPackage(token).then((pkg) => pkg && offices.prompt(pkg))
             // links opened in an already-running tab only change the #fragment
             window.addEventListener('hashchange', () => {
@@ -161,7 +164,7 @@ async function boot() {
               const t = roomToken()
               if (t) void tokenToPackage(t).then((pkg) => pkg && offices.prompt(pkg))
             })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer, runner, editor, screens, hud, avatars: { avatarSheet, avatarThumb, encodeLook, decodeLook, suggestLook, toRecipe } }
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, layouts, objects, importer, runner, editor, screens, hud, avatars: { avatarSheet, avatarThumb, encodeLook, decodeLook, suggestLook, toRecipe } }
           },
         })
       },

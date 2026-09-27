@@ -1,0 +1,551 @@
+{
+ "floors": ["floor0_0", "floor0_1", "floor1_0", "floor1_1"],
+ "id": "tavern",
+ "items": [{
+   "flat": false,
+   "height": 18,
+   "id": "tavern/game_table",
+   "item": "game_table",
+   "label": "Gaming table",
+   "views": {
+    "E": {
+     "d": 4,
+     "frame": "game_table_E",
+     "px": [48, 82],
+     "w": 3
+    },
+    "N": {
+     "d": 3,
+     "frame": "game_table_N",
+     "px": [64, 66],
+     "w": 4
+    },
+    "S": {
+     "d": 3,
+     "frame": "game_table_S",
+     "px": [64, 66],
+     "w": 4
+    },
+    "W": {
+     "d": 4,
+     "frame": "game_table_W",
+     "px": [48, 82],
+     "w": 3
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 22,
+   "id": "tavern/chair",
+   "item": "chair",
+   "label": "Wooden chair",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "chair_E",
+     "px": [16, 38],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "chair_N",
+     "px": [16, 38],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "chair_S",
+     "px": [16, 38],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "chair_W",
+     "px": [16, 38],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 34,
+   "id": "tavern/bookshelf",
+   "item": "bookshelf",
+   "label": "Tome shelf",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "bookshelf_E",
+     "px": [16, 66],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "bookshelf_N",
+     "px": [32, 50],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "bookshelf_S",
+     "px": [32, 50],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "bookshelf_W",
+     "px": [16, 66],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 26,
+   "id": "tavern/brazier",
+   "item": "brazier",
+   "label": "Brazier",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "brazier_E",
+     "px": [16, 42],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "brazier_N",
+     "px": [16, 42],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "brazier_S",
+     "px": [16, 42],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "brazier_W",
+     "px": [16, 42],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 36,
+   "id": "tavern/torch",
+   "item": "torch",
+   "label": "Torch stand",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "torch_E",
+     "px": [16, 52],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "torch_N",
+     "px": [16, 52],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "torch_S",
+     "px": [16, 52],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "torch_W",
+     "px": [16, 52],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 40,
+   "id": "tavern/banner",
+   "item": "banner",
+   "label": "Banner",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "banner_E",
+     "px": [16, 56],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "banner_N",
+     "px": [16, 56],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "banner_S",
+     "px": [16, 56],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "banner_W",
+     "px": [16, 56],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 16,
+   "id": "tavern/chest",
+   "item": "chest",
+   "label": "Treasure chest",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "chest_E",
+     "px": [16, 32],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "chest_N",
+     "px": [16, 32],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "chest_S",
+     "px": [16, 32],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "chest_W",
+     "px": [16, 32],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 38,
+   "id": "tavern/armor",
+   "item": "armor",
+   "label": "Suit of armor",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "armor_E",
+     "px": [16, 54],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "armor_N",
+     "px": [16, 54],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "armor_S",
+     "px": [16, 54],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "armor_W",
+     "px": [16, 54],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 20,
+   "id": "tavern/barrel",
+   "item": "barrel",
+   "label": "Barrel",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "barrel_E",
+     "px": [16, 36],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "barrel_N",
+     "px": [16, 36],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "barrel_S",
+     "px": [16, 36],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "barrel_W",
+     "px": [16, 36],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 28,
+   "id": "tavern/candelabra",
+   "item": "candelabra",
+   "label": "Candelabra",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "candelabra_E",
+     "px": [16, 44],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "candelabra_N",
+     "px": [16, 44],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "candelabra_S",
+     "px": [16, 44],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "candelabra_W",
+     "px": [16, 44],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 44,
+   "id": "tavern/statue",
+   "item": "statue",
+   "label": "Dragon statue",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "statue_E",
+     "px": [32, 76],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "statue_N",
+     "px": [32, 76],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "statue_S",
+     "px": [32, 76],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "statue_W",
+     "px": [32, 76],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 32,
+   "id": "tavern/weapon_rack",
+   "item": "weapon_rack",
+   "label": "Weapon rack",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "weapon_rack_E",
+     "px": [16, 64],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "weapon_rack_N",
+     "px": [32, 48],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "weapon_rack_S",
+     "px": [32, 48],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "weapon_rack_W",
+     "px": [16, 64],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "tavern/potion_shelf",
+   "item": "potion_shelf",
+   "label": "Potion shelf",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "potion_shelf_E",
+     "px": [16, 62],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "potion_shelf_N",
+     "px": [32, 46],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "potion_shelf_S",
+     "px": [32, 46],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "potion_shelf_W",
+     "px": [16, 62],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 1,
+   "id": "tavern/rug",
+   "item": "rug",
+   "label": "Rug",
+   "views": {
+    "E": {
+     "d": 3,
+     "frame": "rug_E",
+     "px": [32, 49],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "rug_N",
+     "px": [48, 33],
+     "w": 3
+    },
+    "S": {
+     "d": 2,
+     "frame": "rug_S",
+     "px": [48, 33],
+     "w": 3
+    },
+    "W": {
+     "d": 3,
+     "frame": "rug_W",
+     "px": [32, 49],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 32,
+   "id": "tavern/noteboard",
+   "item": "noteboard",
+   "label": "Quest board",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "noteboard_E",
+     "px": [16, 48],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "noteboard_N",
+     "px": [16, 48],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "noteboard_S",
+     "px": [16, 48],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "noteboard_W",
+     "px": [16, 48],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 2,
+   "id": "tavern/portal",
+   "item": "portal",
+   "label": "Magic circle",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "portal_E",
+     "px": [16, 18],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "portal_N",
+     "px": [16, 18],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "portal_S",
+     "px": [16, 18],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "portal_W",
+     "px": [16, 18],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 32,
+   "id": "tavern/tv",
+   "item": "tv",
+   "label": "Scrying mirror",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "tv_E",
+     "px": [16, 64],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "tv_N",
+     "px": [32, 48],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "tv_S",
+     "px": [32, 48],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "tv_W",
+     "px": [16, 64],
+     "w": 1
+    }
+   }
+  }],
+ "label": "Adventurer's Hall",
+ "walls": ["wall_tall", "wall_low"]
+}

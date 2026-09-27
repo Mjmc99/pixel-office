@@ -1,0 +1,551 @@
+{
+ "floors": ["floor0_0", "floor0_1", "floor1_0", "floor1_1"],
+ "id": "submarine",
+ "items": [{
+   "flat": false,
+   "height": 44,
+   "id": "submarine/periscope",
+   "item": "periscope",
+   "label": "Periscope",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "periscope_E",
+     "px": [16, 60],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "periscope_N",
+     "px": [16, 60],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "periscope_S",
+     "px": [16, 60],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "periscope_W",
+     "px": [16, 60],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 24,
+   "id": "submarine/sonar",
+   "item": "sonar",
+   "label": "Sonar station",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "sonar_E",
+     "px": [16, 56],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "sonar_N",
+     "px": [32, 40],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "sonar_S",
+     "px": [32, 40],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "sonar_W",
+     "px": [16, 56],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 16,
+   "id": "submarine/chart_table",
+   "item": "chart_table",
+   "label": "Chart table",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "chart_table_E",
+     "px": [32, 48],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "chart_table_N",
+     "px": [32, 48],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "chart_table_S",
+     "px": [32, 48],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "chart_table_W",
+     "px": [32, 48],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 18,
+   "id": "submarine/torpedo",
+   "item": "torpedo",
+   "label": "Torpedo tube",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "torpedo_E",
+     "px": [16, 50],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "torpedo_N",
+     "px": [32, 34],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "torpedo_S",
+     "px": [32, 34],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "torpedo_W",
+     "px": [16, 50],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "submarine/valves",
+   "item": "valves",
+   "label": "Valve panel",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "valves_E",
+     "px": [16, 46],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "valves_N",
+     "px": [16, 46],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "valves_S",
+     "px": [16, 46],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "valves_W",
+     "px": [16, 46],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "submarine/bunk",
+   "item": "bunk",
+   "label": "Bunk",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "bunk_E",
+     "px": [16, 62],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "bunk_N",
+     "px": [32, 46],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "bunk_S",
+     "px": [32, 46],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "bunk_W",
+     "px": [16, 62],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 40,
+   "id": "submarine/pipes",
+   "item": "pipes",
+   "label": "Pipe bundle",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "pipes_E",
+     "px": [16, 56],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "pipes_N",
+     "px": [16, 56],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "pipes_S",
+     "px": [16, 56],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "pipes_W",
+     "px": [16, 56],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "submarine/ballast",
+   "item": "ballast",
+   "label": "Ballast tank",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "ballast_E",
+     "px": [16, 46],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "ballast_N",
+     "px": [16, 46],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "ballast_S",
+     "px": [16, 46],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "ballast_W",
+     "px": [16, 46],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 32,
+   "id": "submarine/porthole",
+   "item": "porthole",
+   "label": "Porthole",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "porthole_E",
+     "px": [16, 48],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "porthole_N",
+     "px": [16, 48],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "porthole_S",
+     "px": [16, 48],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "porthole_W",
+     "px": [16, 48],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 36,
+   "id": "submarine/diving_suit",
+   "item": "diving_suit",
+   "label": "Diving suit",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "diving_suit_E",
+     "px": [16, 52],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "diving_suit_N",
+     "px": [16, 52],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "diving_suit_S",
+     "px": [16, 52],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "diving_suit_W",
+     "px": [16, 52],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 13,
+   "id": "submarine/crate",
+   "item": "crate",
+   "label": "Supply crate",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "crate_E",
+     "px": [16, 29],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "crate_N",
+     "px": [16, 29],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "crate_S",
+     "px": [16, 29],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "crate_W",
+     "px": [16, 29],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 22,
+   "id": "submarine/lamp",
+   "item": "lamp",
+   "label": "Caged lamp",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "lamp_E",
+     "px": [16, 38],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "lamp_N",
+     "px": [16, 38],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "lamp_S",
+     "px": [16, 38],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "lamp_W",
+     "px": [16, 38],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 26,
+   "id": "submarine/tv",
+   "item": "tv",
+   "label": "Scope monitor",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "tv_E",
+     "px": [16, 42],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "tv_N",
+     "px": [16, 42],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "tv_S",
+     "px": [16, 42],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "tv_W",
+     "px": [16, 42],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 28,
+   "id": "submarine/noteboard",
+   "item": "noteboard",
+   "label": "Duty roster",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "noteboard_E",
+     "px": [16, 44],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "noteboard_N",
+     "px": [16, 44],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "noteboard_S",
+     "px": [16, 44],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "noteboard_W",
+     "px": [16, 44],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 3,
+   "id": "submarine/portal",
+   "item": "portal",
+   "label": "Hatch",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "portal_E",
+     "px": [16, 19],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "portal_N",
+     "px": [16, 19],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "portal_S",
+     "px": [16, 19],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "portal_W",
+     "px": [16, 19],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 14,
+   "id": "submarine/chair",
+   "item": "chair",
+   "label": "Stool",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "chair_E",
+     "px": [16, 30],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "chair_N",
+     "px": [16, 30],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "chair_S",
+     "px": [16, 30],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "chair_W",
+     "px": [16, 30],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 1,
+   "id": "submarine/rug",
+   "item": "rug",
+   "label": "Deck grating",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "rug_E",
+     "px": [32, 33],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "rug_N",
+     "px": [32, 33],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "rug_S",
+     "px": [32, 33],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "rug_W",
+     "px": [32, 33],
+     "w": 2
+    }
+   }
+  }],
+ "label": "Submarine",
+ "walls": ["wall_tall", "wall_low"]
+}

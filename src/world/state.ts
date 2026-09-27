@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import { Emitter } from '../net/transport'
 import { canonical, idFromKey, sign, verify, type Identity } from './crypto'
-import { buildingPlan, inside, slotAt } from './building'
+import { inside, isLayout, planFor, planOf, slotAt } from './building'
 import type { Facing } from './types'
 
 /**
@@ -30,6 +30,8 @@ export interface View {
   policy: Policy
   floors: number
   themes: Map<number, string>
+  /** floor -> layout id (missing = the office building) */
+  layouts: Map<number, string>
   zones: Map<string, ZoneDef>
   decor: Map<string, DecorDef>
   /** extension point for later phases (rooms, objects, …) */
@@ -38,7 +40,7 @@ export interface View {
 
 const emptyView = (): View => ({
   owner: null, name: 'Pixel Office', mods: new Set(), bans: new Set(),
-  policy: { decor: 'mods', rooms: 'open' }, floors: 1, themes: new Map(),
+  policy: { decor: 'mods', rooms: 'open' }, floors: 1, themes: new Map(), layouts: new Map(),
   zones: new Map(), decor: new Map(), ext: new Map(),
 })
 
@@ -120,7 +122,6 @@ export class WorldState {
 
   private replay(ops: Op[]): View {
     const v = emptyView()
-    const plan = buildingPlan()
     const sorted = ops.filter((o) => this.verdict.get(o.id)).sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : 1))
     for (const op of sorted) {
       const owner = op.by === v.owner
@@ -157,8 +158,25 @@ export class WorldState {
         case 'theme':
           if (mod && typeof p.theme === 'string') v.themes.set(Number(p.floor) || 0, p.theme)
           break
+        case 'layout': {
+          // swap a floor's plan: its furniture, common-area zones, wall style and
+          // any office that no longer has a slot of its size are cleared
+          const floor = Number(p.floor) || 0
+          if (!mod || banned || !isLayout(p.layout) || floor >= v.floors) break
+          if (p.layout === 'building') v.layouts.delete(floor); else v.layouts.set(floor, p.layout)
+          v.themes.delete(floor)
+          for (const [id, d] of v.decor) if (d.floor === floor) v.decor.delete(id)
+          for (const [id, z] of v.zones) if (z.floor === floor) v.zones.delete(id)
+          const plan = planFor(p.layout)
+          const rooms = v.ext.get('rooms') as Map<string, { floor: number; slot: string; size: string }> | undefined
+          for (const [key, pl] of rooms ?? []) {
+            if (pl.floor === floor && !plan.slots.some((s) => s.id === pl.slot && s.size === pl.size)) rooms!.delete(key)
+          }
+          break
+        }
         case 'zone.set': {
           const z = p as ZoneDef
+          const plan = planOf(v.layouts, Number(z.floor) || 0)
           const okRect = z.w >= 1 && z.h >= 1 && z.x >= 1 && z.y >= 1 && z.x + z.w < plan.w && z.y + z.h < plan.h
           // zones inside an office belong to that room (phase 3); commons are for mods
           if (mod && !banned && okRect && !z.room) v.zones.set(z.id, { ...z, name: String(z.name).slice(0, 32), stage: !!z.stage })
@@ -170,7 +188,7 @@ export class WorldState {
         case 'decor.set': {
           const d = p as DecorDef
           const allowed = !banned && (mod || v.policy.decor === 'everyone')
-          const inSlot = !!slotAt(plan, d.x, d.y)
+          const inSlot = !!slotAt(planOf(v.layouts, Number(d.floor) || 0), d.x, d.y)
           if (allowed && !inSlot && d.floor < v.floors) v.decor.set(d.id, { ...d, by: op.by })
           break
         }

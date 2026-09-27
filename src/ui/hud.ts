@@ -1,4 +1,5 @@
 import type { Transport } from '../net/transport'
+import { layoutDef } from '../world/layouts'
 import type { WorldScene } from '../scenes/WorldScene'
 import type { Call } from '../media/call'
 import type { WorldState } from '../world/state'
@@ -49,6 +50,8 @@ export class Hud {
   private tabSig = ''
   private panelKind: 'people' | 'settings' | null = null
   onOffices: () => void = () => {}
+  /** Opens the floor layout chooser (owner + mods). */
+  onLayouts: (floor: number) => void = () => {}
   /** Later phases add tabs to the decorate palette: [id, label, render(grid)]. */
   extraTabs: { id: string; label: string; visible: () => boolean; render: (grid: HTMLElement) => void; onOpen?: () => void; onClose?: () => void }[] = []
 
@@ -274,7 +277,11 @@ export class Hud {
     if (st.isMod) {
       const floors = el('button', 'btn small', `Add a floor (now ${st.view.floors})`)
       floors.onclick = () => void st.author('floors', { count: st.view.floors + 1 }).then(() => this.renderPanel())
-      p.append(el('label', '', 'Building'), floors)
+      const f = this.scene.floor
+      const lay = el('button', 'btn small', `Floor ${f + 1}: ${esc(layoutDef(st.view.layouts.get(f) ?? 'building').label)} · change layout…`)
+      lay.title = 'Make this floor a starship, submarine, neon apartment, tabletop hall or office building'
+      lay.onclick = () => this.onLayouts(f)
+      p.append(el('label', '', 'Floors'), lay, floors)
     }
     // network
     this.renderNetwork(p)
@@ -335,7 +342,8 @@ export class Hud {
     e.append(el('div', 'ptitle', 'Elevator'))
     const row = el('div', 'row')
     for (let i = 0; i < this.state.view.floors; i++) {
-      const b = el('button', 'btn small' + (i === s.floor ? ' on' : ''), `Floor ${i + 1}`)
+      const lay = this.state.view.layouts.get(i)
+      const b = el('button', 'btn small' + (i === s.floor ? ' on' : ''), `Floor ${i + 1}${lay ? ` · ${esc(layoutDef(lay).label)}` : ''}`)
       b.onclick = () => s.goFloor(i)
       row.append(b)
     }

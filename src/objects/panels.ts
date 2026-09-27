@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import type { Rooms } from '../rooms/rooms'
 import { kindOf, type Thing, type WorldScene } from '../scenes/WorldScene'
-import { buildingPlan } from '../world/building'
+import { planOf } from '../world/building'
 import type { WorldState } from '../world/state'
 import { el, esc, type Hud } from '../ui/hud'
 import { TvSync, parseVideoId, type TvState } from './tv'
@@ -63,12 +63,13 @@ export class ObjectPanels {
   // ------------------------------------------------------------------ portal
   /** Everywhere a portal can lead: lobbies, office doors, other portals. */
   targets(except?: string) {
-    const plan = buildingPlan()
+    const plan = (f: number) => planOf(this.state.view.layouts, f)
     const out: { label: string; to: { floor: number; x: number; y: number } }[] = []
-    for (let f = 0; f < this.state.view.floors; f++) out.push({ label: `Lobby, floor ${f + 1}`, to: { floor: f, x: plan.spawn.x, y: plan.spawn.y - 1 } })
+    for (let f = 0; f < this.state.view.floors; f++) out.push({ label: `${this.state.view.layouts.get(f) ? 'Entrance' : 'Lobby'}, floor ${f + 1}`, to: { floor: f, x: plan(f).spawn.x, y: plan(f).spawn.y - 1 } })
     for (const pl of this.rooms.list()) {
       if (pl.pending) continue
-      const s = plan.slots.find((x) => x.id === pl.slot)!
+      const s = plan(pl.floor).slots.find((x) => x.id === pl.slot)
+      if (!s) continue
       out.push({ label: `${this.rooms.pkgFor(pl)?.name ?? pl.name} (${pl.slot}${pl.floor ? `, floor ${pl.floor + 1}` : ''})`, to: { floor: pl.floor, x: s.door.x, y: s.doorSide === 'S' ? s.y + s.h - 1 : s.y } })
     }
     for (const t of this.scene.allThings()) {

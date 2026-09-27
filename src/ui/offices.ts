@@ -2,7 +2,7 @@ import type { Rooms, Placement } from '../rooms/rooms'
 import type { RoomPackage } from '../rooms/package'
 import type { WorldScene } from '../scenes/WorldScene'
 import type { WorldState } from '../world/state'
-import { buildingPlan, slotAt, type Slot, type SlotSize } from '../world/building'
+import { planOf, slotAt, type Slot, type SlotSize } from '../world/building'
 import { shortKey } from '../world/crypto'
 import { el, esc, type Hud } from './hud'
 
@@ -73,7 +73,7 @@ export class OfficePanel {
 
   /** Door tile just inside an office, for "go there". */
   private doorOf(pl: Placement) {
-    const s = buildingPlan().slots.find((x) => x.id === pl.slot)!
+    const s = planOf(this.state.view.layouts, pl.floor).slots.find((x) => x.id === pl.slot)!
     return { x: s.door.x, y: s.doorSide === 'S' ? s.y + s.h - 1 : s.y }
   }
 
@@ -169,7 +169,7 @@ export class OfficePanel {
     p.append(el('div', 'ptitle', 'Offices'))
     const me = this.state.me.pub
     const t = this.scene.meTile()
-    const here = slotAt(buildingPlan(), t.x, t.y)
+    const here = slotAt(this.scene.plan, t.x, t.y)
     const taken = here && this.rooms.placementAt(here.id, this.scene.floor)
 
     if (!this.rooms.canPlace()) {

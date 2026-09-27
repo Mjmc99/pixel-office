@@ -4,7 +4,7 @@ import Phaser from 'phaser'
 import type { Transport } from '../net/transport'
 import type { Call } from '../media/call'
 import { zoneAt, type Zone } from '../media/proximity'
-import { buildingPlan, FLOOR, inside, isWallTile, regionAt, slotAt, tileAt, wallSlots, type Plan, type Slot, type SlotSize } from '../world/building'
+import { FLOOR, inside, isWallTile, planOf, regionAt, slotAt, tileAt, wallSlots, type Plan, type Slot, type SlotSize } from '../world/building'
 import { sign, verify } from '../world/crypto'
 import { canPlace, solidTiles, type Placement } from '../world/room'
 import { nudge } from '../world/state'
@@ -20,6 +20,12 @@ const WALK = [1, 0, 2, 0]        // walk-cycle frame order
 const REGION_FLOORS: Record<string, [string, string]> = {
   corridor: ['office', 'floor1_0'], lobby: ['zen', 'floor0_0'], lounge: ['cabin', 'floor0_0'],
   cafe: ['office', 'floor0_0'], library: ['cabin', 'floor1_0'], empty: ['zen', 'floor1_0'],
+}
+
+/** Region style -> floor tile: a named style above, or "<theme>:<n>" for that theme's floor n. */
+function regionFloor(style = 'corridor'): [string, string] {
+  const m = style.match(/^([a-z]+):(\d)$/)
+  return m ? [m[1], `floor${m[2]}_0`] : REGION_FLOORS[style] ?? REGION_FLOORS.corridor
 }
 
 interface Avatar {
@@ -60,7 +66,8 @@ export interface SceneDeps {
 
 export class WorldScene extends Phaser.Scene {
   deps!: SceneDeps
-  plan: Plan = buildingPlan()
+  /** The plan of the floor I'm on (floors can have different layouts). */
+  get plan(): Plan { return planOf(this.view.layouts, this.floor) }
   defs = new Map<string, ItemDef>()
   floor = 0
   private thingSprites = new Map<string, Phaser.GameObjects.Image>()
@@ -224,14 +231,20 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.setZoom(z)
   }
 
-  get theme() { return this.view.themes.get(this.floor) ?? 'office' }
+  get theme() { return this.view.themes.get(this.floor) ?? this.plan.theme }
   setTheme(t: string) { void this.state.author('theme', { floor: this.floor, theme: t }) }
 
   /** Re-derive everything visible from the replayed world view. */
   rebuild() {
     for (const a of this.customAssets(this.floor)) this.registerAsset(a)
-    const key = this.theme + ':' + this.floor + ':' + this.structureSig(this.floor)
-    if (key !== this.structureKey) { this.structureKey = key; this.buildStructure() }
+    const key = this.theme + ':' + this.floor + ':' + (this.view.layouts.get(this.floor) ?? 'building') + ':' + this.structureSig(this.floor)
+    if (key !== this.structureKey) {
+      const relaid = this.structureKey && this.structureKey.split(':')[2] !== key.split(':')[2] && this.structureKey.split(':')[1] === key.split(':')[1]
+      this.structureKey = key
+      this.buildStructure()
+      // the floor under my feet changed shape: step out at its entrance
+      if (relaid) this.teleport(this.plan.spawn.x * T + 8, this.plan.spawn.y * T + 10)
+    }
     this.zones = [...[...this.view.zones.values()].filter((z) => z.floor === this.floor), ...this.extraZones(this.floor)]
       .sort((a, b) => a.name.localeCompare(b.name))
     this.buildZones()
@@ -244,6 +257,7 @@ export class WorldScene extends Phaser.Scene {
     for (const o of this.structure) o.destroy()
     this.structure = []
     const p = this.plan, th = this.theme
+    if (!this.picker) this.cameras.main.setBounds(-T * 4, -T * 6, (p.w + 8) * T, (p.h + 10) * T)
     // floors: one render texture for the whole plan
     const rt = this.add.renderTexture(0, 0, p.w * T, p.h * T).setOrigin(0, 0).setDepth(-20000)
     for (let y = 0; y < p.h; y++) {
@@ -251,7 +265,7 @@ export class WorldScene extends Phaser.Scene {
         if (tileAt(p, x, y) !== FLOOR) continue
         const r = regionAt(p, x, y)
         const info = r?.kind === 'slot' ? this.slotInfo(r.id, this.floor) : null
-        const [atlas, frame] = info && !info.pending ? [info.style, 'floor0_0'] : REGION_FLOORS[r?.style ?? 'corridor'] ?? REGION_FLOORS.corridor
+        const [atlas, frame] = info && !info.pending ? [info.style, 'floor0_0'] : regionFloor(r?.style ?? p.floorStyle)
         rt.stamp(atlas, (x * 7 + y * 13) % 11 === 0 ? frame.replace('_0', '_1') : frame, x * T, y * T, { originX: 0, originY: 0 })
       }
     }
@@ -272,7 +286,8 @@ export class WorldScene extends Phaser.Scene {
       const g = this.add.graphics().setDepth(-19000)
       g.fillStyle(0x0c0b10, 0.3).fillRect(s.x * T, s.y * T, s.w * T, s.h * T)
       this.structure.push(g)
-      const t = this.add.text((s.x + s.w / 2) * T, (s.y + s.h / 2) * T, info?.pending ? `${info.label}\nawaiting approval` : `OFFICE ${s.id}\navailable`, {
+      const room = p.regions.find((r) => r.id === s.id)?.name ?? `Office ${s.id}`
+      const t = this.add.text((s.x + s.w / 2) * T, (s.y + s.h / 2) * T, info?.pending ? `${info.label}\nawaiting approval` : `${room.toUpperCase()}\navailable`, {
         fontFamily: 'monospace', fontSize: '24px', color: '#8f8a9c', align: 'center',
       }).setOrigin(0.5).setScale(0.25).setResolution(2).setDepth(-18999)
       t.setData('slot', s.id)
@@ -288,7 +303,7 @@ export class WorldScene extends Phaser.Scene {
     this.structure.push(eg, et)
     // walls: tall where a floor lies to the south (face visible), low where floor lies north.
     // Walls around a placed office use that office's own wall style.
-    const owned = wallSlots()
+    const owned = wallSlots(p)
     const wallAtlas = (x: number, y: number) => {
       for (const id of owned.get(y * p.w + x) ?? []) {
         const info = this.slotInfo(id, this.floor)

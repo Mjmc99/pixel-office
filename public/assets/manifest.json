@@ -3416,6 +3416,2950 @@
     "wall_tall",
     "wall_low"
    ]
+  },
+  "apartment": {
+   "label": "Neon Apartment",
+   "atlas": "apartment",
+   "items": [
+    {
+     "flat": false,
+     "height": 16,
+     "id": "apartment/bed",
+     "item": "bed",
+     "label": "Bed",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "bed_E",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "bed_N",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "bed_S",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "bed_W",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 18,
+     "id": "apartment/sofa",
+     "item": "sofa",
+     "label": "Couch",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "sofa_E",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "sofa_N",
+       "px": [
+        32,
+        34
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "sofa_S",
+       "px": [
+        32,
+        34
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "sofa_W",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 24,
+     "id": "apartment/kitchen",
+     "item": "kitchen",
+     "label": "Kitchenette",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "kitchen_E",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "kitchen_N",
+       "px": [
+        32,
+        40
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "kitchen_S",
+       "px": [
+        32,
+        40
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "kitchen_W",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 34,
+     "id": "apartment/fridge",
+     "item": "fridge",
+     "label": "Fridge",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "fridge_E",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "fridge_N",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "fridge_S",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "fridge_W",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "apartment/tv",
+     "item": "tv",
+     "label": "Holo TV",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "tv_E",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "tv_N",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "tv_S",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "tv_W",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 24,
+     "id": "apartment/desk",
+     "item": "desk",
+     "label": "Battle station",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "desk_E",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "desk_N",
+       "px": [
+        32,
+        40
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "desk_S",
+       "px": [
+        32,
+        40
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "desk_W",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 26,
+     "id": "apartment/chair",
+     "item": "chair",
+     "label": "Gaming chair",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "chair_E",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "chair_N",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "chair_S",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "chair_W",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "apartment/neon_sign",
+     "item": "neon_sign",
+     "label": "Neon sign",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "neon_sign_E",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "neon_sign_N",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "neon_sign_S",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "neon_sign_W",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 34,
+     "id": "apartment/window",
+     "item": "window",
+     "label": "City window",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "window_E",
+       "px": [
+        16,
+        66
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "window_N",
+       "px": [
+        32,
+        50
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "window_S",
+       "px": [
+        32,
+        50
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "window_W",
+       "px": [
+        16,
+        66
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 24,
+     "id": "apartment/plant",
+     "item": "plant",
+     "label": "Synth plant",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "plant_E",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "plant_N",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "plant_S",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "plant_W",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 22,
+     "id": "apartment/lamp",
+     "item": "lamp",
+     "label": "Lava lamp",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "lamp_E",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "lamp_N",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "lamp_S",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "lamp_W",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 1,
+     "id": "apartment/rug",
+     "item": "rug",
+     "label": "Neon rug",
+     "views": {
+      "E": {
+       "d": 3,
+       "frame": "rug_E",
+       "px": [
+        32,
+        49
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "rug_N",
+       "px": [
+        48,
+        33
+       ],
+       "w": 3
+      },
+      "S": {
+       "d": 2,
+       "frame": "rug_S",
+       "px": [
+        48,
+        33
+       ],
+       "w": 3
+      },
+      "W": {
+       "d": 3,
+       "frame": "rug_W",
+       "px": [
+        32,
+        49
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 10,
+     "id": "apartment/coffee_table",
+     "item": "coffee_table",
+     "label": "Coffee table",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "coffee_table_E",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "coffee_table_N",
+       "px": [
+        32,
+        26
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "coffee_table_S",
+       "px": [
+        32,
+        26
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "coffee_table_W",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "apartment/noteboard",
+     "item": "noteboard",
+     "label": "Pin board",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "noteboard_E",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "noteboard_N",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "noteboard_S",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "noteboard_W",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 2,
+     "id": "apartment/portal",
+     "item": "portal",
+     "label": "Teleport pad",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "portal_E",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "portal_N",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "portal_S",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "portal_W",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 26,
+     "id": "apartment/server",
+     "item": "server",
+     "label": "Home server",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "server_E",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "server_N",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "server_S",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "server_W",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "starship": {
+   "label": "Starship",
+   "atlas": "starship",
+   "items": [
+    {
+     "flat": false,
+     "height": 28,
+     "id": "starship/captain_chair",
+     "item": "captain_chair",
+     "label": "Captain's chair",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "captain_chair_E",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "captain_chair_N",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "captain_chair_S",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "captain_chair_W",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 22,
+     "id": "starship/helm",
+     "item": "helm",
+     "label": "Helm console",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "helm_E",
+       "px": [
+        16,
+        54
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "helm_N",
+       "px": [
+        32,
+        38
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "helm_S",
+       "px": [
+        32,
+        38
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "helm_W",
+       "px": [
+        16,
+        54
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "starship/tv",
+     "item": "tv",
+     "label": "Viewscreen",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "tv_E",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "tv_N",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "tv_S",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "tv_W",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 3,
+     "id": "starship/portal",
+     "item": "portal",
+     "label": "Teleporter pad",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "portal_E",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "portal_N",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "portal_S",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "portal_W",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "starship/noteboard",
+     "item": "noteboard",
+     "label": "Mission board",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "noteboard_E",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "noteboard_N",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "noteboard_S",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "noteboard_W",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "starship/bunk",
+     "item": "bunk",
+     "label": "Crew bunk",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "bunk_E",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "bunk_N",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "bunk_S",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "bunk_W",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 14,
+     "id": "starship/crate",
+     "item": "crate",
+     "label": "Cargo crate",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "crate_E",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "crate_N",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "crate_S",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "crate_W",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 44,
+     "id": "starship/reactor",
+     "item": "reactor",
+     "label": "Warp core",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "reactor_E",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "reactor_N",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "reactor_S",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "reactor_W",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "starship/locker",
+     "item": "locker",
+     "label": "Locker",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "locker_E",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "locker_N",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "locker_S",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "locker_W",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 13,
+     "id": "starship/mess_table",
+     "item": "mess_table",
+     "label": "Mess table",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "mess_table_E",
+       "px": [
+        32,
+        45
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "mess_table_N",
+       "px": [
+        32,
+        45
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "mess_table_S",
+       "px": [
+        32,
+        45
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "mess_table_W",
+       "px": [
+        32,
+        45
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 22,
+     "id": "starship/chair",
+     "item": "chair",
+     "label": "Bridge seat",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "chair_E",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "chair_N",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "chair_S",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "chair_W",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 24,
+     "id": "starship/plant",
+     "item": "plant",
+     "label": "Hydro planter",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "plant_E",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "plant_N",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "plant_S",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "plant_W",
+       "px": [
+        16,
+        40
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 34,
+     "id": "starship/viewport",
+     "item": "viewport",
+     "label": "Viewport",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "viewport_E",
+       "px": [
+        16,
+        66
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "viewport_N",
+       "px": [
+        32,
+        50
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "viewport_S",
+       "px": [
+        32,
+        50
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "viewport_W",
+       "px": [
+        16,
+        66
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 1,
+     "id": "starship/rug",
+     "item": "rug",
+     "label": "Deck grate",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "rug_E",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "rug_N",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "rug_S",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "rug_W",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "submarine": {
+   "label": "Submarine",
+   "atlas": "submarine",
+   "items": [
+    {
+     "flat": false,
+     "height": 44,
+     "id": "submarine/periscope",
+     "item": "periscope",
+     "label": "Periscope",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "periscope_E",
+       "px": [
+        16,
+        60
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "periscope_N",
+       "px": [
+        16,
+        60
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "periscope_S",
+       "px": [
+        16,
+        60
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "periscope_W",
+       "px": [
+        16,
+        60
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 24,
+     "id": "submarine/sonar",
+     "item": "sonar",
+     "label": "Sonar station",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "sonar_E",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "sonar_N",
+       "px": [
+        32,
+        40
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "sonar_S",
+       "px": [
+        32,
+        40
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "sonar_W",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 16,
+     "id": "submarine/chart_table",
+     "item": "chart_table",
+     "label": "Chart table",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "chart_table_E",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "chart_table_N",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "chart_table_S",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "chart_table_W",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 18,
+     "id": "submarine/torpedo",
+     "item": "torpedo",
+     "label": "Torpedo tube",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "torpedo_E",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "torpedo_N",
+       "px": [
+        32,
+        34
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "torpedo_S",
+       "px": [
+        32,
+        34
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "torpedo_W",
+       "px": [
+        16,
+        50
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "submarine/valves",
+     "item": "valves",
+     "label": "Valve panel",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "valves_E",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "valves_N",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "valves_S",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "valves_W",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "submarine/bunk",
+     "item": "bunk",
+     "label": "Bunk",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "bunk_E",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "bunk_N",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "bunk_S",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "bunk_W",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 40,
+     "id": "submarine/pipes",
+     "item": "pipes",
+     "label": "Pipe bundle",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "pipes_E",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "pipes_N",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "pipes_S",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "pipes_W",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "submarine/ballast",
+     "item": "ballast",
+     "label": "Ballast tank",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "ballast_E",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "ballast_N",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "ballast_S",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "ballast_W",
+       "px": [
+        16,
+        46
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 32,
+     "id": "submarine/porthole",
+     "item": "porthole",
+     "label": "Porthole",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "porthole_E",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "porthole_N",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "porthole_S",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "porthole_W",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 36,
+     "id": "submarine/diving_suit",
+     "item": "diving_suit",
+     "label": "Diving suit",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "diving_suit_E",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "diving_suit_N",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "diving_suit_S",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "diving_suit_W",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 13,
+     "id": "submarine/crate",
+     "item": "crate",
+     "label": "Supply crate",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "crate_E",
+       "px": [
+        16,
+        29
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "crate_N",
+       "px": [
+        16,
+        29
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "crate_S",
+       "px": [
+        16,
+        29
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "crate_W",
+       "px": [
+        16,
+        29
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 22,
+     "id": "submarine/lamp",
+     "item": "lamp",
+     "label": "Caged lamp",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "lamp_E",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "lamp_N",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "lamp_S",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "lamp_W",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 26,
+     "id": "submarine/tv",
+     "item": "tv",
+     "label": "Scope monitor",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "tv_E",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "tv_N",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "tv_S",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "tv_W",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 28,
+     "id": "submarine/noteboard",
+     "item": "noteboard",
+     "label": "Duty roster",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "noteboard_E",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "noteboard_N",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "noteboard_S",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "noteboard_W",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 3,
+     "id": "submarine/portal",
+     "item": "portal",
+     "label": "Hatch",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "portal_E",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "portal_N",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "portal_S",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "portal_W",
+       "px": [
+        16,
+        19
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 14,
+     "id": "submarine/chair",
+     "item": "chair",
+     "label": "Stool",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "chair_E",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "chair_N",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "chair_S",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "chair_W",
+       "px": [
+        16,
+        30
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 1,
+     "id": "submarine/rug",
+     "item": "rug",
+     "label": "Deck grating",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "rug_E",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "rug_N",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "rug_S",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "rug_W",
+       "px": [
+        32,
+        33
+       ],
+       "w": 2
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
+  },
+  "tavern": {
+   "label": "Adventurer's Hall",
+   "atlas": "tavern",
+   "items": [
+    {
+     "flat": false,
+     "height": 18,
+     "id": "tavern/game_table",
+     "item": "game_table",
+     "label": "Gaming table",
+     "views": {
+      "E": {
+       "d": 4,
+       "frame": "game_table_E",
+       "px": [
+        48,
+        82
+       ],
+       "w": 3
+      },
+      "N": {
+       "d": 3,
+       "frame": "game_table_N",
+       "px": [
+        64,
+        66
+       ],
+       "w": 4
+      },
+      "S": {
+       "d": 3,
+       "frame": "game_table_S",
+       "px": [
+        64,
+        66
+       ],
+       "w": 4
+      },
+      "W": {
+       "d": 4,
+       "frame": "game_table_W",
+       "px": [
+        48,
+        82
+       ],
+       "w": 3
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 22,
+     "id": "tavern/chair",
+     "item": "chair",
+     "label": "Wooden chair",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "chair_E",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "chair_N",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "chair_S",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "chair_W",
+       "px": [
+        16,
+        38
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 34,
+     "id": "tavern/bookshelf",
+     "item": "bookshelf",
+     "label": "Tome shelf",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "bookshelf_E",
+       "px": [
+        16,
+        66
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "bookshelf_N",
+       "px": [
+        32,
+        50
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "bookshelf_S",
+       "px": [
+        32,
+        50
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "bookshelf_W",
+       "px": [
+        16,
+        66
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 26,
+     "id": "tavern/brazier",
+     "item": "brazier",
+     "label": "Brazier",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "brazier_E",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "brazier_N",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "brazier_S",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "brazier_W",
+       "px": [
+        16,
+        42
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 36,
+     "id": "tavern/torch",
+     "item": "torch",
+     "label": "Torch stand",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "torch_E",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "torch_N",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "torch_S",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "torch_W",
+       "px": [
+        16,
+        52
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 40,
+     "id": "tavern/banner",
+     "item": "banner",
+     "label": "Banner",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "banner_E",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "banner_N",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "banner_S",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "banner_W",
+       "px": [
+        16,
+        56
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 16,
+     "id": "tavern/chest",
+     "item": "chest",
+     "label": "Treasure chest",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "chest_E",
+       "px": [
+        16,
+        32
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "chest_N",
+       "px": [
+        16,
+        32
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "chest_S",
+       "px": [
+        16,
+        32
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "chest_W",
+       "px": [
+        16,
+        32
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 38,
+     "id": "tavern/armor",
+     "item": "armor",
+     "label": "Suit of armor",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "armor_E",
+       "px": [
+        16,
+        54
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "armor_N",
+       "px": [
+        16,
+        54
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "armor_S",
+       "px": [
+        16,
+        54
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "armor_W",
+       "px": [
+        16,
+        54
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 20,
+     "id": "tavern/barrel",
+     "item": "barrel",
+     "label": "Barrel",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "barrel_E",
+       "px": [
+        16,
+        36
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "barrel_N",
+       "px": [
+        16,
+        36
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "barrel_S",
+       "px": [
+        16,
+        36
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "barrel_W",
+       "px": [
+        16,
+        36
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 28,
+     "id": "tavern/candelabra",
+     "item": "candelabra",
+     "label": "Candelabra",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "candelabra_E",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "candelabra_N",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "candelabra_S",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "candelabra_W",
+       "px": [
+        16,
+        44
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 44,
+     "id": "tavern/statue",
+     "item": "statue",
+     "label": "Dragon statue",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "statue_E",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "statue_N",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 2,
+       "frame": "statue_S",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "statue_W",
+       "px": [
+        32,
+        76
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 32,
+     "id": "tavern/weapon_rack",
+     "item": "weapon_rack",
+     "label": "Weapon rack",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "weapon_rack_E",
+       "px": [
+        16,
+        64
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "weapon_rack_N",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "weapon_rack_S",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "weapon_rack_W",
+       "px": [
+        16,
+        64
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 30,
+     "id": "tavern/potion_shelf",
+     "item": "potion_shelf",
+     "label": "Potion shelf",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "potion_shelf_E",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "potion_shelf_N",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "potion_shelf_S",
+       "px": [
+        32,
+        46
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "potion_shelf_W",
+       "px": [
+        16,
+        62
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 1,
+     "id": "tavern/rug",
+     "item": "rug",
+     "label": "Rug",
+     "views": {
+      "E": {
+       "d": 3,
+       "frame": "rug_E",
+       "px": [
+        32,
+        49
+       ],
+       "w": 2
+      },
+      "N": {
+       "d": 2,
+       "frame": "rug_N",
+       "px": [
+        48,
+        33
+       ],
+       "w": 3
+      },
+      "S": {
+       "d": 2,
+       "frame": "rug_S",
+       "px": [
+        48,
+        33
+       ],
+       "w": 3
+      },
+      "W": {
+       "d": 3,
+       "frame": "rug_W",
+       "px": [
+        32,
+        49
+       ],
+       "w": 2
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 32,
+     "id": "tavern/noteboard",
+     "item": "noteboard",
+     "label": "Quest board",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "noteboard_E",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "noteboard_N",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "noteboard_S",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "noteboard_W",
+       "px": [
+        16,
+        48
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": true,
+     "height": 2,
+     "id": "tavern/portal",
+     "item": "portal",
+     "label": "Magic circle",
+     "views": {
+      "E": {
+       "d": 1,
+       "frame": "portal_E",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "portal_N",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      },
+      "S": {
+       "d": 1,
+       "frame": "portal_S",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      },
+      "W": {
+       "d": 1,
+       "frame": "portal_W",
+       "px": [
+        16,
+        18
+       ],
+       "w": 1
+      }
+     }
+    },
+    {
+     "flat": false,
+     "height": 32,
+     "id": "tavern/tv",
+     "item": "tv",
+     "label": "Scrying mirror",
+     "views": {
+      "E": {
+       "d": 2,
+       "frame": "tv_E",
+       "px": [
+        16,
+        64
+       ],
+       "w": 1
+      },
+      "N": {
+       "d": 1,
+       "frame": "tv_N",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "S": {
+       "d": 1,
+       "frame": "tv_S",
+       "px": [
+        32,
+        48
+       ],
+       "w": 2
+      },
+      "W": {
+       "d": 2,
+       "frame": "tv_W",
+       "px": [
+        16,
+        64
+       ],
+       "w": 1
+      }
+     }
+    }
+   ],
+   "floors": [
+    "floor0_0",
+    "floor0_1",
+    "floor1_0",
+    "floor1_1"
+   ],
+   "walls": [
+    "wall_tall",
+    "wall_low"
+   ]
   }
  },
  "avatars": {

@@ -1,0 +1,519 @@
+{
+ "floors": ["floor0_0", "floor0_1", "floor1_0", "floor1_1"],
+ "id": "apartment",
+ "items": [{
+   "flat": false,
+   "height": 16,
+   "id": "apartment/bed",
+   "item": "bed",
+   "label": "Bed",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "bed_E",
+     "px": [32, 48],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "bed_N",
+     "px": [32, 48],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "bed_S",
+     "px": [32, 48],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "bed_W",
+     "px": [32, 48],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 18,
+   "id": "apartment/sofa",
+   "item": "sofa",
+   "label": "Couch",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "sofa_E",
+     "px": [16, 50],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "sofa_N",
+     "px": [32, 34],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "sofa_S",
+     "px": [32, 34],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "sofa_W",
+     "px": [16, 50],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 24,
+   "id": "apartment/kitchen",
+   "item": "kitchen",
+   "label": "Kitchenette",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "kitchen_E",
+     "px": [16, 56],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "kitchen_N",
+     "px": [32, 40],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "kitchen_S",
+     "px": [32, 40],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "kitchen_W",
+     "px": [16, 56],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 34,
+   "id": "apartment/fridge",
+   "item": "fridge",
+   "label": "Fridge",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "fridge_E",
+     "px": [16, 50],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "fridge_N",
+     "px": [16, 50],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "fridge_S",
+     "px": [16, 50],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "fridge_W",
+     "px": [16, 50],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "apartment/tv",
+   "item": "tv",
+   "label": "Holo TV",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "tv_E",
+     "px": [16, 62],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "tv_N",
+     "px": [32, 46],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "tv_S",
+     "px": [32, 46],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "tv_W",
+     "px": [16, 62],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 24,
+   "id": "apartment/desk",
+   "item": "desk",
+   "label": "Battle station",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "desk_E",
+     "px": [16, 56],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "desk_N",
+     "px": [32, 40],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "desk_S",
+     "px": [32, 40],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "desk_W",
+     "px": [16, 56],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 26,
+   "id": "apartment/chair",
+   "item": "chair",
+   "label": "Gaming chair",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "chair_E",
+     "px": [16, 42],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "chair_N",
+     "px": [16, 42],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "chair_S",
+     "px": [16, 42],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "chair_W",
+     "px": [16, 42],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "apartment/neon_sign",
+   "item": "neon_sign",
+   "label": "Neon sign",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "neon_sign_E",
+     "px": [16, 46],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "neon_sign_N",
+     "px": [16, 46],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "neon_sign_S",
+     "px": [16, 46],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "neon_sign_W",
+     "px": [16, 46],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 34,
+   "id": "apartment/window",
+   "item": "window",
+   "label": "City window",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "window_E",
+     "px": [16, 66],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "window_N",
+     "px": [32, 50],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "window_S",
+     "px": [32, 50],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "window_W",
+     "px": [16, 66],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 24,
+   "id": "apartment/plant",
+   "item": "plant",
+   "label": "Synth plant",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "plant_E",
+     "px": [16, 40],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "plant_N",
+     "px": [16, 40],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "plant_S",
+     "px": [16, 40],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "plant_W",
+     "px": [16, 40],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 22,
+   "id": "apartment/lamp",
+   "item": "lamp",
+   "label": "Lava lamp",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "lamp_E",
+     "px": [16, 38],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "lamp_N",
+     "px": [16, 38],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "lamp_S",
+     "px": [16, 38],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "lamp_W",
+     "px": [16, 38],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 1,
+   "id": "apartment/rug",
+   "item": "rug",
+   "label": "Neon rug",
+   "views": {
+    "E": {
+     "d": 3,
+     "frame": "rug_E",
+     "px": [32, 49],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "rug_N",
+     "px": [48, 33],
+     "w": 3
+    },
+    "S": {
+     "d": 2,
+     "frame": "rug_S",
+     "px": [48, 33],
+     "w": 3
+    },
+    "W": {
+     "d": 3,
+     "frame": "rug_W",
+     "px": [32, 49],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 10,
+   "id": "apartment/coffee_table",
+   "item": "coffee_table",
+   "label": "Coffee table",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "coffee_table_E",
+     "px": [16, 42],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "coffee_table_N",
+     "px": [32, 26],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "coffee_table_S",
+     "px": [32, 26],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "coffee_table_W",
+     "px": [16, 42],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "apartment/noteboard",
+   "item": "noteboard",
+   "label": "Pin board",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "noteboard_E",
+     "px": [16, 46],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "noteboard_N",
+     "px": [16, 46],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "noteboard_S",
+     "px": [16, 46],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "noteboard_W",
+     "px": [16, 46],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 2,
+   "id": "apartment/portal",
+   "item": "portal",
+   "label": "Teleport pad",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "portal_E",
+     "px": [16, 18],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "portal_N",
+     "px": [16, 18],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "portal_S",
+     "px": [16, 18],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "portal_W",
+     "px": [16, 18],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 26,
+   "id": "apartment/server",
+   "item": "server",
+   "label": "Home server",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "server_E",
+     "px": [16, 42],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "server_N",
+     "px": [16, 42],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "server_S",
+     "px": [16, 42],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "server_W",
+     "px": [16, 42],
+     "w": 1
+    }
+   }
+  }],
+ "label": "Neon Apartment",
+ "walls": ["wall_tall", "wall_low"]
+}

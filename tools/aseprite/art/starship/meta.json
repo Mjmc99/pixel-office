@@ -1,0 +1,455 @@
+{
+ "floors": ["floor0_0", "floor0_1", "floor1_0", "floor1_1"],
+ "id": "starship",
+ "items": [{
+   "flat": false,
+   "height": 28,
+   "id": "starship/captain_chair",
+   "item": "captain_chair",
+   "label": "Captain's chair",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "captain_chair_E",
+     "px": [16, 44],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "captain_chair_N",
+     "px": [16, 44],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "captain_chair_S",
+     "px": [16, 44],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "captain_chair_W",
+     "px": [16, 44],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 22,
+   "id": "starship/helm",
+   "item": "helm",
+   "label": "Helm console",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "helm_E",
+     "px": [16, 54],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "helm_N",
+     "px": [32, 38],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "helm_S",
+     "px": [32, 38],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "helm_W",
+     "px": [16, 54],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "starship/tv",
+   "item": "tv",
+   "label": "Viewscreen",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "tv_E",
+     "px": [16, 62],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "tv_N",
+     "px": [32, 46],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "tv_S",
+     "px": [32, 46],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "tv_W",
+     "px": [16, 62],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 3,
+   "id": "starship/portal",
+   "item": "portal",
+   "label": "Teleporter pad",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "portal_E",
+     "px": [16, 19],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "portal_N",
+     "px": [16, 19],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "portal_S",
+     "px": [16, 19],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "portal_W",
+     "px": [16, 19],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "starship/noteboard",
+   "item": "noteboard",
+   "label": "Mission board",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "noteboard_E",
+     "px": [16, 46],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "noteboard_N",
+     "px": [16, 46],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "noteboard_S",
+     "px": [16, 46],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "noteboard_W",
+     "px": [16, 46],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "starship/bunk",
+   "item": "bunk",
+   "label": "Crew bunk",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "bunk_E",
+     "px": [16, 62],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "bunk_N",
+     "px": [32, 46],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "bunk_S",
+     "px": [32, 46],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "bunk_W",
+     "px": [16, 62],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 14,
+   "id": "starship/crate",
+   "item": "crate",
+   "label": "Cargo crate",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "crate_E",
+     "px": [16, 30],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "crate_N",
+     "px": [16, 30],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "crate_S",
+     "px": [16, 30],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "crate_W",
+     "px": [16, 30],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 44,
+   "id": "starship/reactor",
+   "item": "reactor",
+   "label": "Warp core",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "reactor_E",
+     "px": [32, 76],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "reactor_N",
+     "px": [32, 76],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "reactor_S",
+     "px": [32, 76],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "reactor_W",
+     "px": [32, 76],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 30,
+   "id": "starship/locker",
+   "item": "locker",
+   "label": "Locker",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "locker_E",
+     "px": [16, 46],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "locker_N",
+     "px": [16, 46],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "locker_S",
+     "px": [16, 46],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "locker_W",
+     "px": [16, 46],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 13,
+   "id": "starship/mess_table",
+   "item": "mess_table",
+   "label": "Mess table",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "mess_table_E",
+     "px": [32, 45],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "mess_table_N",
+     "px": [32, 45],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "mess_table_S",
+     "px": [32, 45],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "mess_table_W",
+     "px": [32, 45],
+     "w": 2
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 22,
+   "id": "starship/chair",
+   "item": "chair",
+   "label": "Bridge seat",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "chair_E",
+     "px": [16, 38],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "chair_N",
+     "px": [16, 38],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "chair_S",
+     "px": [16, 38],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "chair_W",
+     "px": [16, 38],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 24,
+   "id": "starship/plant",
+   "item": "plant",
+   "label": "Hydro planter",
+   "views": {
+    "E": {
+     "d": 1,
+     "frame": "plant_E",
+     "px": [16, 40],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "plant_N",
+     "px": [16, 40],
+     "w": 1
+    },
+    "S": {
+     "d": 1,
+     "frame": "plant_S",
+     "px": [16, 40],
+     "w": 1
+    },
+    "W": {
+     "d": 1,
+     "frame": "plant_W",
+     "px": [16, 40],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": false,
+   "height": 34,
+   "id": "starship/viewport",
+   "item": "viewport",
+   "label": "Viewport",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "viewport_E",
+     "px": [16, 66],
+     "w": 1
+    },
+    "N": {
+     "d": 1,
+     "frame": "viewport_N",
+     "px": [32, 50],
+     "w": 2
+    },
+    "S": {
+     "d": 1,
+     "frame": "viewport_S",
+     "px": [32, 50],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "viewport_W",
+     "px": [16, 66],
+     "w": 1
+    }
+   }
+  }, {
+   "flat": true,
+   "height": 1,
+   "id": "starship/rug",
+   "item": "rug",
+   "label": "Deck grate",
+   "views": {
+    "E": {
+     "d": 2,
+     "frame": "rug_E",
+     "px": [32, 33],
+     "w": 2
+    },
+    "N": {
+     "d": 2,
+     "frame": "rug_N",
+     "px": [32, 33],
+     "w": 2
+    },
+    "S": {
+     "d": 2,
+     "frame": "rug_S",
+     "px": [32, 33],
+     "w": 2
+    },
+    "W": {
+     "d": 2,
+     "frame": "rug_W",
+     "px": [32, 33],
+     "w": 2
+    }
+   }
+  }],
+ "label": "Starship",
+ "walls": ["wall_tall", "wall_low"]
+}

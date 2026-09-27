@@ -3,7 +3,6 @@ import type { Transport } from '../net/transport'
 import type { Rooms, Placement } from '../rooms/rooms'
 import { pkgKey } from '../rooms/package'
 import type { Thing, WorldScene } from '../scenes/WorldScene'
-import { buildingPlan } from '../world/building'
 import { hashHex, shortKey } from '../world/crypto'
 import type { WorldState } from '../world/state'
 import { el, esc, type Hud } from '../ui/hud'
@@ -60,7 +59,7 @@ export class CodeRunner {
   /** The office I'm in (active, with code), if any. */
   private currentOffice() {
     const t = this.scene.meTile()
-    const slot = buildingPlan().slots.find((s) => t.x >= s.x && t.x < s.x + s.w && t.y >= s.y && t.y < s.y + s.h)
+    const slot = this.scene.plan.slots.find((s) => t.x >= s.x && t.x < s.x + s.w && t.y >= s.y && t.y < s.y + s.h)
     if (!slot) return null
     const pl = this.rooms.placementAt(slot.id, this.scene.floor)
     const pkg = pl && !pl.pending ? this.rooms.pkgFor(pl) : null

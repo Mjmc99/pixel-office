@@ -1,6 +1,6 @@
 import { nudge } from '../world/state'
 import { Emitter, type Transport } from '../net/transport'
-import { buildingPlan, SLOT_SIZES, type Slot, type SlotSize } from '../world/building'
+import { planOf, SLOT_SIZES, type Slot, type SlotSize } from '../world/building'
 import { registerOp, type View, type WorldState } from '../world/state'
 import type { Zone } from '../media/proximity'
 import type { CustomAsset } from '../world/types'
@@ -17,15 +17,15 @@ export interface Placement {
 }
 
 export const placements = (v: View) => (v.ext.get('rooms') ?? new Map()) as Map<string, Placement>
-const slotById = (id: string) => buildingPlan().slots.find((s) => s.id === id)
+const slotById = (v: View, id: string, floor: number) => planOf(v.layouts, floor).slots.find((s) => s.id === id)
 
 // ---- op log rules for offices ------------------------------------------------
 registerOp('room.place', (v, op, r) => {
   const p = op.p ?? {}
   const rooms = v.ext.get('rooms') ?? new Map<string, Placement>()
   v.ext.set('rooms', rooms)
-  const slot = slotById(p.slot)
   const floor = Number(p.floor) || 0
+  const slot = slotById(v, p.slot, floor)
   const key = `${floor}:${p.slot}`
   if (r.banned || !slot || slot.size !== p.size || floor >= v.floors || rooms.has(key)) return
   if ([...rooms.values()].some((x) => x.owner === p.owner && x.roomId === p.roomId)) return
@@ -41,8 +41,8 @@ registerOp('room.move', (v, op, r) => {
   const rooms = placements(v)
   const from = `${p.from?.floor}:${p.from?.slot}`
   const pl = rooms.get(from)
-  const slot = slotById(p.to?.slot)
   const floor = Number(p.to?.floor) || 0
+  const slot = slotById(v, p.to?.slot, floor)
   const key = `${floor}:${p.to?.slot}`
   if (!pl || r.banned || !(r.mod || op.by === pl.owner)) return
   if (!slot || slot.size !== pl.size || floor >= v.floors || rooms.has(key)) return
@@ -124,7 +124,7 @@ export class Rooms {
   /** Empty slots on a floor (optionally only one size). */
   freeSlots(floor: number, size?: SlotSize): Slot[] {
     const taken = new Set(this.onFloor(floor).map((p) => p.slot))
-    return buildingPlan().slots.filter((s) => (!size || s.size === size) && !taken.has(s.id))
+    return planOf(this.state.view.layouts, floor).slots.filter((s) => (!size || s.size === size) && !taken.has(s.id))
   }
   /** My offices (packages I own) that aren't placed in this world. */
   myUnplaced() { return this.myPackages().filter((p) => !this.findPlaced(p)) }
@@ -189,7 +189,7 @@ export class Rooms {
     const out: { id: string; item: string; x: number; y: number; f: RoomThing['f']; floor: number; editable: boolean; source: 'room'; cfg?: any; ox: number; oy: number }[] = []
     for (const pl of this.onFloor(floor)) {
       const pkg = this.pkgFor(pl)
-      const slot = slotById(pl.slot)
+      const slot = slotById(this.state.view, pl.slot, pl.floor)
       if (!pkg || !slot || pl.pending) continue
       const mine = pkg.owner === this.state.me.pub && !this.state.isBanned
       for (const t of pkg.things) {
@@ -202,7 +202,7 @@ export class Rooms {
   zones(floor: number): (Zone & { room: string })[] {
     const out: (Zone & { room: string })[] = []
     for (const pl of this.onFloor(floor)) {
-      const pkg = this.pkgFor(pl), slot = slotById(pl.slot)
+      const pkg = this.pkgFor(pl), slot = slotById(this.state.view, pl.slot, pl.floor)
       if (!pkg || !slot || pl.pending) continue
       for (const z of pkg.zones) out.push({ id: `${pl.key}/${z.id}`, name: z.name, x: slot.x + z.x, y: slot.y + z.y, w: z.w, h: z.h, room: pl.key })
     }
@@ -211,7 +211,7 @@ export class Rooms {
 
   /** My (active) placement whose slot contains world tile x,y on floor. */
   myPlacementAt(x: number, y: number, floor: number) {
-    const slot = buildingPlan().slots.find((s) => x >= s.x && x < s.x + s.w && y >= s.y && y < s.y + s.h)
+    const slot = planOf(this.state.view.layouts, floor).slots.find((s) => x >= s.x && x < s.x + s.w && y >= s.y && y < s.y + s.h)
     if (!slot) return null
     const pl = this.placementAt(slot.id, floor)
     return pl && !pl.pending && pl.owner === this.state.me.pub && !this.state.isBanned && this.pkgFor(pl) ? { pl, slot } : null
