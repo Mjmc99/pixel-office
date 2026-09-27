@@ -1,10 +1,15 @@
 import type Phaser from 'phaser'
-import { buildAvatar, decodeLook, MODEL_H, palette, toRecipe } from './parts'
+import { buildAvatar, decodeLook, HEAD_TOP_PX, MODEL_H, palette, toRecipe } from './parts'
 import { FACINGS } from './voxel'
 
 /** Every avatar frame is 16 × (16 + MODEL_H) px; the feet sit 8.5 rows below the model height. */
 export const FRAME_W = 16, FRAME_H = 16 + MODEL_H
 export const ORIGIN: [number, number] = [0.5, (MODEL_H + 8.5) / FRAME_H]
+/** Pixels from the feet to the top of the head (name labels sit just above). */
+export const HEAD_TOP = HEAD_TOP_PX
+/** Thumbnails are cropped to the rows the figure can occupy (hat tip to shoes). */
+const THUMB_Y = 4, THUMB_H = MODEL_H + 10 - THUMB_Y
+export const THUMB_SIZE: [number, number] = [FRAME_W, THUMB_H]
 
 const sheets = new Map<string, HTMLCanvasElement>()
 
@@ -43,8 +48,8 @@ export function avatarThumb(recipe: string): string {
   let u = thumbs.get(key)
   if (!u) {
     const c = document.createElement('canvas')
-    c.width = FRAME_W; c.height = FRAME_H
-    c.getContext('2d')!.drawImage(avatarSheet(key), 0, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H)
+    c.width = FRAME_W; c.height = THUMB_H
+    c.getContext('2d')!.drawImage(avatarSheet(key), 0, THUMB_Y, FRAME_W, THUMB_H, 0, 0, FRAME_W, THUMB_H)
     u = c.toDataURL()
     thumbs.set(key, u)
   }

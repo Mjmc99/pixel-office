@@ -1,3 +1,4 @@
+import { nudge } from '../world/state'
 import { Emitter, type Transport } from '../net/transport'
 import { buildingPlan, SLOT_SIZES, type Slot, type SlotSize } from '../world/building'
 import { registerOp, type View, type WorldState } from '../world/state'
@@ -160,14 +161,14 @@ export class Rooms {
   // ---- scene integration -------------------------------------------------------
   /** Things inside offices on this floor, translated to world coordinates. */
   things(floor: number) {
-    const out: { id: string; item: string; x: number; y: number; f: RoomThing['f']; floor: number; editable: boolean; source: 'room'; cfg?: any }[] = []
+    const out: { id: string; item: string; x: number; y: number; f: RoomThing['f']; floor: number; editable: boolean; source: 'room'; cfg?: any; ox: number; oy: number }[] = []
     for (const pl of this.onFloor(floor)) {
       const pkg = this.pkgFor(pl)
       const slot = slotById(pl.slot)
       if (!pkg || !slot || pl.pending) continue
       const mine = pkg.owner === this.state.me.pub && !this.state.isBanned
       for (const t of pkg.things) {
-        out.push({ id: `${pl.key}/${t.id}`, item: t.item, x: slot.x + t.x, y: slot.y + t.y, f: t.f, floor, editable: mine, source: 'room', cfg: t.cfg })
+        out.push({ id: `${pl.key}/${t.id}`, item: t.item, x: slot.x + t.x, y: slot.y + t.y, f: t.f, floor, editable: mine, source: 'room', cfg: t.cfg, ox: nudge(t.ox), oy: nudge(t.oy) })
       }
     }
     return out
@@ -191,13 +192,13 @@ export class Rooms {
     return pl && !pl.pending && pl.owner === this.state.me.pub && !this.state.isBanned && this.pkgFor(pl) ? { pl, slot } : null
   }
 
-  setThing(t: { id: string; item: string; x: number; y: number; f: RoomThing['f']; floor: number; cfg?: any }) {
+  setThing(t: { id: string; item: string; x: number; y: number; f: RoomThing['f']; floor: number; cfg?: any; ox?: number; oy?: number }) {
     const hit = this.myPlacementAt(t.x, t.y, t.floor)
     if (!hit) return
     const localId = t.id.includes('/') ? t.id.split('/').pop()! : t.id
     void this.edit(hit.pl, (c) => {
       c.things = c.things.filter((x) => x.id !== localId)
-      c.things.push({ id: localId, item: t.item, x: t.x - hit.slot.x, y: t.y - hit.slot.y, f: t.f, ...(t.cfg ? { cfg: t.cfg } : {}) })
+      c.things.push({ id: localId, item: t.item, x: t.x - hit.slot.x, y: t.y - hit.slot.y, f: t.f, ...(t.cfg ? { cfg: t.cfg } : {}), ...(nudge(t.ox) || nudge(t.oy) ? { ox: nudge(t.ox), oy: nudge(t.oy) } : {}) })
     })
   }
 

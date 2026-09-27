@@ -178,8 +178,14 @@ export function palette(l: Look): Record<string, Mat> {
   }
 }
 
-/** Model size: 16 wide × 16 deep × MODEL_H tall. Rendered frames are 16 × (16 + MODEL_H). */
-export const MODEL_H = 30
+/**
+ * Model size: 16 wide × 16 deep × MODEL_H tall. Rendered frames are 16 × (16 + MODEL_H).
+ * The figure itself is about 22 px tall on 16 px tiles: legs 4, torso 6, head 7 tall
+ * (plus 4 rows of head top in the 3/4 view) and a hat of 1-3 voxels on top.
+ */
+export const MODEL_H = 24
+/** Rows from the feet up to the top of the hair, for placing name labels. */
+export const HEAD_TOP_PX = 22
 
 /** Build the chibi avatar for one walk frame (0 stand, 1/2 step). Front faces +y. */
 export function buildAvatar(l: Look, frame: number): VModel {
@@ -192,99 +198,95 @@ export function buildAvatar(l: Look, frame: number): VModel {
   return m
 }
 
+// Layout (voxels): legs z0-4 · torso x5-10, y6-8, z4-10 · head x4-11, y6-9, z10-16
+// (face = the y=9 layer) · hair tops out at z17 · hats start at z18.
+
 function buildLegs(m: VModel, l: Look, lo: number, ro: number) {
   const bottom = BOTTOMS[l.bottom], dress = TOPS[l.top] === 'Dress'
   for (const [x0, off] of [[5, lo], [9, ro]] as const) {
-    m.box(x0, 6 + off, 1, x0 + 2, 9 + off, 6, dress || bottom === 'Skirt' ? 'skin' : 'pants')
-    if (bottom === 'Shorts' && !dress) m.box(x0, 6 + off, 1, x0 + 2, 9 + off, 4, 'skin')
-    m.box(x0, 6 + off, 0, x0 + 2, 10 + off, 1, 'shoes')
+    m.box(x0, 7 + off, 1, x0 + 2, 9 + off, 4, dress || bottom === 'Skirt' ? 'skin' : 'pants')
+    if (bottom === 'Shorts' && !dress) m.box(x0, 7 + off, 1, x0 + 2, 9 + off, 3, 'skin')
+    m.box(x0, 7 + off, 0, x0 + 2, 10 + off, 1, 'shoes')
   }
-  if (bottom === 'Skirt' && !dress) m.box(4, 5, 4, 12, 11, 7, 'pants')
+  if (bottom === 'Skirt' && !dress) m.box(4, 6, 3, 12, 10, 5, 'pants')
 }
 
 function buildTorso(m: VModel, l: Look, lo: number, ro: number) {
   const top = TOPS[l.top]
-  m.box(4, 5, 6, 12, 10, 13, 'shirt')
-  if (top === 'Dress') m.box(4, 5, 3, 12, 11, 8, 'shirt')
-  if (top === 'Hoodie') { m.box(4, 5, 12, 12, 7, 15, 'shirt'); m.box(6, 10, 7, 10, 10, 9, 'trim') }
-  if (top === 'Suit') { m.box(7, 9, 7, 9, 10, 13, 'trim'); m.box(7, 10, 8, 9, 11, 12, 'tie') }
-  if (top === 'Sweater') m.box(4, 5, 10, 12, 10, 11, 'trim')
-  if (top === 'T-shirt') m.box(6, 9, 12, 10, 10, 13, 'trim')
-  if (top === 'Tank top') { m.box(4, 5, 11, 5, 10, 13, 'skin'); m.box(11, 5, 11, 12, 10, 13, 'skin') }
-  for (const [x0, off] of [[3, -lo], [12, -ro]] as const) {
-    m.box(x0, 7 + off, 8, x0 + 1, 9 + off, 13, top === 'Tank top' ? 'skin' : 'shirt')
-    m.box(x0, 7 + off, 7, x0 + 1, 9 + off, 8, 'skin')
+  m.box(5, 6, 4, 11, 9, 10, 'shirt')
+  if (top === 'Dress') { m.box(4, 5, 2, 12, 10, 5, 'shirt'); m.box(5, 6, 5, 11, 9, 6, 'shirt') }
+  if (top === 'Hoodie') { m.box(5, 5, 8, 11, 6, 11, 'shirt'); m.box(6, 9, 5, 10, 10, 7, 'trim') }
+  if (top === 'Suit') { m.box(7, 8, 5, 9, 9, 10, 'trim'); m.box(7, 9, 6, 9, 10, 9, 'tie') }
+  if (top === 'Sweater') m.box(5, 6, 7, 11, 9, 8, 'trim')
+  if (top === 'T-shirt') m.box(7, 8, 9, 9, 9, 10, 'trim')
+  if (top === 'Tank top') { m.box(5, 6, 8, 6, 9, 10, 'skin'); m.box(10, 6, 8, 11, 9, 10, 'skin') }
+  for (const [x0, off] of [[4, -lo], [11, -ro]] as const) {
+    m.box(x0, 7 + off, 5, x0 + 1, 8 + off, 10, top === 'Tank top' ? 'skin' : 'shirt')
+    m.box(x0, 7 + off, 4, x0 + 1, 8 + off, 5, 'skin')
   }
 }
 
 /** Head, face, hair, eyewear. Returns the z where a hat should sit. */
 function buildHead(m: VModel, l: Look): number {
-  // head is 10 wide × 6 deep × 11 tall; the face is the y=10 layer
-  m.box(3, 5, 13, 13, 11, 24, 'skin')
-  for (const x of [5, 10]) m.box(x, 10, 16, x + 1, 11, 19, 'eyes')
-  m.set(4, 10, 15, 'blush'); m.set(11, 10, 15, 'blush')
+  m.box(4, 6, 10, 12, 10, 17, 'skin')
+  for (const x of [6, 9]) m.box(x, 9, 12, x + 1, 10, 14, 'eyes')
+  m.set(5, 9, 11, 'blush'); m.set(10, 9, 11, 'blush')
   const fh = FACIAL[l.facial]
-  if (fh === 'Beard') { m.box(4, 9, 13, 12, 11, 16, 'hair'); m.box(3, 7, 14, 4, 10, 18, 'hair'); m.box(12, 7, 14, 13, 10, 18, 'hair') }
-  if (fh === 'Mustache') m.box(5, 10, 15, 11, 11, 16, 'hair')
-  if (fh === 'Stubble') for (let x = 5; x < 11; x += 2) m.set(x, 10, 14, 'hair')
+  if (fh === 'Beard') { m.box(5, 8, 10, 11, 10, 12, 'hair'); m.box(4, 7, 10, 5, 9, 13, 'hair'); m.box(11, 7, 10, 12, 9, 13, 'hair') }
+  if (fh === 'Mustache') m.box(6, 9, 11, 10, 10, 12, 'hair')
+  if (fh === 'Stubble') { m.set(6, 9, 10, 'hair'); m.set(8, 9, 10, 'hair'); m.set(10, 9, 10, 'hair') }
 
   const hs = HAIR_STYLES[l.hair]
-  const cap = () => { m.box(3, 4, 22, 13, 11, 25, 'hair'); m.box(3, 4, 14, 13, 5, 22, 'hair') }
-  const sides = (low: number) => { m.box(2, 5, low, 3, 10, 24, 'hair'); m.box(13, 5, low, 14, 10, 24, 'hair') }
-  const fringe = () => { m.box(4, 10, 21, 12, 11, 23, 'hair'); m.box(3, 10, 18, 4, 11, 22, 'hair'); m.box(12, 10, 18, 13, 11, 22, 'hair') }
-  let hatBase = 25
+  const cap = () => { m.box(4, 5, 16, 12, 10, 18, 'hair'); m.box(4, 5, 11, 12, 6, 16, 'hair') }
+  const sides = (low: number) => { m.box(3, 6, low, 4, 9, 17, 'hair'); m.box(12, 6, low, 13, 9, 17, 'hair') }
+  const fringe = () => { m.box(5, 9, 15, 11, 10, 16, 'hair'); m.box(4, 9, 13, 5, 10, 16, 'hair'); m.box(11, 9, 13, 12, 10, 16, 'hair') }
+  let hatBase = 18
   switch (hs) {
-    case 'Short': cap(); sides(18); fringe(); break
-    case 'Buzz': m.box(3, 4, 23, 13, 11, 25, 'hair'); m.box(3, 4, 17, 13, 5, 23, 'hair'); m.box(3, 5, 21, 4, 10, 23, 'hair'); m.box(12, 5, 21, 13, 10, 23, 'hair'); break
-    case 'Long': cap(); sides(12); fringe(); m.box(3, 3, 9, 13, 5, 16, 'hair'); break
-    case 'Bun': cap(); sides(18); fringe(); m.box(6, 4, 24, 10, 7, 27, 'hair'); break
+    case 'Short': cap(); sides(13); fringe(); break
+    case 'Buzz': m.box(4, 5, 17, 12, 10, 18, 'hair'); m.box(4, 5, 13, 12, 6, 17, 'hair'); m.box(4, 6, 15, 5, 9, 17, 'hair'); m.box(11, 6, 15, 12, 9, 17, 'hair'); break
+    case 'Long': cap(); sides(8); fringe(); m.box(4, 4, 6, 12, 6, 12, 'hair'); break
+    case 'Bun': cap(); sides(13); fringe(); m.box(6, 5, 18, 10, 8, 20, 'hair'); hatBase = 18; break
     case 'Curly':
-      m.box(2, 3, 21, 14, 11, 26, 'hair'); m.box(2, 3, 14, 14, 5, 21, 'hair'); sides(15)
-      m.box(4, 10, 21, 12, 11, 24, 'hair'); m.box(1, 5, 17, 2, 10, 24, 'hair'); m.box(14, 5, 17, 15, 10, 24, 'hair')
-      hatBase = 26; break
-    case 'Ponytail': cap(); sides(19); fringe(); m.box(7, 2, 14, 9, 4, 23, 'hair'); m.box(6, 3, 21, 10, 4, 24, 'trim'); break
-    case 'Mohawk': m.box(7, 3, 24, 9, 11, 28, 'hair'); m.box(7, 3, 16, 9, 4, 24, 'hair'); break
-    case 'Bob': cap(); fringe(); m.box(2, 4, 15, 3, 11, 25, 'hair'); m.box(13, 4, 15, 14, 11, 25, 'hair'); break
+      m.box(3, 4, 15, 13, 10, 19, 'hair'); m.box(3, 4, 10, 13, 6, 15, 'hair'); sides(11)
+      m.box(4, 9, 15, 12, 10, 17, 'hair'); m.box(2, 5, 12, 3, 9, 17, 'hair'); m.box(13, 5, 12, 14, 9, 17, 'hair')
+      hatBase = 19; break
+    case 'Ponytail': cap(); sides(14); fringe(); m.box(7, 3, 9, 9, 5, 16, 'hair'); m.box(7, 4, 14, 9, 5, 16, 'trim'); break
+    case 'Mohawk': m.box(7, 5, 17, 9, 10, 20, 'hair'); m.box(7, 5, 12, 9, 6, 17, 'hair'); hatBase = 17; break
+    case 'Bob': cap(); fringe(); m.box(3, 5, 11, 4, 10, 17, 'hair'); m.box(12, 5, 11, 13, 10, 17, 'hair'); break
     case 'Spiky':
-      cap(); sides(19); fringe()
-      for (const [x, y] of [[4, 5], [7, 6], [10, 5], [5, 8], [9, 8], [12, 7]]) m.box(x, y, 25, x + 2, y + 2, 27, 'hair'); break
-    case 'Bald': hatBase = 24; break
+      cap(); sides(14); fringe()
+      for (const [x, y] of [[4, 6], [7, 5], [10, 6], [6, 8], [9, 8]]) m.box(x, y, 18, x + 2, y + 1, 19, 'hair'); break
+    case 'Bald': hatBase = 17; break
   }
 
+  // eyewear sits one layer in front of the face (y=10)
   const ew = EYEWEAR[l.eyewear]
-  if (ew === 'Glasses' || ew === 'Sunglasses') {
-    const lens = ew === 'Sunglasses' ? 'lens' : 'eyes'
-    for (const x of [4, 9]) { m.box(x, 11, 15, x + 3, 12, 20, 'frame'); m.box(x + 1, 11, 16, x + 2, 12, 19, lens) }
-    m.box(7, 11, 18, 9, 12, 19, 'frame')
-    if (ew === 'Sunglasses') { m.box(4, 11, 16, 7, 12, 19, 'lens'); m.box(9, 11, 16, 12, 12, 19, 'lens') }
+  if (ew === 'Glasses' || ew === 'Sunglasses' || ew === 'Round glasses') {
+    const frame = ew === 'Round glasses' ? 'rim' : 'frame', lens = ew === 'Sunglasses' ? 'lens' : 'eyes'
+    m.box(5, 10, 12, 11, 11, 14, frame)
+    m.set(6, 10, 12, lens); m.set(6, 10, 13, lens); m.set(9, 10, 12, lens); m.set(9, 10, 13, lens)
+    if (ew === 'Sunglasses') { m.set(7, 10, 13, 'lens'); m.set(10, 10, 13, 'lens') }
+    if (ew === 'Round glasses') { m.set(5, 10, 13, 'skin'); m.set(10, 10, 13, 'skin') }
   }
-  if (ew === 'Round glasses') {
-    for (const x of [4, 9]) {
-      m.box(x, 11, 16, x + 3, 12, 17, 'rim'); m.box(x, 11, 19, x + 3, 12, 20, 'rim')
-      m.box(x, 11, 17, x + 1, 12, 19, 'rim'); m.box(x + 2, 11, 17, x + 3, 12, 19, 'rim'); m.box(x + 1, 11, 17, x + 2, 12, 19, 'eyes')
-    }
-    m.box(7, 11, 18, 9, 12, 19, 'rim')
-  }
-  if (ew === 'VR visor') { m.box(3, 10, 15, 13, 13, 21, 'frame'); m.box(4, 12, 16, 12, 13, 20, 'visor'); m.box(2, 6, 17, 3, 10, 19, 'frame'); m.box(13, 6, 17, 14, 10, 19, 'frame') }
+  if (ew === 'VR visor') { m.box(4, 9, 11, 12, 11, 15, 'frame'); m.box(5, 10, 12, 11, 11, 14, 'visor'); m.box(3, 7, 12, 4, 9, 14, 'frame'); m.box(12, 7, 12, 13, 9, 14, 'frame') }
   return hatBase
 }
 
-/** Small hats that sit on top of the hair (b = first free layer above it). */
+/** Small hats sitting on the hair (b = first free layer above it). */
 function buildHat(m: VModel, l: Look, b: number) {
   switch (HATS[l.hat]) {
     case 'Beanie':
-      m.box(5, 6, b, 11, 10, b + 2, 'hat'); m.box(5, 6, b, 11, 10, b + 1, 'hat2'); m.box(7, 7, b + 2, 9, 9, b + 3, 'hat2'); break
+      m.box(5, 6, b - 1, 11, 10, b + 1, 'hat'); m.box(5, 6, b - 1, 11, 10, b, 'hat2'); m.set(8, 7, b + 1, 'hat2'); break
     case 'Cap':
-      m.box(5, 6, b, 11, 10, b + 2, 'hat'); m.box(5, 10, b, 11, 12, b + 1, 'hat'); m.set(8, 8, b + 2, 'hat2'); break
+      m.box(5, 6, b - 1, 11, 10, b + 1, 'hat'); m.box(5, 10, b - 1, 11, 12, b, 'hat'); m.set(8, 7, b + 1, 'hat2'); break
     case 'Top hat':
-      m.box(4, 5, b, 12, 11, b + 1, 'hat'); m.box(5, 6, b + 1, 11, 10, b + 4, 'hat'); m.box(5, 6, b + 1, 11, 10, b + 2, 'hat2'); break
+      m.box(4, 5, b, 12, 10, b + 1, 'hat'); m.box(5, 6, b + 1, 11, 9, b + 4, 'hat'); m.box(5, 6, b + 1, 11, 9, b + 2, 'hat2'); break
     case 'Party hat':
-      m.box(6, 6, b, 10, 10, b + 1, 'hat'); m.box(7, 7, b + 1, 9, 9, b + 3, 'hat'); m.set(7, 8, b + 1, 'hat2'); m.set(8, 7, b + 2, 'hat2')
-      m.set(8, 8, b + 3, 'hat2'); break
+      m.box(6, 6, b, 10, 9, b + 1, 'hat'); m.box(7, 7, b + 1, 9, 8, b + 3, 'hat'); m.set(7, 7, b + 1, 'hat2'); m.set(8, 7, b + 3, 'hat2'); break
     case 'Bow':
-      m.box(8, 8, b - 1, 10, 10, b + 1, 'hat'); m.box(11, 8, b - 1, 13, 10, b + 1, 'hat'); m.set(10, 9, b - 1, 'hat2'); break
+      m.box(9, 7, b - 1, 10, 9, b + 1, 'hat'); m.box(11, 7, b - 1, 12, 9, b + 1, 'hat'); m.set(10, 8, b - 1, 'hat2'); m.set(10, 8, b, 'hat2'); break
     case 'Flower':
-      m.box(9, 8, b - 1, 12, 11, b, 'hat'); m.set(10, 9, b - 1, 'hat2'); m.set(10, 10, b, 'hat'); m.set(10, 8, b, 'hat'); break
+      m.set(10, 8, b, 'hat2'); m.set(9, 8, b, 'hat'); m.set(11, 8, b, 'hat'); m.set(10, 7, b, 'hat'); m.set(10, 9, b, 'hat'); break
     case 'Crown':
       m.box(5, 6, b, 11, 10, b + 1, 'hat')
       for (const [x, y] of [[5, 6], [10, 6], [5, 9], [10, 9], [7, 9], [8, 6]]) m.set(x, y, b + 1, 'hat')

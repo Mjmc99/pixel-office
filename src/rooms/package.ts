@@ -8,7 +8,7 @@ import type { CustomAsset, Facing } from '../world/types'
  * Coordinates are local to the room (0,0 = top-left tile inside the office).
  * Newer versions (higher `ver`) from the same owner + roomId replace older ones.
  */
-export interface RoomThing { id: string; item: string; x: number; y: number; f: Facing; cfg?: any }
+export interface RoomThing { id: string; item: string; x: number; y: number; f: Facing; cfg?: any; ox?: number; oy?: number }
 export interface RoomZone { id: string; name: string; x: number; y: number; w: number; h: number }
 export interface RoomContent {
   v: 1

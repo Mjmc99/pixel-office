@@ -1,4 +1,4 @@
-import { avatarTexture, ORIGIN as AV_ORIGIN } from '../avatars/avatars'
+import { avatarTexture, HEAD_TOP as AV_HEAD_TOP, ORIGIN as AV_ORIGIN } from '../avatars/avatars'
 import { toRecipe } from '../avatars/parts'
 import Phaser from 'phaser'
 import type { Transport } from '../net/transport'
@@ -7,6 +7,7 @@ import { zoneAt, type Zone } from '../media/proximity'
 import { buildingPlan, FLOOR, inside, isWallTile, regionAt, slotAt, tileAt, type Plan } from '../world/building'
 import { sign, verify } from '../world/crypto'
 import { canPlace, solidTiles, type Placement } from '../world/room'
+import { nudge } from '../world/state'
 import type { DecorDef, View, WorldState, ZoneDef } from '../world/state'
 import { FACINGS, type CustomAsset, type Facing, type ItemDef, type Manifest, type Presence } from '../world/types'
 
@@ -40,7 +41,7 @@ interface Avatar {
 }
 
 /** Something drawn on the map that people can bump into (world decor, room decor…). */
-export interface Thing extends Placement { id: string; floor: number; editable: boolean; source: 'world' | 'room'; cfg?: any }
+export interface Thing extends Placement { id: string; floor: number; editable: boolean; source: 'world' | 'room'; cfg?: any; ox?: number; oy?: number }
 
 /** Items that do something when you press E next to them (or step on them). */
 export const OBJECT_KINDS: Record<string, 'portal' | 'notes' | 'whiteboard' | 'tv'> = {
@@ -108,6 +109,8 @@ export class WorldScene extends Phaser.Scene {
   } | null = null
   // decorate mode
   decorating = false
+  /** Snap placed furniture to the tile grid. Off: pieces follow the mouse and keep a pixel offset. */
+  snap = (() => { try { return localStorage.getItem('po:snap') !== '0' } catch { return true } })()
   private buildItem: string | null = null
   private buildFacing: Facing = 'S'
   private ghost?: Phaser.GameObjects.Image
@@ -153,9 +156,14 @@ export class WorldScene extends Phaser.Scene {
     this.state.onChange.on(() => { this.rebuild(); this.onChange() })
 
     const kb = this.input.keyboard!
-    this.keys = kb.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,R,B,E,ESC,DELETE,SHIFT', false) as Record<string, Phaser.Input.Keyboard.Key>
+    this.keys = kb.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,R,B,E,G,ESC,DELETE,SHIFT,ALT', false) as Record<string, Phaser.Input.Keyboard.Key>
     kb.on('keydown-R', () => { if (!this.typing && this.decorating) this.rotate(this.keys.SHIFT.isDown ? -1 : 1) })
     kb.on('keydown-B', () => { if (!this.typing) this.setDecorating(!this.decorating) })
+    kb.on('keydown-G', () => { if (!this.typing && this.decorating) this.setSnap(!this.snap) })
+    kb.on('keydown-ALT', () => this.updateGhost())
+    kb.on('keyup-ALT', () => this.updateGhost())
+    // tapping Alt on its own would otherwise move focus to the browser menu (Windows)
+    window.addEventListener('keyup', (e) => { if (e.key === 'Alt' && this.decorating) e.preventDefault() })
     kb.on('keydown-ESC', () => { if (this.decorating) this.buildItem ? this.setBuildItem(null) : this.setDecorating(false) })
     kb.on('keydown-E', () => { if (!this.typing && this.near) this.onInteract(this.near) })
     kb.on('keydown-DELETE', () => { if (this.decorating && this.hoverId) this.deleteThing(this.hoverId) })
@@ -342,7 +350,7 @@ export class WorldScene extends Phaser.Scene {
     const canWorld = this.state.canDecorate()
     for (const d of this.view.decor.values()) {
       if (d.floor !== this.floor) continue
-      out.set(d.id, { id: d.id, item: d.item, x: d.x, y: d.y, f: d.f, floor: d.floor, editable: canWorld, source: 'world', cfg: d.cfg })
+      out.set(d.id, { id: d.id, item: d.item, x: d.x, y: d.y, f: d.f, floor: d.floor, editable: canWorld, source: 'world', cfg: d.cfg, ox: nudge(d.ox), oy: nudge(d.oy) })
     }
     for (const t of this.extraThings(this.floor)) out.set(t.id, t)
     return out
@@ -359,8 +367,9 @@ export class WorldScene extends Phaser.Scene {
       let spr = this.thingSprites.get(id)
       if (!spr) { spr = this.add.image(0, 0, tid, v.frame).setOrigin(0, 1); this.thingSprites.set(id, spr) }
       spr.setTexture(tid, v.frame)
-      spr.setPosition(p.x * T, (p.y + v.d) * T)
-      spr.setDepth(def.flat ? -10000 + p.y : (p.y + v.d) * T - 0.25)
+      const ox = nudge(p.ox), oy = nudge(p.oy)
+      spr.setPosition(p.x * T + ox, (p.y + v.d) * T + oy)
+      spr.setDepth(def.flat ? -10000 + p.y + oy / T : (p.y + v.d) * T + oy - 0.25)
     }
     this.solid = solidTiles(this.things.values(), this.defs)
     this.updateGhost()
@@ -411,10 +420,10 @@ export class WorldScene extends Phaser.Scene {
     a.sprite.setDepth(a.sprite.y)
     const text = this.labelText(a)
     if (a.label.text !== text) a.label.setText(text)
-    a.label.setPosition(Math.round(a.sprite.x), Math.round(a.sprite.y - 36))
+    a.label.setPosition(Math.round(a.sprite.x), Math.round(a.sprite.y - AV_HEAD_TOP - 5))
     a.label.setDepth(200000)
     if (a.bubble) {
-      a.bubble.setPosition(Math.round(a.sprite.x), Math.round(a.sprite.y - 44)).setDepth(200001)
+      a.bubble.setPosition(Math.round(a.sprite.x), Math.round(a.sprite.y - AV_HEAD_TOP - 13)).setDepth(200001)
       if (Date.now() > (a.bubbleUntil ?? 0)) { a.bubble.destroy(); a.bubble = undefined }
     }
   }
@@ -713,17 +722,28 @@ export class WorldScene extends Phaser.Scene {
     return canPlace(def, x, y, f, this.things.values(), this.defs, (tx, ty) => this.placeBlocked(tx, ty, x, y), ignore)
   }
 
-  private writeThing(t: { id: string; item: string; x: number; y: number; f: Facing; cfg?: any }) {
-    if (slotAt(this.plan, t.x, t.y)) this.roomEditHook?.set({ ...t, floor: this.floor })
-    else void this.state.author('decor.set', { ...t, floor: this.floor } satisfies Omit<DecorDef, 'by'>)
+  private writeThing(t: { id: string; item: string; x: number; y: number; f: Facing; cfg?: any; ox?: number; oy?: number }) {
+    const { ox, oy, ...rest } = t
+    const off = nudge(ox) || nudge(oy) ? { ox: nudge(ox), oy: nudge(oy) } : {}
+    if (slotAt(this.plan, t.x, t.y)) this.roomEditHook?.set({ ...rest, ...off, floor: this.floor })
+    else void this.state.author('decor.set', { ...rest, ...off, floor: this.floor } satisfies Omit<DecorDef, 'by'>)
   }
+
+  setSnap(on: boolean) {
+    this.snap = on
+    try { localStorage.setItem('po:snap', on ? '1' : '0') } catch { /* storage blocked */ }
+    this.updateGhost()
+    this.onChange()
+  }
+  /** Snapping right now: the setting, inverted while Alt is held. */
+  private snapping() { return this.snap !== !!this.keys?.ALT?.isDown }
 
   /** Update an object's settings (e.g. where a portal leads). */
   configure(id: string, cfg: any) {
     const t = this.things.get(id)
     if (!t?.editable) return false
     const localId = t.source === 'room' ? id.slice(id.lastIndexOf('/') + 1) : id
-    this.writeThing({ id: localId, item: t.item, x: t.x, y: t.y, f: t.f, cfg })
+    this.writeThing({ id: localId, item: t.item, x: t.x, y: t.y, f: t.f, cfg, ox: t.ox, oy: t.oy })
     return true
   }
   thing(id: string) { return this.things.get(id) }
@@ -750,7 +770,7 @@ export class WorldScene extends Phaser.Scene {
     if (!p || !def || !p.editable) return
     const f = next(p.f)
     const localId = p.source === 'room' ? p.id.slice(p.id.lastIndexOf('/') + 1) : p.id
-    if (this.canPlaceAt(def, p.x, p.y, f, p.id)) this.writeThing({ id: localId, item: p.item, x: p.x, y: p.y, f, cfg: p.cfg })
+    if (this.canPlaceAt(def, p.x, p.y, f, p.id)) this.writeThing({ id: localId, item: p.item, x: p.x, y: p.y, f, cfg: p.cfg, ox: p.ox, oy: p.oy })
     else this.cameras.main.shake(80, 0.002)
   }
 
@@ -779,15 +799,22 @@ export class WorldScene extends Phaser.Scene {
     for (const spr of this.thingSprites.values()) spr.clearTint()
     if (this.zoneMode) { if (this.dragStart) this.drawDrag(); return }
     if (!this.decorating) return
-    const { tx, ty } = this.pointerTile()
+    const { tx, ty, wx, wy } = this.pointerTile()
     if (this.ghost && this.buildItem) {
       const def = this.defs.get(this.buildItem)!
       const v = def.views[this.buildFacing]
-      const gx = tx - Math.floor((v.w - 1) / 2), gy = ty - Math.floor((v.d - 1) / 2)
-      this.ghost.setFrame(v.frame).setPosition(gx * T, (gy + v.d) * T).setDepth(300000)
+      let gx = tx - Math.floor((v.w - 1) / 2), gy = ty - Math.floor((v.d - 1) / 2), ox = 0, oy = 0
+      if (!this.snapping()) {
+        // free placement: the footprint's centre follows the mouse; the piece is anchored to
+        // the nearest tile (for collisions and walking) and keeps the rest as a pixel offset
+        const left = Math.round(wx - (v.w * T) / 2), top = Math.round(wy - (v.d * T) / 2)
+        gx = Math.round(left / T); gy = Math.round(top / T)
+        ox = Math.max(-8, Math.min(8, left - gx * T)); oy = Math.max(-8, Math.min(8, top - gy * T))
+      }
+      this.ghost.setFrame(v.frame).setPosition(gx * T + ox, (gy + v.d) * T + oy).setDepth(300000)
       const ok = this.canPlaceAt(def, gx, gy, this.buildFacing)
       this.ghost.setTint(ok ? 0xa0ffa0 : 0xff7070)
-      this.ghost.setData('pos', { x: gx, y: gy, ok })
+      this.ghost.setData('pos', { x: gx, y: gy, ox, oy, ok })
       this.hoverId = null
       return
     }
@@ -816,13 +843,13 @@ export class WorldScene extends Phaser.Scene {
       return
     }
     if (this.buildItem && this.ghost) {
-      const pos = this.ghost.getData('pos') as { x: number; y: number; ok: boolean }
+      const pos = this.ghost.getData('pos') as { x: number; y: number; ox: number; oy: number; ok: boolean }
       if (!pos?.ok) { this.cameras.main.shake(80, 0.002); return }
       const id = Math.random().toString(36).slice(2, 10)
       const cfg = this.ghost.getData('cfg')
-      this.writeThing({ id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing, ...(cfg ? { cfg } : {}) })
+      this.writeThing({ id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing, ox: pos.ox, oy: pos.oy, ...(cfg ? { cfg } : {}) })
       // optimistic: treat as taken until the op replays
-      this.things.set(id, { id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing, floor: this.floor, editable: true, source: 'world' })
+      this.things.set(id, { id, item: this.buildItem, x: pos.x, y: pos.y, f: this.buildFacing, floor: this.floor, editable: true, source: 'world', ox: pos.ox, oy: pos.oy })
       const placedKind = kindOf(this.buildItem)
       if (!p.event.shiftKey && this.ghost.getData('moving')) this.setBuildItem(null)
       // a brand-new portal: ask where it goes

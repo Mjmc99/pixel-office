@@ -21,7 +21,7 @@ test('avatar recipes: legacy ids, garbage and round-trips are all safe', async (
   expect(r.junk).toMatch(/^v2(\.\d+){13}$/)
   expect(r.notString).toMatch(/^v2(\.\d+){13}$/)
   expect(r.roundTrip).toBe(true)
-  expect(r.sheet).toEqual([192, 46])
+  expect(r.sheet).toEqual([192, 40])
   // first-version recipes still load: darkest skin, mohawk, suit, sunglasses, cat ears
   expect([r.v1.skin, r.v1.hair, r.v1.top, r.v1.eyewear, r.v1.hat]).toEqual([255, 6, 2, 3, 8])
 })

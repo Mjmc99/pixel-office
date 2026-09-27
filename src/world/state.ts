@@ -17,7 +17,9 @@ import type { Facing } from './types'
 export interface Op { id: string; t: string; p: any; by: string; ts: number; sig: string }
 
 export interface ZoneDef { id: string; name: string; x: number; y: number; w: number; h: number; floor: number; stage?: boolean; room?: string }
-export interface DecorDef { id: string; item: string; x: number; y: number; f: Facing; floor: number; by: string; room?: string; cfg?: any }
+export interface DecorDef { id: string; item: string; x: number; y: number; f: Facing; floor: number; by: string; room?: string; cfg?: any; ox?: number; oy?: number }
+/** Off-grid placement: a pixel offset of at most half a tile from the anchor tile (untrusted input). */
+export const nudge = (v: unknown) => (typeof v === 'number' && Number.isInteger(v) && Math.abs(v) <= 8 ? v : 0)
 export interface Policy { decor: 'everyone' | 'mods'; rooms: 'open' | 'approval' | 'closed' }
 
 export interface View {

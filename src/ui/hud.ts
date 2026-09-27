@@ -26,6 +26,7 @@ export class Hud {
   private peersEl = el('div', 'peers')
   private titleEl = el('div', 'title')
   private palette = el('div', 'palette hidden')
+  private snapBtn = el('button', 'btn small snap', '')
   private grid = el('div', 'grid')
   private tabs = el('div', 'tabs')
   private status = el('div', 'status')
@@ -361,6 +362,9 @@ export class Hud {
       b.onclick = () => { this.themeTab = t.id; close(); t.onOpen?.(); this.renderTabs(); this.renderGrid() }
       this.tabs.append(b)
     }
+    this.snapBtn.title = 'Snap furniture to the tile grid (G). Hold Alt to flip it for one placement.'
+    this.snapBtn.onclick = () => this.scene.setSnap(!this.scene.snap)
+    if (this.themeTab !== 'zones') this.tabs.append(this.snapBtn)
     if (this.manifest.themes[this.themeTab] && this.state.isMod) {
       const use = el('button', 'btn small', 'Use this style for walls')
       use.onclick = () => this.scene.setTheme(this.themeTab)
@@ -428,6 +432,8 @@ export class Hud {
     const tabSig = [s.canZoneHere, st.isMod, ...this.extraTabs.map((t) => t.visible())].join()
     if (tabSig !== this.tabSig) { this.tabSig = tabSig; this.renderTabs() }
     this.decoBtn.classList.toggle('on', s.decorating)
+    this.snapBtn.innerHTML = `${s.snap ? '▦ Snap: on' : '◇ Snap: off'} <kbd>G</kbd>`
+    this.snapBtn.classList.toggle('on', s.snap)
     this.palette.classList.toggle('hidden', !s.decorating)
     if (this.themeTab === 'zones' && s.decorating && !s.zoneMode && s.canZoneHere) s.setZoneMode(true)
     if (this.themeTab === 'zones' && s.decorating && JSON.stringify(s.zones) !== this.zoneSig && !this.grid.contains(document.activeElement)) this.renderZones()
@@ -436,7 +442,7 @@ export class Hud {
       ? 'Drag to draw a call zone · right-click a zone to delete'
       : s.decorating
         ? s.selectedItem
-          ? `Placing <b>${esc(s.defs.get(s.selectedItem)?.label ?? '')}</b> facing <b>${s.facing}</b> · <kbd>R</kbd> rotate · click place · right-click cancel`
+          ? `Placing <b>${esc(s.defs.get(s.selectedItem)?.label ?? '')}</b> facing <b>${s.facing}</b> · <kbd>R</kbd> rotate · <kbd>G</kbd> ${s.snap ? 'free placement' : 'snap to grid'} (or hold <kbd>Alt</kbd>) · click place · right-click cancel`
           : st.canDecorate() ? 'Pick an item · hover furniture: <kbd>R</kbd> rotate, click move, right-click delete' : 'Only moderators can decorate common areas here. You can decorate your own office.'
         : `<kbd>WASD</kbd> move · walk up to people or into a zone to talk${floorNote}`
     for (const b of this.grid.querySelectorAll<HTMLButtonElement>('.item')) b.classList.toggle('on', b.dataset.item === s.selectedItem)
