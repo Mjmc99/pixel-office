@@ -35,6 +35,20 @@ registerOp('room.place', (v, op, r) => {
     size: p.size, by: op.by, pending: v.policy.rooms === 'approval' && !r.mod,
   })
 })
+// an office owner (or a mod) moves an office to another free slot of the same size
+registerOp('room.move', (v, op, r) => {
+  const p = op.p ?? {}
+  const rooms = placements(v)
+  const from = `${p.from?.floor}:${p.from?.slot}`
+  const pl = rooms.get(from)
+  const slot = slotById(p.to?.slot)
+  const floor = Number(p.to?.floor) || 0
+  const key = `${floor}:${p.to?.slot}`
+  if (!pl || r.banned || !(r.mod || op.by === pl.owner)) return
+  if (!slot || slot.size !== pl.size || floor >= v.floors || rooms.has(key)) return
+  rooms.delete(from)
+  rooms.set(key, { ...pl, key, slot: slot.id, floor })
+})
 registerOp('room.approve', (v, op, r) => {
   const pl = placements(v).get(`${op.p?.floor}:${op.p?.slot}`)
   if (pl && r.mod) pl.pending = false
@@ -105,9 +119,15 @@ export class Rooms {
   findPlaced(p: { owner: string; roomId: string }) { return this.list().find((x) => x.owner === p.owner && x.roomId === p.roomId) }
 
   freeSlot(size: SlotSize, floor: number): Slot | null {
-    const taken = new Set(this.onFloor(floor).map((p) => p.slot))
-    return buildingPlan().slots.find((s) => s.size === size && !taken.has(s.id)) ?? null
+    return this.freeSlots(floor, size)[0] ?? null
   }
+  /** Empty slots on a floor (optionally only one size). */
+  freeSlots(floor: number, size?: SlotSize): Slot[] {
+    const taken = new Set(this.onFloor(floor).map((p) => p.slot))
+    return buildingPlan().slots.filter((s) => (!size || s.size === size) && !taken.has(s.id))
+  }
+  /** My offices (packages I own) that aren't placed in this world. */
+  myUnplaced() { return this.myPackages().filter((p) => !this.findPlaced(p)) }
   canPlace() {
     const v = this.state.view
     return !this.state.isBanned && (v.policy.rooms !== 'closed' || this.state.isMod)
@@ -145,6 +165,11 @@ export class Rooms {
     mutate(next)
     next.ver = cur.ver + 1
     await this.accept(await signPackage(this.state.me, next))
+  }
+
+  /** Move an office to another free slot (same size), on any floor. */
+  move(pl: Placement, slot: Slot, floor: number) {
+    return this.state.author('room.move', { from: { slot: pl.slot, floor: pl.floor }, to: { slot: slot.id, floor } })
   }
 
   approve(pl: Placement) { return this.state.author('room.approve', { slot: pl.slot, floor: pl.floor }) }
@@ -251,6 +276,6 @@ export class Rooms {
 
   /** Signature of what affects the drawn building (to know when to redraw floors/signs). */
   structureSig(floor: number) {
-    return this.onFloor(floor).map((p) => `${p.slot}:${p.pending}:${this.pkgFor(p)?.floorStyle}:${this.pkgFor(p)?.name}`).join('|')
+    return this.onFloor(floor).map((p) => { const k = this.pkgFor(p); return `${p.slot}:${p.pending}:${k?.floorStyle}:${k?.wallStyle}:${k?.name}` }).join('|')
   }
 }

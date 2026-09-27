@@ -97,4 +97,26 @@ export function slotAt(p: Plan, x: number, y: number): Slot | null {
   return p.slots.find((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h) ?? null
 }
 
+/**
+ * Which offices each wall tile belongs to (tile index -> slot ids, west first).
+ * A wall belongs to an office when it touches the office's floor, so a wall
+ * shared by two offices lists both; the first one that is placed styles it.
+ */
+let wallCache: Map<number, string[]> | null = null
+export function wallSlots(): Map<number, string[]> {
+  if (wallCache) return wallCache
+  const p = buildingPlan()
+  const out = new Map<number, string[]>()
+  for (const s of p.slots) {
+    for (let y = s.y - 1; y <= s.y + s.h; y++) {
+      for (let x = s.x - 1; x <= s.x + s.w; x++) {
+        if (inside(s, x, y) || tileAt(p, x, y) !== WALL) continue
+        const i = y * p.w + x
+        out.set(i, [...(out.get(i) ?? []), s.id])
+      }
+    }
+  }
+  return (wallCache = out)
+}
+
 export const inside = (r: Rect, x: number, y: number) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h

@@ -4,7 +4,7 @@ import Phaser from 'phaser'
 import type { Transport } from '../net/transport'
 import type { Call } from '../media/call'
 import { zoneAt, type Zone } from '../media/proximity'
-import { buildingPlan, FLOOR, inside, isWallTile, regionAt, slotAt, tileAt, type Plan } from '../world/building'
+import { buildingPlan, FLOOR, inside, isWallTile, regionAt, slotAt, tileAt, wallSlots, type Plan, type Slot, type SlotSize } from '../world/building'
 import { sign, verify } from '../world/crypto'
 import { canPlace, solidTiles, type Placement } from '../world/room'
 import { nudge } from '../world/state'
@@ -94,7 +94,7 @@ export class WorldScene extends Phaser.Scene {
   private onPortal: string | null = null
   /** Later phases: zones that belong to offices, and how offices look. */
   extraZones: (floor: number) => (Zone & { room?: string })[] = () => []
-  slotInfo: (slotId: string, floor: number) => { style: string; label: string; pending: boolean } | null = () => null
+  slotInfo: (slotId: string, floor: number) => { style: string; wall: string | null; label: string; pending: boolean } | null = () => null
   structureSig: (floor: number) => string = () => ''
   roomZoneHook: {
     canZone: (floor: number) => boolean
@@ -107,6 +107,17 @@ export class WorldScene extends Phaser.Scene {
     set: (t: Omit<Thing, 'editable' | 'source'>) => void
     del: (id: string) => void
   } | null = null
+  /** "Pick a spot" mode: choose a free office slot on the map (claim / move / add an office). */
+  private picker: {
+    size: SlotSize | null
+    current: { slot: string; floor: number } | null
+    onPick: (slot: Slot, floor: number) => void
+    onCancel: () => void
+    home: { floor: number; x: number; y: number }
+  } | null = null
+  private pickGfx: Phaser.GameObjects.GameObject[] = []
+  private pickHover: string | null = null
+  get picking() { return !!this.picker }
   // decorate mode
   decorating = false
   /** Snap placed furniture to the tile grid. Off: pieces follow the mouse and keep a pixel offset. */
@@ -158,17 +169,17 @@ export class WorldScene extends Phaser.Scene {
     const kb = this.input.keyboard!
     this.keys = kb.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,R,B,E,G,ESC,DELETE,SHIFT,ALT', false) as Record<string, Phaser.Input.Keyboard.Key>
     kb.on('keydown-R', () => { if (!this.typing && this.decorating) this.rotate(this.keys.SHIFT.isDown ? -1 : 1) })
-    kb.on('keydown-B', () => { if (!this.typing) this.setDecorating(!this.decorating) })
+    kb.on('keydown-B', () => { if (!this.typing && !this.picker) this.setDecorating(!this.decorating) })
     kb.on('keydown-G', () => { if (!this.typing && this.decorating) this.setSnap(!this.snap) })
     kb.on('keydown-ALT', () => this.updateGhost())
     kb.on('keyup-ALT', () => this.updateGhost())
     // tapping Alt on its own would otherwise move focus to the browser menu (Windows)
     window.addEventListener('keyup', (e) => { if (e.key === 'Alt' && this.decorating) e.preventDefault() })
-    kb.on('keydown-ESC', () => { if (this.decorating) this.buildItem ? this.setBuildItem(null) : this.setDecorating(false) })
+    kb.on('keydown-ESC', () => { if (this.picker) this.cancelPicking(); else if (this.decorating) this.buildItem ? this.setBuildItem(null) : this.setDecorating(false) })
     kb.on('keydown-E', () => { if (!this.typing && this.near) this.onInteract(this.near) })
     kb.on('keydown-DELETE', () => { if (this.decorating && this.hoverId) this.deleteThing(this.hoverId) })
     this.input.mouse?.disableContextMenu()
-    this.input.on('pointermove', () => this.updateGhost())
+    this.input.on('pointermove', () => { if (this.picker) this.hoverPick(); else this.updateGhost() })
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => this.onPointerDown(p))
     this.input.on('pointerup', () => this.onPointerUp())
 
@@ -208,6 +219,7 @@ export class WorldScene extends Phaser.Scene {
 
   // ------------------------------------------------------------------ layout
   private fitZoom() {
+    if (this.picker) return this.fitPickZoom()
     const z = Math.max(2, Math.min(4, Math.round(Math.min(this.scale.width, this.scale.height * 1.4) / (T * 22))))
     this.cameras.main.setZoom(z)
   }
@@ -224,6 +236,7 @@ export class WorldScene extends Phaser.Scene {
       .sort((a, b) => a.name.localeCompare(b.name))
     this.buildZones()
     this.syncThings()
+    if (this.picker) this.drawPicker()
     if (this.floor >= this.view.floors) this.goFloor(0)
   }
 
@@ -273,7 +286,16 @@ export class WorldScene extends Phaser.Scene {
     const et = this.add.text((e.x + e.w / 2) * T, (e.y + 0.5) * T, 'ELEVATOR', { fontFamily: 'monospace', fontSize: '20px', color: '#f2c14e' })
       .setOrigin(0.5).setScale(0.25).setResolution(2).setDepth(-18989)
     this.structure.push(eg, et)
-    // walls: tall where a floor lies to the south (face visible), low where floor lies north
+    // walls: tall where a floor lies to the south (face visible), low where floor lies north.
+    // Walls around a placed office use that office's own wall style.
+    const owned = wallSlots()
+    const wallAtlas = (x: number, y: number) => {
+      for (const id of owned.get(y * p.w + x) ?? []) {
+        const info = this.slotInfo(id, this.floor)
+        if (info && !info.pending) return info.wall ?? th
+      }
+      return th
+    }
     for (let y = 0; y < p.h; y++) {
       for (let x = 0; x < p.w; x++) {
         if (tileAt(p, x, y) !== 2) continue
@@ -288,7 +310,7 @@ export class WorldScene extends Phaser.Scene {
           this.structure.push(cap)
           continue
         }
-        const img = this.add.image(x * T, (y + 1) * T, th, low ? 'wall_low' : 'wall_tall').setOrigin(0, 1)
+        const img = this.add.image(x * T, (y + 1) * T, wallAtlas(x, y), low ? 'wall_low' : 'wall_tall').setOrigin(0, 1)
         img.setDepth(low ? (y + 1) * T + 40 : (y + 1) * T - 0.5)
         this.structure.push(img)
       }
@@ -505,7 +527,7 @@ export class WorldScene extends Phaser.Scene {
     const dt = Math.min(dtMs, 50)
     const k = this.keys
     let vx = 0, vy = 0
-    if (!this.typing) {
+    if (!this.typing && !this.picker) {
       if (k.A.isDown || k.LEFT.isDown) vx -= 1
       if (k.D.isDown || k.RIGHT.isDown) vx += 1
       if (k.W.isDown || k.UP.isDown) vy -= 1
@@ -823,6 +845,16 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private onPointerDown(p: Phaser.Input.Pointer) {
+    if (this.picker) {
+      if (p.rightButtonDown()) return this.cancelPicking()
+      const slot = this.pickSlotUnder()
+      if (slot && this.pickable(slot)) {
+        const pk = this.picker
+        this.stopPicking()
+        pk.onPick(slot, this.floor)
+      } else this.cameras.main.shake(80, 0.002)
+      return
+    }
     if (this.zoneMode) {
       if (p.rightButtonDown()) {
         const { tx, ty } = this.pointerTile()
@@ -926,6 +958,110 @@ export class WorldScene extends Phaser.Scene {
       zone: zoneAt(this.zones, { x: this.me.sprite.x, y: this.me.sprite.y })?.id ?? null,
       call: this.deps.call.mesh.stats(),
       owner: this.state.isOwner,
+    }
+  }
+
+  // ------------------------------------------------------------------ pick a spot
+  /** Zoom out to the whole floor and let the player click a free office slot. */
+  startPicking(opts: { size: SlotSize | null; current?: { slot: string; floor: number } | null; onPick: (slot: Slot, floor: number) => void; onCancel?: () => void }) {
+    if (this.picker) this.stopPicking()
+    if (this.decorating) this.setDecorating(false)
+    this.picker = {
+      size: opts.size, current: opts.current ?? null, onPick: opts.onPick, onCancel: opts.onCancel ?? (() => {}),
+      home: { floor: this.floor, x: this.me.sprite.x, y: this.me.sprite.y },
+    }
+    this.pickHover = null
+    this.cameras.main.stopFollow()
+    this.fitPickZoom()
+    this.drawPicker()
+    this.onChange()
+  }
+
+  /** Leave pick mode without choosing: back to where you were. */
+  cancelPicking() {
+    const pk = this.picker
+    if (!pk) return
+    this.stopPicking()
+    if (this.floor !== pk.home.floor) this.goFloor(pk.home.floor)
+    this.teleport(pk.home.x, pk.home.y)
+    pk.onCancel()
+  }
+
+  private stopPicking() {
+    this.picker = null
+    for (const o of this.pickGfx) o.destroy()
+    this.pickGfx = []
+    this.cameras.main.startFollow(this.me.sprite, true, 0.15, 0.15)
+    this.fitZoom()
+    this.onChange()
+  }
+
+  /** Browse another floor while picking. */
+  pickFloor(n: number) {
+    if (!this.picker || n < 0 || n >= this.view.floors) return
+    this.goFloor(n)
+    this.fitPickZoom()
+    this.drawPicker()
+  }
+
+  /** Can the office being placed go into this slot? */
+  pickable(s: Slot) {
+    const pk = this.picker
+    if (!pk || (pk.size && s.size !== pk.size)) return false
+    return !this.slotInfo(s.id, this.floor)
+  }
+
+  private fitPickZoom() {
+    const c = this.cameras.main, p = this.plan
+    const z = Math.min(this.scale.width / ((p.w + 2) * T), (this.scale.height - 120) / ((p.h + 2) * T))
+    c.setZoom(Math.max(0.5, Math.min(3, z)))
+    c.centerOn((p.w * T) / 2, (p.h * T) / 2 - 40 / c.zoom)
+  }
+
+  private pickSlotUnder() {
+    const { tx, ty } = this.pointerTile()
+    return this.plan.slots.find((s) => tx >= s.x - 1 && tx <= s.x + s.w && ty >= s.y - 1 && ty <= s.y + s.h) ?? null
+  }
+
+  private hoverPick() {
+    const id = this.pickSlotUnder()?.id ?? null
+    if (id !== this.pickHover) { this.pickHover = id; this.drawPicker() }
+    this.game.canvas.style.cursor = id && this.pickable(this.plan.slots.find((s) => s.id === id)!) ? 'pointer' : ''
+  }
+
+  private drawPicker() {
+    for (const o of this.pickGfx) o.destroy()
+    this.pickGfx = []
+    const pk = this.picker
+    if (!pk) { this.game.canvas.style.cursor = ''; return }
+    const z = this.cameras.main.zoom
+    const g = this.add.graphics().setDepth(200000)
+    this.pickGfx.push(g)
+    // darken everything, then light up the slots
+    g.fillStyle(0x0c0b10, 0.45).fillRect(-T * 4, -T * 6, (this.plan.w + 8) * T, (this.plan.h + 10) * T)
+    const text = (x: number, y: number, s: string, color: string) => {
+      const t = this.add.text(x, y, s, { fontFamily: 'monospace', fontSize: '26px', fontStyle: 'bold', color, align: 'center', stroke: '#141319', strokeThickness: 5 })
+        .setOrigin(0.5).setScale(0.5 / Math.max(z, 0.5)).setResolution(2).setDepth(200001)
+      this.pickGfx.push(t)
+    }
+    for (const s of this.plan.slots) {
+      const [x, y, w, h] = [s.x * T, s.y * T, s.w * T, s.h * T]
+      const here = pk.current && pk.current.slot === s.id && pk.current.floor === this.floor
+      const hover = this.pickHover === s.id
+      if (here) {
+        g.fillStyle(0x6aa8f2, 0.25).fillRect(x, y, w, h)
+        g.lineStyle(2, 0x6aa8f2, 1).strokeRect(x, y, w, h)
+        text(x + w / 2, y + h / 2, `YOUR OFFICE\n(${s.id})`, '#9cc6f7')
+      } else if (this.pickable(s)) {
+        g.fillStyle(0x5fd38d, hover ? 0.45 : 0.2).fillRect(x, y, w, h)
+        g.lineStyle(hover ? 3 : 2, 0x5fd38d, 1).strokeRect(x, y, w, h)
+        text(x + w / 2, y + h / 2, hover ? `PUT IT HERE\n${s.id}` : `${s.id}\n${s.size === 'M' ? 'large' : 'small'}`, hover ? '#ffffff' : '#bff0d2')
+      } else if (!this.slotInfo(s.id, this.floor)) {
+        text(x + w / 2, y + h / 2, `${s.id}\n${s.size === 'M' ? 'large only' : 'small only'}`, '#6f6a7c')
+      } else {
+        g.fillStyle(0x0c0b10, 0.35).fillRect(x, y, w, h)
+        text(x + w / 2, y + h / 2, this.slotInfo(s.id, this.floor)!.label, '#8f8a9c')
+      }
     }
   }
 

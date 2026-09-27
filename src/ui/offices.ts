@@ -2,7 +2,7 @@ import type { Rooms, Placement } from '../rooms/rooms'
 import type { RoomPackage } from '../rooms/package'
 import type { WorldScene } from '../scenes/WorldScene'
 import type { WorldState } from '../world/state'
-import { buildingPlan, slotAt } from '../world/building'
+import { buildingPlan, slotAt, type Slot, type SlotSize } from '../world/building'
 import { shortKey } from '../world/crypto'
 import { el, esc, type Hud } from './hud'
 
@@ -10,13 +10,63 @@ import { el, esc, type Hud } from './hud'
 export class OfficePanel {
   private panel = el('div', 'card panel offices hidden')
   private modal = el('div', 'modal hidden')
+  private pickBar = el('div', 'card pickbar hidden')
   open = false
   onEditCode: (pl: Placement) => void = () => {}
 
   constructor(private hud: Hud, private scene: WorldScene, private rooms: Rooms, private state: WorldState, private worldLink: () => string) {
-    hud.root.append(this.panel, this.modal)
+    hud.root.append(this.panel, this.modal, this.pickBar)
     rooms.onChange.on(() => this.render())
     state.onChange.on(() => this.render())
+    // Decorate > "My office": walls and floor for your own office, one click each
+    hud.extraTabs.push({
+      id: 'myoffice', label: 'My office',
+      visible: () => this.myOfficesHere().length > 0,
+      render: (grid) => this.renderStyleTab(grid),
+    })
+    rooms.onChange.on(() => { if (this.hud.root.querySelector('.palette:not(.hidden) .swatches')) this.hud.renderGrid() })
+  }
+
+  /** My active offices on the floor I'm on. */
+  private myOfficesHere() {
+    return this.rooms.onFloor(this.scene.floor).filter((pl) => pl.owner === this.state.me.pub && !pl.pending && this.rooms.pkgFor(pl))
+  }
+
+  /** The office whose style the "My office" tab edits: the one I'm standing in, else my first one on this floor. */
+  private styleTarget() {
+    const t = this.scene.meTile()
+    return this.rooms.myPlacementAt(t.x, t.y, this.scene.floor)?.pl ?? this.myOfficesHere()[0] ?? null
+  }
+
+  private renderStyleTab(grid: HTMLElement) {
+    const pl = this.styleTarget()
+    const pkg = pl && this.rooms.pkgFor(pl)
+    if (!pl || !pkg) { grid.append(el('div', 'zone-help', 'You have no office on this floor.')); return }
+    const themes = Object.entries(this.scene.deps.manifest.themes)
+    const box = el('div', 'swatches')
+    box.append(el('div', 'swatch-label', `Walls of <b>${esc(pkg.name)}</b> — only your office changes; everyone picks their own.`))
+    const wallSw = (id: string | null, label: string) => {
+      const b = el('button', 'swatch' + ((pkg.wallStyle ?? null) === id ? ' on' : ''))
+      b.dataset.wall = id ?? 'building'
+      const img = el('div', 'wallprev')
+      img.style.backgroundImage = `url(${this.hud.thumb(id ?? this.scene.theme, 'wall_tall')})`
+      b.append(img, el('span', '', label))
+      b.onclick = () => void this.rooms.edit(pl, (c) => { if (id) c.wallStyle = id; else delete c.wallStyle })
+      box.append(b)
+    }
+    wallSw(null, 'Building')
+    for (const [id, th] of themes) wallSw(id, th.label)
+    box.append(el('div', 'swatch-label', 'Floor'))
+    for (const [id, th] of themes) {
+      const b = el('button', 'swatch' + (pkg.floorStyle === id ? ' on' : ''))
+      b.dataset.floor = id
+      const img = el('div', 'floorprev')
+      img.style.backgroundImage = `url(${this.hud.thumb(id, 'floor0_0')})`
+      b.append(img, el('span', '', th.label))
+      b.onclick = () => void this.rooms.edit(pl, (c) => { c.floorStyle = id })
+      box.append(b)
+    }
+    grid.append(box)
   }
 
   toggle() { this.open = !this.open; this.render() }
@@ -31,6 +81,76 @@ export class OfficePanel {
     if (this.scene.floor !== pl.floor) this.scene.goFloor(pl.floor)
     const d = this.doorOf(pl)
     this.scene.teleport(d.x * 16 + 8, d.y * 16 + 10)
+  }
+
+  /**
+   * Zoom out to the floor map and let the player click where the office goes.
+   * `size` null = any free slot (a brand-new office takes the size of the slot).
+   */
+  pick(title: string, size: SlotSize | null, onPick: (slot: Slot, floor: number) => void | Promise<void>, current: Placement | null = null) {
+    const wasOpen = this.open
+    this.open = false
+    this.render()
+    const bar = this.pickBar
+    const done = () => { bar.classList.add('hidden'); this.scene.onChange() }
+    const draw = () => {
+      bar.innerHTML = ''
+      bar.append(el('div', 'ptitle', esc(title)))
+      const free = this.rooms.freeSlots(this.scene.floor, size ?? undefined).length
+      bar.append(el('div', 'hint', free
+        ? `Click a <b style="color:#5fd38d">green</b> office to put it there.${size ? ` Only ${size === 'M' ? 'large' : 'small'} offices fit.` : ''}`
+        : `No free ${size ? (size === 'M' ? 'large ' : 'small ') : ''}offices on this floor${this.state.view.floors > 1 ? ' — try another floor.' : '. A moderator can add a floor.'}`))
+      const row = el('div', 'row')
+      const floors = this.state.view.floors
+      if (floors > 1) {
+        for (let f = 0; f < floors; f++) {
+          const n = this.rooms.freeSlots(f, size ?? undefined).length
+          const b = el('button', 'btn small' + (f === this.scene.floor ? ' on' : ''), `Floor ${f + 1}${n ? ` · ${n} free` : ''}`)
+          b.onclick = () => { this.scene.pickFloor(f); draw() }
+          row.append(b)
+        }
+      }
+      const cancel = el('button', 'btn small', 'Cancel <kbd>Esc</kbd>')
+      cancel.onclick = () => this.scene.cancelPicking()
+      row.append(cancel)
+      bar.append(row)
+    }
+    bar.classList.remove('hidden')
+    draw()
+    this.scene.startPicking({
+      size,
+      current: current ? { slot: current.slot, floor: current.floor } : null,
+      onPick: async (slot, floor) => { done(); await onPick(slot, floor) },
+      onCancel: () => { done(); if (wasOpen) this.toggle() },
+    })
+  }
+
+  /** Pick a spot for a brand-new office. */
+  pickNew() {
+    this.pick('Where should your new office go?', null, async (slot, floor) => {
+      await this.rooms.claim(slot, floor, this.scene.deps.me.name)
+      const pl = this.rooms.placementAt(slot.id, floor)
+      if (pl) this.goTo(pl)
+    })
+  }
+
+  /** Pick a new spot for one of my placed offices. */
+  pickMove(pl: Placement) {
+    const pkg = this.rooms.pkgFor(pl)
+    this.pick(`Move “${pkg?.name ?? pl.name}”`, pl.size, async (slot, floor) => {
+      await this.rooms.move(pl, slot, floor)
+      const moved = this.rooms.placementAt(slot.id, floor)
+      if (moved) this.goTo(moved)
+    }, pl)
+  }
+
+  /** Pick a spot for an office package (from a link, or one of mine not placed here yet). */
+  pickPackage(pkg: RoomPackage) {
+    this.pick(`Place “${pkg.name}”`, pkg.size, async (slot, floor) => {
+      await this.rooms.place(pkg, slot, floor)
+      const pl = this.rooms.findPlaced(pkg)
+      if (pl) this.goTo(pl)
+    })
   }
 
   private async copy(btn: HTMLButtonElement, text: string | null, label: string) {
@@ -54,13 +174,19 @@ export class OfficePanel {
 
     if (!this.rooms.canPlace()) {
       p.append(el('div', 'hint', 'This world is closed to new offices.'))
-    } else if (here && !taken) {
-      const b = el('button', 'btn', `Claim office ${here.id} (${here.size === 'M' ? 'large' : 'small'})`)
-      b.onclick = async () => { b.disabled = true; await this.rooms.claim(here, this.scene.floor, this.scene.deps.me.name) }
-      p.append(b)
-      if (this.state.view.policy.rooms === 'approval' && !this.state.isMod) p.append(el('div', 'hint', 'A moderator will need to approve it.'))
     } else {
-      p.append(el('div', 'hint', 'Walk into an empty office to claim it, or open someone\'s office link to add their office here.'))
+      const row = el('div', 'row')
+      const pickB = el('button', 'btn', '＋ New office: pick a spot')
+      pickB.title = 'Shows the floor map; click any free office'
+      pickB.onclick = () => this.pickNew()
+      row.append(pickB)
+      if (here && !taken) {
+        const b = el('button', 'btn', `Claim ${here.id} (where I'm standing)`)
+        b.onclick = async () => { b.disabled = true; await this.rooms.claim(here, this.scene.floor, this.scene.deps.me.name) }
+        row.append(b)
+      }
+      p.append(row)
+      if (this.state.view.policy.rooms === 'approval' && !this.state.isMod) p.append(el('div', 'hint', 'A moderator will need to approve new offices.'))
     }
 
     const mine = this.rooms.mine()
@@ -76,6 +202,13 @@ export class OfficePanel {
       for (const [id, th] of Object.entries(this.scene.deps.manifest.themes)) style.append(new Option(`${th.label} floor`, id))
       style.value = pkg?.floorStyle ?? 'office'
       style.onchange = () => void this.rooms.edit(pl, (c) => { c.floorStyle = style.value })
+      const walls = el('select') as HTMLSelectElement
+      walls.append(new Option('Building walls', ''))
+      for (const [id, th] of Object.entries(this.scene.deps.manifest.themes)) walls.append(new Option(`${th.label} walls`, id))
+      walls.value = pkg?.wallStyle ?? ''
+      walls.onchange = () => void this.rooms.edit(pl, (c) => { if (walls.value) c.wallStyle = walls.value; else delete c.wallStyle })
+      const styles = el('div', 'row')
+      styles.append(style, walls)
       const row = el('div', 'row')
       const share = el('button', 'btn small', 'Copy office link') as HTMLButtonElement
       share.title = 'Anyone who opens this link can add your office to their own world'
@@ -85,14 +218,31 @@ export class OfficePanel {
       invite.onclick = async () => this.copy(invite, await this.rooms.shareLink(pl, this.worldLink()), 'Invite to my office')
       const go = el('button', 'btn small', 'Go there')
       go.onclick = () => this.goTo(pl)
+      const mv = el('button', 'btn small', 'Move…')
+      mv.title = 'Pick a different free office on the map; everything inside comes with it'
+      mv.onclick = () => this.pickMove(pl)
       const rm = el('button', 'btn small danger', 'Remove')
       rm.onclick = () => void this.rooms.remove(pl)
       const code = el('button', 'btn small', pkg?.code ? 'Office code ✓' : 'Office code…')
       code.onclick = () => this.onEditCode(pl)
-      row.append(share, invite, go, code, rm)
-      box.append(el('div', 'sub', `Your office ${pl.slot}${pl.floor ? ` · floor ${pl.floor + 1}` : ''}${pl.pending ? ' · <b>awaiting approval</b>' : ''} · v${pkg?.ver ?? '?'}`), name, style, row)
+      row.append(go, mv, share, invite, code, rm)
+      box.append(el('div', 'sub', `Your office ${pl.slot}${pl.floor ? ` · floor ${pl.floor + 1}` : ''}${pl.pending ? ' · <b>awaiting approval</b>' : ''} · v${pkg?.ver ?? '?'}`), name, styles, row)
       box.append(el('div', 'hint', 'Only you can decorate inside it (press B inside your office). Draw call zones in it from Decorate > Call zones.'))
       p.append(box)
+    }
+
+    // offices I own that aren't in this world (removed, or made in another world)
+    const spare = this.rooms.myUnplaced()
+    if (spare.length && this.rooms.canPlace()) {
+      p.append(el('label', '', 'Your other offices'))
+      for (const pkg of spare) {
+        const r = el('div', 'prow')
+        r.append(el('span', '', `${esc(pkg.name)} <i>${pkg.size === 'M' ? 'large' : 'small'} · not in this world</i>`))
+        const put = el('button', 'btn small', 'Place here…')
+        put.onclick = () => this.pickPackage(pkg)
+        r.append(put)
+        p.append(r)
+      }
     }
 
     const others = this.rooms.list().filter((pl) => pl.owner !== me)
@@ -148,7 +298,9 @@ export class OfficePanel {
           if (pl) this.goTo(pl)
           close()
         }
-        row.append(add)
+        const choose = el('button', 'btn', 'Choose a spot…')
+        choose.onclick = () => { close(); this.pickPackage(pkg) }
+        row.append(add, choose)
         if (this.state.view.policy.rooms === 'approval' && !this.state.isMod) row.append(el('div', 'hint', 'Needs approval from a moderator.'))
       }
     }
