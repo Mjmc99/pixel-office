@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { connected, move, world } from './helpers'
 
-const calls = (p: Page) => p.evaluate(() => (window as any).__po.scene.debugState().call as { id: string; state: string; tracks: { kind: string; muted: boolean; live: boolean }[] }[])
+const calls = (p: Page) => p.evaluate(() => (window as any).__po.scene.debugState().call as { id: string; state: string; tracks: { kind: string; muted: boolean; live: boolean }[]; sending: { audio: boolean; video: boolean } }[])
 const mediaOn = (p: Page) => p.evaluate(async () => {
   const d = (window as any).__po.call.devices
   await d.setMic(true); await d.setCam(true)
@@ -37,7 +37,10 @@ test('four people hold a video call in the library zone; walking out cuts it', a
 
   // camera off: video stops, call stays
   await pages[2].evaluate(() => (window as any).__po.call.devices.setCam(false))
-  await expect.poll(async () => (await calls(pages[3]))[0]?.tracks.find((t) => t.kind === 'video')?.muted, { timeout: 15_000 }).toBe(true)
+  // (a remote track's "muted" flag isn't reliable across Chrome builds, so check what Cy
+  // sends, and that Dee's tile switches to Cy's avatar)
+  await expect.poll(async () => (await calls(pages[2]))[0]?.sending.video, { timeout: 15_000 }).toBe(false)
+  await expect.poll(async () => (await pages[3].evaluate(() => (window as any).__po.scene.callInfo().peers))[0]?.cam, { timeout: 15_000 }).toBe(false)
   expect(await connected(pages[3])).toBe(1)
 })
 

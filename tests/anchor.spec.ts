@@ -42,7 +42,7 @@ test('real P2P over a self-hosted relay; the anchor peer keeps the world online'
 
   // start the anchor peer for this world
   const data = mkdtempSync(join(tmpdir(), 'anchor-'))
-  anchor = spawn('node', ['anchor/anchor.mjs', '--invite', hash, '--relay', RELAY, '--data', data], { stdio: 'pipe' })
+  anchor = spawn('node', ['anchor/anchor.mjs', '--invite', hash, '--relay', RELAY, '--data', data, '--verbose'], { stdio: 'pipe' })
   anchor.stdout!.on('data', (d) => anchorLog.push(String(d)))
   anchor.stderr!.on('data', (d) => anchorLog.push(String(d)))
   const worldId = hash.match(/w=([a-z0-9]+)/)![1]

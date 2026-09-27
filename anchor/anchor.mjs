@@ -3,7 +3,7 @@
  * Pixel Office anchor peer: keeps worlds online when nobody's in them.
  *
  *   node anchor/anchor.mjs --invite "https://you.github.io/pixel-office/#w=abc123.SECRET" [--invite …]
- *                          [--relay wss://your-relay:8787] [--data ./anchor-data]
+ *                          [--relay wss://your-relay:8787] [--data ./anchor-data] [--verbose]
  *
  * It joins each world as a silent peer (no avatar), keeps a copy of the
  * world's shared document (the signed op log, whiteboards, notes, …) and every
@@ -30,6 +30,31 @@ if (!invites.length) {
 }
 mkdirSync(dataDir, { recursive: true })
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a)
+const verbose = args.includes('--verbose')
+
+/** --verbose: log relay sockets and WebRTC connection progress (for "why doesn't it connect?"). */
+class LoggedPC extends RTCPeerConnection {
+  constructor(...a) {
+    super(...a)
+    const id = Math.random().toString(36).slice(2, 6)
+    log(`[pc ${id}] created`)
+    this.iceConnectionStateChange?.subscribe?.((s) => log(`[pc ${id}] ice ${s}`))
+    this.connectionStateChange?.subscribe?.((s) => log(`[pc ${id}] ${s}`))
+    this.onIceCandidate?.subscribe?.((c) => c && log(`[pc ${id}] local candidate ${String(c.candidate ?? '').split(' ').slice(4, 8).join(' ')}`))
+  }
+}
+if (verbose && globalThis.WebSocket) {
+  const WS = globalThis.WebSocket
+  globalThis.WebSocket = class extends WS {
+    constructor(url, ...rest) {
+      super(url, ...rest)
+      log(`[ws] connecting ${url}`)
+      this.addEventListener('open', () => log(`[ws] open ${url}`))
+      this.addEventListener('close', (e) => log(`[ws] closed ${url} ${e.code}`))
+      this.addEventListener('error', () => log(`[ws] error ${url}`))
+    }
+  }
+}
 
 for (const invite of invites) {
   const m = invite.match(/w=([a-z0-9]+)\.([A-Za-z0-9_-]+)/)
@@ -58,7 +83,7 @@ function serveWorld(worldId, secret) {
     saveTimer = setTimeout(flush, Math.max(0, Math.min(500, firstDirty + 3000 - now)))
   }
 
-  const config = { appId: APP_ID, password: secret, rtcPolyfill: RTCPeerConnection, passive: true }
+  const config = { appId: APP_ID, password: secret, rtcPolyfill: verbose ? LoggedPC : RTCPeerConnection, passive: true }
   const room = relay ? joinRelay({ ...config, relayConfig: { urls: [relay] } }, worldId) : joinNostr(config, worldId)
 
   const y = room.makeAction('y')
