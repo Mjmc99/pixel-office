@@ -42,7 +42,7 @@ test('real P2P over a self-hosted relay; the anchor peer keeps the world online'
 
   // start the anchor peer for this world
   const data = mkdtempSync(join(tmpdir(), 'anchor-'))
-  anchor = spawn('node', ['anchor/anchor.mjs', '--invite', hash, '--relay', RELAY, '--data', data, '--verbose'], { stdio: 'pipe' })
+  anchor = spawn('node', ['anchor/anchor.mjs', '--invite', hash, '--relay', RELAY, '--data', data, '--stun', 'off', '--verbose'], { stdio: 'pipe' })
   anchor.stdout!.on('data', (d) => anchorLog.push(String(d)))
   anchor.stderr!.on('data', (d) => anchorLog.push(String(d)))
   const worldId = hash.match(/w=([a-z0-9]+)/)![1]
@@ -51,7 +51,7 @@ test('real P2P over a self-hosted relay; the anchor peer keeps the world online'
     await expect.poll(() => existsSync(join(data, `${worldId}.yjs`)) && existsSync(join(data, `${worldId}.packages.json`)), { timeout: 60_000 }).toBe(true)
     await expect.poll(() => anchorLog.join(''), { timeout: 30_000 }).toContain('peer joined')
   } catch (e) {
-    throw new Error(`${(e as Error).message}\n--- anchor log ---\n${anchorLog.join('').slice(-2000)}`)
+    throw new Error(`${(e as Error).message}\n--- anchor log ---\n${(l => l.length > 3000 ? l.slice(0, 1200) + '\n…\n' + l.slice(-1800) : l)(anchorLog.join(''))}`)
   }
   await a.waitForTimeout(1500)
 

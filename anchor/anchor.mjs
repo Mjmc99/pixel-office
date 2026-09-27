@@ -3,7 +3,11 @@
  * Pixel Office anchor peer: keeps worlds online when nobody's in them.
  *
  *   node anchor/anchor.mjs --invite "https://you.github.io/pixel-office/#w=abc123.SECRET" [--invite …]
- *                          [--relay wss://your-relay:8787] [--data ./anchor-data] [--verbose]
+ *                          [--relay wss://your-relay:8787] [--data ./anchor-data] [--stun off] [--verbose]
+ *
+ * --stun off skips public STUN lookups (only local addresses are offered): use it when the
+ * anchor and everyone who connects are on the same machine or LAN. It also makes startup
+ * much faster, since the anchor prepares a pool of 20 connections up front.
  *
  * It joins each world as a silent peer (no avatar), keeps a copy of the
  * world's shared document (the signed op log, whiteboards, notes, …) and every
@@ -31,6 +35,7 @@ if (!invites.length) {
 mkdirSync(dataDir, { recursive: true })
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a)
 const verbose = args.includes('--verbose')
+const noStun = opt('stun')[0] === 'off'
 
 /** --verbose: log relay sockets and WebRTC connection progress (for "why doesn't it connect?"). */
 class LoggedPC extends RTCPeerConnection {
@@ -83,7 +88,10 @@ function serveWorld(worldId, secret) {
     saveTimer = setTimeout(flush, Math.max(0, Math.min(500, firstDirty + 3000 - now)))
   }
 
-  const config = { appId: APP_ID, password: secret, rtcPolyfill: verbose ? LoggedPC : RTCPeerConnection, passive: true }
+  const config = {
+    appId: APP_ID, password: secret, rtcPolyfill: verbose ? LoggedPC : RTCPeerConnection, passive: true,
+    ...(noStun ? { rtcConfig: { iceServers: [] } } : {}),
+  }
   const room = relay ? joinRelay({ ...config, relayConfig: { urls: [relay] } }, worldId) : joinNostr(config, worldId)
 
   const y = room.makeAction('y')
@@ -106,5 +114,5 @@ function serveWorld(worldId, secret) {
     for (const p of pkgs.values()) pkg.send(p, { target: peer }).catch(() => {})
   }
   room.onPeerLeave = (peer) => log(`[${worldId}] peer left ${peer}`)
-  log(`[${worldId}] anchoring (ops: ${doc.getArray('ops').length}, offices: ${pkgs.size}) via ${relay ?? 'nostr'}`)
+  log(`[${worldId}] anchoring (ops: ${doc.getArray('ops').length}, offices: ${pkgs.size}) via ${relay ?? 'nostr'}${noStun ? ', no STUN' : ''}`)
 }

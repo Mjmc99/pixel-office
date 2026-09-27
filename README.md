@@ -263,6 +263,9 @@ browser still verifies the log and packages itself. Several `--invite` flags anc
 worlds. To run it as a service, use `pm2 start anchor/anchor.mjs -- --invite …` or a systemd
 unit.
 
+Add `--stun off` when the anchor and its visitors share a machine or LAN: it skips public STUN
+lookups and starts much faster. Add `--verbose` to log relay and WebRTC connection steps.
+
 **Own relay (optional).** `npm run relay -- --port 8787` starts a signaling relay. Put it
 behind TLS (e.g. Caddy) and enter `wss://your-host` in Settings > Network (or add
 `?relay=wss://your-host` to a link) for everyone who should use it, and pass
