@@ -44,13 +44,18 @@ function serveWorld(worldId, secret) {
   if (existsSync(docFile)) Y.applyUpdate(doc, readFileSync(docFile))
   const pkgs = new Map(existsSync(pkgFile) ? Object.entries(JSON.parse(readFileSync(pkgFile, 'utf8'))) : [])
 
-  let saveTimer = null
+  // debounced save: 0.5 s after things go quiet, but never more than 3 s after the first change
+  let saveTimer = null, firstDirty = 0
+  const flush = () => {
+    clearTimeout(saveTimer); saveTimer = null; firstDirty = 0
+    writeFileSync(docFile, Y.encodeStateAsUpdate(doc))
+    writeFileSync(pkgFile, JSON.stringify(Object.fromEntries(pkgs)))
+  }
   const save = () => {
+    const now = Date.now()
+    if (!firstDirty) firstDirty = now
     clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => {
-      writeFileSync(docFile, Y.encodeStateAsUpdate(doc))
-      writeFileSync(pkgFile, JSON.stringify(Object.fromEntries(pkgs)))
-    }, 500)
+    saveTimer = setTimeout(flush, Math.max(0, Math.min(500, firstDirty + 3000 - now)))
   }
 
   const config = { appId: APP_ID, password: secret, rtcPolyfill: RTCPeerConnection, passive: true }

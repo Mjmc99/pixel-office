@@ -27,7 +27,19 @@ export const screenOf = (p: Page, tx: number, ty: number) =>
   p.evaluate(([x, y]) => (window as any).__po.scene.tileToScreen(x, y), [tx, ty])
 export const connected = (p: Page) =>
   p.evaluate(() => (window as any).__po.scene.debugState().call.filter((c: any) => c.state === 'connected').length)
+/** Wait until the camera has stopped gliding (tile -> screen mapping is stable). */
+export async function settle(p: Page) {
+  let last = ''
+  await expect.poll(async () => {
+    const { x, y } = await screenOf(p, 0, 0)
+    const now = `${Math.round(x)},${Math.round(y)}`
+    const same = now === last
+    last = now
+    return same
+  }, { intervals: [150], timeout: 10_000 }).toBe(true)
+}
 export async function drag(p: Page, a: [number, number], b: [number, number]) {
+  await settle(p)
   const s = await screenOf(p, ...a), e = await screenOf(p, ...b)
   await p.mouse.move(s.x, s.y); await p.mouse.down(); await p.mouse.move(e.x, e.y, { steps: 4 }); await p.mouse.up()
 }

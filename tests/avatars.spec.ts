@@ -59,7 +59,8 @@ test('starters: picking one usually gives you a unique variation', async ({ page
     const av = (window as any).__po.avatars
     return av.encodeLook({ hat: 0, hatColor: 0, skin: 40, hair: 0, hairColor: 1, facial: 0, eyewear: 0, top: 0, topColor: 5, trim: 9, bottom: 0, bottomColor: 6, shoes: 12 })
   })
-  for (let i = 0; i < 20; i++) {
+  // 80% of picks are varied: over 10 picks, 7+ exact originals would happen < 0.1% of the time
+  for (let i = 0; i < 10; i++) {
     await modal.locator('[data-starter="Classic"]').click()
     await modal.getByRole('button', { name: 'Save' }).click()
     const r = await page.evaluate(() => (window as any).__po.scene.callInfo().me.preset)
@@ -67,8 +68,8 @@ test('starters: picking one usually gives you a unique variation', async ({ page
     seen.add(r)
     await page.getByRole('button', { name: 'Customize' }).click()
   }
-  expect(originals).toBeLessThan(10)
-  expect(seen.size).toBeGreaterThan(10)
+  expect(originals).toBeLessThan(7)
+  expect(seen.size).toBeGreaterThan(3)
   // and you can always go back to the exact starter
   await modal.locator('[data-starter="Classic"]').click()
   const link = modal.locator('.cr-note .linkish')

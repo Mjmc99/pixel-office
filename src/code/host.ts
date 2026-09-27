@@ -35,7 +35,10 @@ export class CodeHost {
   private frame: HTMLIFrameElement
   private port?: MessagePort
   private pingN = 0
-  private lastPong = Date.now()
+  /** When the oldest unanswered ping was sent (0 = none outstanding). */
+  private pendingSince = 0
+  private answered = false
+  private started = Date.now()
   private timer: number
   private budget = { t: Date.now(), n: 0 }
   dead: string | null = null
@@ -58,7 +61,7 @@ export class CodeHost {
       this.port = ch.port1
       this.port.onmessage = (e) => this.onMessage(e.data)
       this.frame.contentWindow?.postMessage({ t: 'init', src: SDK_SOURCE + '\n;\n' + code.src }, '*', [ch.port2])
-      this.lastPong = Date.now()
+      this.started = Date.now()
       ready()
     }
     document.body.append(this.frame)
@@ -67,9 +70,17 @@ export class CodeHost {
 
   send(m: unknown) { if (!this.dead) this.port?.postMessage(m) }
 
+  /**
+   * Kill the code only when a ping has gone unanswered for 3 s (10 s while it's still
+   * starting up). Measuring from the ping, not from the last pong, means a janky page
+   * (main thread busy, tab throttled) never gets healthy code killed.
+   */
   private watchdog() {
     if (this.dead) return
-    if (Date.now() - this.lastPong > 3000) return this.kill('stopped responding (possible infinite loop)')
+    const now = Date.now()
+    if (!this.pendingSince) this.pendingSince = now
+    const limit = this.answered ? 3000 : 10_000
+    if (now - (this.answered ? this.pendingSince : this.started) > limit) return this.kill('stopped responding (possible infinite loop)')
     this.send({ t: 'ping', n: ++this.pingN })
   }
 
@@ -78,7 +89,8 @@ export class CodeHost {
     const now = Date.now()
     if (now - this.budget.t > 1000) this.budget = { t: now, n: 0 }
     if (++this.budget.n > 300) return this.kill('sent too many messages')
-    if (m.t === 'pong') { this.lastPong = now; return }
+    this.answered = true // any message means the code has started; the startup grace is over
+    if (m.t === 'pong') { this.pendingSince = 0; return }
     if (m.t === 'log') return this.onLog('log', (m.args ?? []).join(' ').slice(0, 500))
     if (m.t === 'error') return this.onLog('error', String(m.message).slice(0, 500))
     if (m.t === 'call' && typeof m.fn === 'string' && Array.isArray(m.args)) {

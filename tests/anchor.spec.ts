@@ -46,8 +46,13 @@ test('real P2P over a self-hosted relay; the anchor peer keeps the world online'
   anchor.stdout!.on('data', (d) => anchorLog.push(String(d)))
   anchor.stderr!.on('data', (d) => anchorLog.push(String(d)))
   const worldId = hash.match(/w=([a-z0-9]+)/)![1]
-  await expect.poll(() => existsSync(join(data, `${worldId}.yjs`)) && existsSync(join(data, `${worldId}.packages.json`)), { timeout: 60_000 }).toBe(true)
-  await expect.poll(() => anchorLog.join(''), { timeout: 30_000 }).toContain('peer joined')
+  // if the anchor never syncs, show what it said (the log is otherwise invisible on CI)
+  try {
+    await expect.poll(() => existsSync(join(data, `${worldId}.yjs`)) && existsSync(join(data, `${worldId}.packages.json`)), { timeout: 60_000 }).toBe(true)
+    await expect.poll(() => anchorLog.join(''), { timeout: 30_000 }).toContain('peer joined')
+  } catch (e) {
+    throw new Error(`${(e as Error).message}\n--- anchor log ---\n${anchorLog.join('').slice(-2000)}`)
+  }
   await a.waitForTimeout(1500)
 
   // everyone leaves

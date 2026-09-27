@@ -46,7 +46,8 @@ export class MediaMesh {
 
   constructor(private net: Transport, private iceServers: RTCIceServer[] = DEFAULT_ICE, private relayOnly = false, channel = 'sig') {
     this.sig = net.channel<Sig>(channel)
-    this.sig.onMessage((m, from) => void this.onSignal(m as Sig, from))
+    // signaling races (someone leaves mid-handshake) are expected; the next offer starts over
+    this.sig.onMessage((m, from) => void this.onSignal(m as Sig, from).catch((e) => console.debug('[mesh]', from, e?.message ?? e)))
     net.onPeerLeave((p) => this.close(p, false))
   }
 
@@ -151,10 +152,12 @@ export class MediaMesh {
       await c.pc.setRemoteDescription({ type: 'offer', sdp: m.sdp })
       c.remoteSet = true
       for (const t of c.pc.getTransceivers()) {
+        if (c.pc.signalingState === 'closed') return // they left while we were answering
         const kind = t.receiver.track.kind as 'audio' | 'video'
         t.direction = 'sendrecv'
         await t.sender.replaceTrack(this.trackFor(from, kind)).catch(() => {})
       }
+      if (c.pc.signalingState === 'closed') return
       await c.pc.setLocalDescription(await c.pc.createAnswer())
       this.sig.send({ t: 'answer', sdp: c.pc.localDescription!.sdp }, from)
       const vs = this.sender(c.pc, 'video'); if (vs) this.capBitrate(vs)

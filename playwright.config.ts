@@ -3,6 +3,10 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
   testDir: 'tests',
   timeout: 90_000,
+  // UI checks get more time: shared CI runners can be several times slower than a laptop
+  expect: { timeout: 15_000 },
+  // on CI, failing tests are also annotated on the GitHub run page
+  reporter: process.env.CI ? [['github'], ['list']] : 'list',
   use: {
     baseURL: 'http://localhost:5174',
     viewport: { width: 1280, height: 800 },
