@@ -126,7 +126,7 @@ async function boot() {
               const pl = rooms.placementAt(slot, f)
               if (!pl) return null
               const pkg = rooms.pkgFor(pl)
-              return { style: pkg?.floorStyle ?? 'office', label: pkg?.name ?? `${pl.name} (loading…)`, pending: pl.pending || !pkg }
+              return { style: pkg?.floorStyle ?? 'office', wall: pkg?.wallStyle ?? null, label: pkg?.name ?? `${pl.name} (loading…)`, pending: pl.pending || !pkg }
             }
             s.roomEditHook = {
               canEditAt: (x, y, f) => !!rooms.myPlacementAt(x, y, f),

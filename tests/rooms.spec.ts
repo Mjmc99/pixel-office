@@ -11,7 +11,7 @@ test('claim an office, decorate it (owner only), zone it, and share it into anot
   await bob.bringToFront()
   await move(bob, 6, 10); await bob.waitForTimeout(600)
   await bob.getByRole('button', { name: 'Offices' }).click()
-  await bob.getByRole('button', { name: /Claim office N1/ }).click()
+  await bob.getByRole('button', { name: /Claim N1/ }).click()
   await expect.poll(() => rooms(alice)).toEqual(['N1:active'])
   await expect.poll(() => roomThings(alice)).toContain('office/desk@2,2,S')
 

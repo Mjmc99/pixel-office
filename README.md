@@ -75,7 +75,8 @@ Add `?net=local` to the URL to use the offline, same-browser transport (no netwo
 | People / Settings (world card) | See who's here; owners make mods and ban; mods add floors; back up your identity key |
 | Stand on the elevator pad | Pick a floor |
 | E | Use the object you're next to (whiteboard, notes, TV, portal settings) |
-| **Offices** (world card) | Claim the empty office you're standing in; rename, restyle, share or remove yours; mods approve/remove |
+| **Offices** (world card) | **New office: pick a spot** zooms out to the floor map: click any green (free) office. **Move…** does the same for an office you have, and everything inside comes along. Also: claim where you stand, rename, pick floor and wall style, share or remove; re-place removed offices or ones from other worlds; mods approve/remove/move |
+| Decorate > **My office** | One-click wall and floor styles for your own office (just yours; everyone picks their own) |
 | Decorate > **Call zones** (owner/mods) | Drag on the floor to draw a zone; rename or delete it in the list, or right-click it |
 
 *Copy invite link* shares the world. The part after `#` holds the world id and a secret

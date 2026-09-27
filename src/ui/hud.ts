@@ -366,7 +366,7 @@ export class Hud {
     this.snapBtn.onclick = () => this.scene.setSnap(!this.scene.snap)
     if (this.themeTab !== 'zones') this.tabs.append(this.snapBtn)
     if (this.manifest.themes[this.themeTab] && this.state.isMod) {
-      const use = el('button', 'btn small', 'Use this style for walls')
+      const use = el('button', 'btn small', 'Use this style for the whole floor')
       use.onclick = () => this.scene.setTheme(this.themeTab)
       this.tabs.append(use)
     }

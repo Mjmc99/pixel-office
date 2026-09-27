@@ -19,6 +19,7 @@ export interface RoomContent {
   name: string
   size: SlotSize
   floorStyle: string   // theme id for the office floor
+  wallStyle?: string   // theme id for the office walls (unset: the floor's building walls)
   things: RoomThing[]
   zones: RoomZone[]
   objects: any[]       // phase 4: interactables (portals, whiteboards, TVs…)
