@@ -1,10 +1,10 @@
 import type Phaser from 'phaser'
-import { buildAvatar, decodeLook, palette, toRecipe } from './parts'
+import { buildAvatar, decodeLook, MODEL_H, palette, toRecipe } from './parts'
 import { FACINGS } from './voxel'
 
-/** Every avatar frame is 16 × 44 px; feet sit at row ~36.5. */
-export const FRAME_W = 16, FRAME_H = 44
-export const ORIGIN: [number, number] = [0.5, 36.5 / 44]
+/** Every avatar frame is 16 × (16 + MODEL_H) px; the feet sit 8.5 rows below the model height. */
+export const FRAME_W = 16, FRAME_H = 16 + MODEL_H
+export const ORIGIN: [number, number] = [0.5, (MODEL_H + 8.5) / FRAME_H]
 
 const sheets = new Map<string, HTMLCanvasElement>()
 

@@ -1,4 +1,4 @@
-import { decodeLook, encodeLook, randomLook, toRecipe } from './avatars/parts'
+import { decodeLook, encodeLook, suggestLook, toRecipe } from './avatars/parts'
 import { avatarSheet, avatarThumb } from './avatars/avatars'
 import Phaser from 'phaser'
 import './style.css'
@@ -91,7 +91,7 @@ async function boot() {
   const meKey = 'po:me' + (profile() ? ':' + profile() : '')
   const me = store(meKey, {
     name: `Guest ${Math.floor(Math.random() * 900 + 100)}`,
-    avatar: encodeLook(randomLook()),
+    avatar: encodeLook(suggestLook()),
   })
   if (params.get('name')) me.name = params.get('name')!
   me.avatar = toRecipe(me.avatar)
@@ -161,7 +161,7 @@ async function boot() {
               const t = roomToken()
               if (t) void tokenToPackage(t).then((pkg) => pkg && offices.prompt(pkg))
             })
-            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer, runner, editor, screens, hud, avatars: { avatarSheet, avatarThumb, encodeLook, decodeLook, randomLook, toRecipe } }
+            ;(window as any).__po = { scene: s, net, doc: sync.doc, call, state, rooms, offices, objects, importer, runner, editor, screens, hud, avatars: { avatarSheet, avatarThumb, encodeLook, decodeLook, suggestLook, toRecipe } }
           },
         })
       },

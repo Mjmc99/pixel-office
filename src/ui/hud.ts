@@ -90,7 +90,7 @@ export class Hud {
       face.src = avatarThumb(recipe)
       onMe(nameIn.value.trim() || 'Guest', recipe)
     }
-    const creator = new Creator(this.root, (b) => (this.scene.typing = b))
+    const creator = new Creator(this.root, (b) => (this.scene.typing = b), () => this.scene.recipesInUse())
     const openCreator = () => creator.show(recipe, (r) => { recipe = r; apply() })
     custom.onclick = openCreator
     face.onclick = openCreator

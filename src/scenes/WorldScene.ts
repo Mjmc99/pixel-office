@@ -471,6 +471,11 @@ export class WorldScene extends Phaser.Scene {
     this.onChange()
   }
 
+  /** Recipes other people here are wearing (the creator nudges you away from exact copies). */
+  recipesInUse(): Set<string> {
+    return new Set([...this.others.values()].map((a) => a.preset))
+  }
+
   setMe(name: string, avatar: string) {
     this.deps.me = { name, avatar }
     this.me.preset = toRecipe(avatar)

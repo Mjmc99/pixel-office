@@ -216,21 +216,26 @@ palettes). To add a piece, write a builder in `models.py` and register it in `SH
 
 ### Characters
 
-Avatars are built in the browser from a short recipe such as `v1.3.4.1.1.5.9.0.6.12.0.2.0.0`
-(skin, hair style, hair colour, top, top colour, trim, bottoms, bottoms colour, shoes,
-facial hair, eyewear, headwear, accessory colour). The recipe is what goes over the network, and
-every peer renders it with `src/avatars/voxel.ts`, so there are no image downloads and bad
-values fall back to safe defaults. The options are:
+A character has four parts, each with its own tab (and its own 🎲) in the creator:
 
-- 10 skin tones
-- 10 hair styles in 13 colours
-- 6 tops, 3 bottoms, and 16 cloth colours for top, trim, bottoms and shoes
-- facial hair, 5 eyewear and 6 headwear options
+- **Hat**: none, beanie, cap, top hat, party hat, bow, flower, crown or cat ears, in any of 16 colours. Hats are small and sit on top of the hair.
+- **Head**: a skin-tone slider that blends smoothly from light to deep, 10 hair styles in 13 colours, facial hair, and eyewear (glasses, round glasses, sunglasses, VR visor).
+- **Torso**: T-shirt, hoodie, suit, sweater, dress or tank top, with a colour and a trim colour.
+- **Legs**: pants, shorts or skirt, a colour, and shoes.
 
-That makes millions of combinations. The original 8 presets (`ada`…`hana`) still resolve to
-recipes. To add a part, add a name to its list in `parts.ts` and a case in `buildAvatar`.
+**Start from** offers 8 starter looks. Picking one usually (80%) gives you your own take on it,
+with a new skin tone and fresh colours that still go together, and never an exact copy of
+someone in the world. "Use the original" is one click away. **Ideas** shows matching combos
+(bright tops get calm bottoms, shoes stay neutral) and the creator tells you if someone here
+already looks exactly like you. New visitors start with a random matching combo.
 
-![Random characters in all four facings](docs/avatars-grid.png)
+Avatars are built in the browser from a short recipe (`v2.` + 13 numbers). The recipe is what
+goes over the network, and every peer renders it with `src/avatars/voxel.ts`, so there are no
+image downloads and bad values fall back to safe defaults. Older recipes (`v1.`) and the
+original 8 presets still load. To add a part, add a name to its list in `parts.ts` and a
+case in `buildHat` / `buildHead` / `buildTorso` / `buildLegs`.
+
+![Hats, the skin-tone range, and suggested combos (front and side)](docs/avatars-grid.png)
 ![The character creator](docs/creator.png)
 
 ## Test
